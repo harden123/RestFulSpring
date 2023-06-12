@@ -4,10 +4,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import restfulspring.view.SWTFactory;
 
@@ -62,6 +66,25 @@ public class TabFolderFactory {
 		tab3.setControl(composite3);
 		
 		folder.setSelection(0);
+		
+		/*------------------------- ToolItem-----------------------------*/
+		  // 创建工具栏按钮并添加到 CTabFolder 中
+        ToolBar toolBar = new ToolBar(folder, SWT.FLAT);
+        ToolItem toolItem = new ToolItem(toolBar, SWT.PUSH);
+        toolItem.setText("reset");
+        ToolItem formatItem = new ToolItem(toolBar, SWT.PUSH);
+        formatItem.setText("format");
+        
+        folder.setTopRight(toolBar);
+        // 添加工具栏按钮的事件监听器
+        toolItem.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+            	CTabItem selection = folder.getSelection();
+            	System.out.println(selection.getText());
+            }
+        });
+        
 
 	}
 }
