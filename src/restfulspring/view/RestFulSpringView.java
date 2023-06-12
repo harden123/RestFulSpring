@@ -62,6 +62,19 @@ public class RestFulSpringView extends ViewPart {
 	    
 	    Button collapse = new Button(toolRow, SWT.NONE);
 	    collapse.setText("collapse");
+	    
+		Combo workSpaceCombo = new Combo(toolRow, SWT.READ_ONLY);
+		workSpaceCombo.setToolTipText("select workSpace");
+		workSpaceCombo.setItems(new String[] {"workSpace1", "workSpace2"});
+		workSpaceCombo.select(0); // 设置选中第一个选项
+		// 添加选项变更监听器
+		workSpaceCombo.addSelectionListener(new SelectionAdapter() {
+		    @Override
+		    public void widgetSelected(SelectionEvent e) {
+		        System.out.println("选择了：" + workSpaceCombo.getText());
+		    }
+		});
+		
 	    /*------------------------- treeRow-----------------------------*/
 
 		Composite treeRow = SWTFactory.createComposite(composite);
