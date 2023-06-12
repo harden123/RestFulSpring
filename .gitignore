@@ -1,0 +1,19 @@
+/pom.xml.versionsBackup
+# 忽略所有target目录
+target/
+.idea/
+.mvn/
+# 忽略idea的配置文件
+*.iml
+# 忽略log文件
+*.log
+*.log.*
+logs/
+
+#忽略Eclipse 的 .project
+.project
+.classpath
+.settings
+.settings/
+build.cmd
+bin/
