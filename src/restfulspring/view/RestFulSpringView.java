@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 
+import restfulspring.view.tab.TabFolderFactory;
 import restfulspring.view.tree.MyInput;
 import restfulspring.view.tree.MyLabelProvider;
 import restfulspring.view.tree.TreeContentProvider;
@@ -93,7 +94,7 @@ public class RestFulSpringView extends ViewPart {
 		
 		// 创建 Text 控件
 		Text text = new Text(queryRow, SWT.BORDER);
-		RowData rowData = new RowData(300, SWT.DEFAULT);
+		RowData rowData = new RowData(200, SWT.DEFAULT);
 		text.setLayoutData(rowData); // 设置布局数据
 
 		// 添加文本变更监听器
@@ -107,9 +108,11 @@ public class RestFulSpringView extends ViewPart {
 	    Button send = new Button(queryRow, SWT.NONE);
 	    send.setText("send");
 	    /*-------------------------resultRow -----------------------------*/
-	    
-		
-	    
+		Composite resultRow = SWTFactory.createComposite(composite);
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		resultRow.setLayoutData(gridData);
+		resultRow.setLayout(SWTFactory.createGridLayout(1));
+		TabFolderFactory.create(resultRow);
 	    
 		createActions();
 		// Uncomment if you wish to add code to initialize the toolbar
