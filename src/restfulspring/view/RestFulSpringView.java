@@ -8,8 +8,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.RowData;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -43,7 +42,7 @@ public class RestFulSpringView extends ViewPart {
 		GridData row1Data = new GridData(SWT.FILL, SWT.FILL, true, false);
 //		 row1.heightHint = 200;
 		toolRow.setLayoutData(row1Data);
-	    toolRow.setLayout(SWTFactory.createGridLayout(8));
+	    toolRow.setLayout(SWTFactory.createGridLayout(6));
 	    
 	    Button refresh = new Button(toolRow, SWT.NONE);
 	    refresh.setText("refresh");
@@ -77,7 +76,7 @@ public class RestFulSpringView extends ViewPart {
 		GridData row3Data = new GridData(SWT.FILL, SWT.FILL, true, false);
 		queryRow.setLayoutData(row3Data);
 		
-		RowLayout rowLayout = SWTFactory.createRowLayout();
+		GridLayout rowLayout = SWTFactory.createGridLayout(3);
 		queryRow.setLayout(rowLayout);
 		
 	    
@@ -94,8 +93,7 @@ public class RestFulSpringView extends ViewPart {
 		
 		// 创建 Text 控件
 		Text text = new Text(queryRow, SWT.BORDER);
-		RowData rowData = new RowData(200, SWT.DEFAULT);
-		text.setLayoutData(rowData); // 设置布局数据
+		text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false)); // 设置布局数据
 
 		// 添加文本变更监听器
 		text.addModifyListener(new ModifyListener() {

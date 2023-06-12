@@ -2,7 +2,6 @@ package restfulspring.view;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 
 public class SWTFactory {
@@ -38,12 +37,12 @@ public class SWTFactory {
 		return composite;
 	}
 
-	public static RowLayout createRowLayout() {
-		RowLayout rowLayout = new RowLayout();
-		rowLayout.marginTop = 0;
-		rowLayout.marginBottom = 0;
-		rowLayout.marginLeft = 0;
-		rowLayout.marginRight = 0;
-		return rowLayout;
-	}
+//	public static RowLayout createRowLayout() {
+//		RowLayout rowLayout = new RowLayout();
+//		rowLayout.marginTop = 0;
+//		rowLayout.marginBottom = 0;
+//		rowLayout.marginLeft = 0;
+//		rowLayout.marginRight = 0;
+//		return rowLayout;
+//	}
 }
