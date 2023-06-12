@@ -6,7 +6,8 @@ Bundle-Version: 1.0.0
 Bundle-Activator: restfulspring.Activator
 Bundle-Vendor: huang
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.core;bundle-version="3.32.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Automatic-Module-Name: RestFulSpring
 Bundle-ActivationPolicy: lazy
