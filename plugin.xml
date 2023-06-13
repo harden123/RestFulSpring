@@ -18,4 +18,17 @@
             name="RestFulSpring">
       </category>
    </extension>
+   
+     <extension
+         point="org.eclipse.core.runtime.products">
+      <product
+            name="My Product"
+            application="org.eclipse.ui.ide.workbench">
+            
+      </product>
+              
+		<property
+		   name="osgi.splashPath"
+		   value="-nosplash"/>
+	   </extension>
 </plugin>
