@@ -9,11 +9,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MyElement {
+public class MyTreeElement {
 	private String name;
 	private Image image;
 	private Object[] children;
-	private MyElement parent;
+	private MyTreeElement parent;
 
 
 }

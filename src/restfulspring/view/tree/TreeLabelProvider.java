@@ -4,13 +4,13 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.swt.graphics.Image;
 
-public class MyLabelProvider implements ILabelProvider {
+public class TreeLabelProvider implements ILabelProvider {
     public String getText(Object element) {
-        return ((MyElement) element).getName();
+        return ((MyTreeElement) element).getName();
     }
 
     public Image getImage(Object element) {
-        return ((MyElement) element).getImage();
+        return ((MyTreeElement) element).getImage();
     }
 
     public void addListener(ILabelProviderListener listener) {}

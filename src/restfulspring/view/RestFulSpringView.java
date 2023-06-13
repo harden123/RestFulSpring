@@ -1,7 +1,9 @@
 package restfulspring.view;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -17,16 +19,17 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.part.ViewPart;
 
-import restfulspring.handlers.JdtSourceHandlers;
 import restfulspring.view.tab.TabFolderFactory;
-import restfulspring.view.tree.MyInput;
-import restfulspring.view.tree.MyLabelProvider;
+import restfulspring.view.tree.MyTreeInput;
 import restfulspring.view.tree.TreeContentProvider;
+import restfulspring.view.tree.TreeLabelProvider;
 import restfulspring.view.tree.TreeViewFactory;
 
 public class RestFulSpringView extends ViewPart {
 
 	int commonStyle = SWT.BORDER;
+	private MyTreeInput treeData;
+	private TreeViewer treeViewer;
 
 	public RestFulSpringView() {
 	}
@@ -55,7 +58,10 @@ public class RestFulSpringView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// 按钮被单击时执行的代码
-				JdtSourceHandlers.handle();
+//				JdtSourceHandlers.handle();
+				int nextInt = RandomUtils.nextInt(1, 10);
+				treeData.setFirstLevelElements(MyTreeInput.mockFirstLevel(nextInt));
+				treeViewer.refresh();
 			}
 
 			@Override
@@ -100,7 +106,8 @@ public class RestFulSpringView extends ViewPart {
 		treeRowData.heightHint = 200;
 		treeRow.setLayoutData(treeRowData);
 		treeRow.setLayout(SWTFactory.createGridLayout(1));
-		TreeViewFactory.create(treeRow, new TreeContentProvider(), new MyLabelProvider(), MyInput.init());
+		treeData = MyTreeInput.mockMyTreeInput(10);
+		treeViewer = TreeViewFactory.create(treeRow, new TreeContentProvider(), new TreeLabelProvider(), treeData);
 
 		/*-------------------------queryRow -----------------------------*/
 		Composite queryRow = SWTFactory.createComposite(composite);
