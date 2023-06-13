@@ -1,6 +1,9 @@
 package restfulspring.view;
 
-import org.apache.commons.lang3.RandomUtils;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -15,11 +18,19 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.part.ViewPart;
 
+import com.google.common.collect.Lists;
+
+import restfulspring.dto.JDTMethodDTO;
+import restfulspring.dto.JDTTypeDTO;
+import restfulspring.handlers.JdtSourceHandlers;
+import restfulspring.utils.CollectionUtils;
 import restfulspring.view.tab.TabFolderFactory;
+import restfulspring.view.tree.MyTreeElement;
 import restfulspring.view.tree.MyTreeInput;
 import restfulspring.view.tree.TreeContentProvider;
 import restfulspring.view.tree.TreeLabelProvider;
@@ -28,8 +39,8 @@ import restfulspring.view.tree.TreeViewFactory;
 public class RestFulSpringView extends ViewPart {
 
 	int commonStyle = SWT.BORDER;
-	private MyTreeInput treeData;
-	private TreeViewer treeViewer;
+	private static MyTreeInput treeData;
+	private static TreeViewer treeViewer;
 
 	public RestFulSpringView() {
 	}
@@ -58,10 +69,7 @@ public class RestFulSpringView extends ViewPart {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// 按钮被单击时执行的代码
-//				JdtSourceHandlers.handle();
-				int nextInt = RandomUtils.nextInt(1, 10);
-				treeData.setFirstLevelElements(MyTreeInput.mockFirstLevel(nextInt));
-				treeViewer.refresh();
+				JdtSourceHandlers.handle();
 			}
 
 			@Override
@@ -153,6 +161,55 @@ public class RestFulSpringView extends ViewPart {
 		// Uncomment if you wish to add code to initialize the toolbar
 		// initializeToolBar();
 		initializeMenu();
+		
+		initialDatas();
+		
+
+	}
+
+
+	private void initialDatas() {
+		if (CollectionUtils.isEmpty(JdtSourceHandlers.getList())) {
+			JdtSourceHandlers.handle();
+		}else if (CollectionUtils.isNotEmpty(JdtSourceHandlers.getList())) {
+			notifyRefreshTree();
+		}
+	}
+
+	public static void notifyRefreshTree() {
+		Display.getDefault().asyncExec(new Runnable() {
+		    public void run() {
+		    	if (treeViewer==null) {
+					return ;
+				}
+		    	List<JDTTypeDTO> jDTTypeDTOs = JdtSourceHandlers.getList();
+				if (CollectionUtils.isEmpty(jDTTypeDTOs)) {
+					treeData.setFirstLevelElements(Lists.newArrayList());
+					treeViewer.refresh();
+					return ;
+				}
+				List<MyTreeElement> typeElements = Lists.newArrayListWithExpectedSize(jDTTypeDTOs.size());
+				for (JDTTypeDTO jDTTypeDTO : jDTTypeDTOs) {
+					MyTreeElement typeElement = new MyTreeElement();
+					typeElement.setName(jDTTypeDTO.getType().getName().toString());
+					typeElement.setJDTTypeDTO(jDTTypeDTO);
+					List<MyTreeElement> children = typeElement.getChildren();
+					HashMap<String, JDTMethodDTO> methodName2DTOMap = jDTTypeDTO.getMethodName2DTOMap();
+					for (Map.Entry<String, JDTMethodDTO> entry : methodName2DTOMap.entrySet()) {
+						String methodName = entry.getKey();
+						JDTMethodDTO jDTMethodDTO = entry.getValue();
+						MyTreeElement method = new MyTreeElement();
+						method.setName(methodName);
+						method.setJDTMethodDTO(jDTMethodDTO);
+						children.add(method);
+					}
+					typeElements.add(typeElement);
+				}
+				treeData.setFirstLevelElements(typeElements);
+				treeViewer.refresh();
+		    }
+		});
+		
 	}
 
 	/**

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
@@ -39,46 +40,69 @@ import lombok.SneakyThrows;
 import restfulspring.constant.RestConstant;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.JDTTypeDTO;
+import restfulspring.view.RestFulSpringView;
 
 public class JdtSourceHandlers {
 	
-	public static List<JDTTypeDTO> list;
+	private static List<JDTTypeDTO> list;
+	private static AtomicBoolean running = new AtomicBoolean();
 
-	@SneakyThrows
-	public static List<JDTTypeDTO> handle() {
-		long s1 = System.currentTimeMillis();
-		IWorkbench workbench = PlatformUI.getWorkbench();
-		IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-		IEditorPart editor = Optional.ofNullable(window).map(x -> x.getActivePage()).map(x -> x.getActiveEditor()).orElse(null);
-		if (editor == null) {
-			return Lists.newArrayList();
+	public static void handle() {
+		boolean compareAndSet = running.compareAndSet(false, true);
+		if (compareAndSet) {
+				try {
+					long s1 = System.currentTimeMillis();
+					IWorkbench workbench = PlatformUI.getWorkbench();
+					IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
+					IEditorPart editor = Optional.ofNullable(window).map(x -> x.getActivePage()).map(x -> x.getActiveEditor()).orElse(null);
+					Thread thread = new Thread(new Runnable() {
+						@SneakyThrows
+						@Override
+						public void run() {
+							try {
+								if (editor == null) {
+									return ;
+								}
+								IFile file = (IFile) editor.getEditorInput().getAdapter(IFile.class);
+								IProject project = file.getProject();
+								if (project == null) {
+									return ;
+								}
+								if (!project.isOpen() || !project.hasNature(JavaCore.NATURE_ID)) {
+									return ;
+								}
+								IJavaProject javaProject = JavaCore.create(project);
+								IPackageFragmentRoot[] packageFragmentRoots = javaProject.getPackageFragmentRoots();
+								List<ICompilationUnit> allJavaFiles = new ArrayList<>();
+								for (IPackageFragmentRoot iPackageFragmentRoot : packageFragmentRoots) {
+									boolean open = iPackageFragmentRoot.isOpen();
+									if (!open) {
+										continue;
+									}
+									String path = iPackageFragmentRoot.getPath().toString();
+									if (path.endsWith("/src/test/java") || path.endsWith("/src/main/resources")) {
+										continue;
+									}
+									getAllJavaFiles(iPackageFragmentRoot, allJavaFiles);
+								}
+								list = parseAllJavaFiles(allJavaFiles);
+								long s2 = System.currentTimeMillis();
+								System.out.println("parseJDTUsed:"+(s2-s1)/1000);
+								RestFulSpringView.notifyRefreshTree();
+							}catch (Exception e) {
+								System.out.println(e.getMessage());
+							}
+							finally {
+								running.set(false);
+							}
+						}
+					});
+					thread.start();
+				} finally {
+					running.set(false);
+				}
+			
 		}
-		IFile file = (IFile) editor.getEditorInput().getAdapter(IFile.class);
-		IProject project = file.getProject();
-		if (project == null) {
-			return Lists.newArrayList();
-		}
-		if (!project.isOpen() || !project.hasNature(JavaCore.NATURE_ID)) {
-			return Lists.newArrayList();
-		}
-		IJavaProject javaProject = JavaCore.create(project);
-		IPackageFragmentRoot[] packageFragmentRoots = javaProject.getPackageFragmentRoots();
-		List<ICompilationUnit> allJavaFiles = new ArrayList<>();
-		for (IPackageFragmentRoot iPackageFragmentRoot : packageFragmentRoots) {
-			boolean open = iPackageFragmentRoot.isOpen();
-			if (!open) {
-				continue;
-			}
-			String path = iPackageFragmentRoot.getPath().toString();
-			if (path.endsWith("/src/test/java") || path.endsWith("/src/main/resources")) {
-				continue;
-			}
-			getAllJavaFiles(iPackageFragmentRoot, allJavaFiles);
-		}
-		list = parseAllJavaFiles(allJavaFiles);
-		long s2 = System.currentTimeMillis();
-		System.out.println("parseJDTUsed:"+(s2-s1)/1000);
-		return list;
 	}
 
 	@SneakyThrows
@@ -205,6 +229,10 @@ public class JdtSourceHandlers {
 			String string = annotation.toString();
 			hashMap.put(string, null);
 		}
+	}
+
+	public static List<JDTTypeDTO>  getList() {
+		return list;
 	}
 
 }
