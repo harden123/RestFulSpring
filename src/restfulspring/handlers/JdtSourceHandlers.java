@@ -17,11 +17,13 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
@@ -174,6 +176,13 @@ public class JdtSourceHandlers {
 	// 获取给定 ICompilationUnit 中所有方法及其参数和注解的方法
 	@SneakyThrows
 	public static void parseAllMethods(ICompilationUnit cu, List<JDTTypeDTO> jDTTypeDTOs) {
+		ArrayList<String> unitAnnos = getUnitAnnos(cu);
+		if (!unitAnnos.contains(RestConstant.RequestMapping)&&!unitAnnos.contains(RestConstant.RestController)) {
+			return ;
+		}
+		if (unitAnnos.contains(RestConstant.FeignClient)) {
+			return ;
+		}
 		// 创建 ASTParser 对象，并以给定的 ICompilationUnit 作为源代码输入
 		ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
 		parser.setSource(cu);
@@ -185,12 +194,7 @@ public class JdtSourceHandlers {
 			if (o instanceof TypeDeclaration) {
 				TypeDeclaration type = (TypeDeclaration) o;
 				HashMap<String, Map<String, Object>> typeAnnotations = retrieveAnnotations(type.modifiers());
-				if (!typeAnnotations.containsKey(RestConstant.RequestMapping)&&!typeAnnotations.containsKey(RestConstant.RestController)) {
-					continue;
-				}
-				if (typeAnnotations.containsKey(RestConstant.FeignClient)) {
-					continue;
-				}
+				
 				JDTTypeDTO typeDTO = new JDTTypeDTO();
 				typeDTO.setType(type);
 				typeDTO.setAnnotations(typeAnnotations);
@@ -272,5 +276,25 @@ public class JdtSourceHandlers {
 	public static List<JDTTypeDTO>  getList() {
 		return list;
 	}
+
+	@SneakyThrows
+	private static ArrayList<String> getUnitAnnos(ICompilationUnit unit) {
+		ArrayList<String> annos = Lists.newArrayList();
+		IJavaElement[] elements = unit.getChildren();  // 获取编译单元中的所有 Java 元素
+		for (IJavaElement element : elements) {
+		    if (element instanceof IType) {  // 如果是一个类
+		        IType type = (IType) element;
+		        IAnnotation[] annotations = type.getAnnotations();  // 获取类型定义上的注解
+		        for (IAnnotation annotation : annotations) {
+		            String annotationName = annotation.getElementName();
+		            // 处理注解信息...
+		            annos.add(annotationName);
+		        }
+		    }
+		}
+		return annos;
+	}
+	
+	
 
 }
