@@ -1,11 +1,18 @@
 package restfulspring.handlers;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
@@ -40,12 +47,16 @@ import lombok.SneakyThrows;
 import restfulspring.constant.RestConstant;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.JDTTypeDTO;
+import restfulspring.utils.CollectionUtils;
 import restfulspring.view.RestFulSpringView;
 
 public class JdtSourceHandlers {
 	
 	private static List<JDTTypeDTO> list;
 	private static AtomicBoolean running = new AtomicBoolean();
+	private static LinkedBlockingQueue queue = new LinkedBlockingQueue<>(10);
+	private static final ExecutorService executor = new ThreadPoolExecutor(4, 4, 0L, TimeUnit.MICROSECONDS, queue,
+			new ThreadPoolExecutor.CallerRunsPolicy());
 
 	public static void handle() {
 		boolean compareAndSet = running.compareAndSet(false, true);
@@ -71,6 +82,7 @@ public class JdtSourceHandlers {
 								if (!project.isOpen() || !project.hasNature(JavaCore.NATURE_ID)) {
 									return ;
 								}
+								System.out.println("parseJDTing");
 								IJavaProject javaProject = JavaCore.create(project);
 								IPackageFragmentRoot[] packageFragmentRoots = javaProject.getPackageFragmentRoots();
 								List<ICompilationUnit> allJavaFiles = new ArrayList<>();
@@ -85,7 +97,7 @@ public class JdtSourceHandlers {
 									}
 									getAllJavaFiles(iPackageFragmentRoot, allJavaFiles);
 								}
-								list = parseAllJavaFiles(allJavaFiles);
+								JdtSourceHandlers.setList(parseAllJavaFiles(allJavaFiles));
 								long s2 = System.currentTimeMillis();
 								System.out.println("parseJDTUsed:"+(s2-s1)/1000);
 								RestFulSpringView.notifyRefreshTree();
@@ -98,8 +110,9 @@ public class JdtSourceHandlers {
 						}
 					});
 					thread.start();
-				} finally {
+				} catch (Exception e) {
 					running.set(false);
+					throw e;
 				}
 			
 		}
@@ -136,15 +149,27 @@ public class JdtSourceHandlers {
 		}
 	}
 
+	@SneakyThrows
 	private static List<JDTTypeDTO> parseAllJavaFiles(List<ICompilationUnit> allJavaFiles) {
-		List<JDTTypeDTO> lists = Lists.newArrayList();
+		List<JDTTypeDTO> lists = Lists.newArrayListWithExpectedSize(allJavaFiles.size());
+		ArrayList<Future<?>> submits = Lists.newArrayListWithExpectedSize(allJavaFiles.size());
 		for (ICompilationUnit iCompilationUnit : allJavaFiles) {
 			String elementName = iCompilationUnit.getElementName();
 			if (StringUtils.containsIgnoreCase(elementName, RestConstant.Controller)||StringUtils.containsIgnoreCase(elementName, RestConstant.Service)) {
-				parseAllMethods(iCompilationUnit,lists);
+				Future<?> submit = executor.submit(()->{
+					parseAllMethods(iCompilationUnit,lists);
+				});
+				submits.add(submit);
 			}
 		}
-		return lists;
+		for (Future<?> f : submits) {
+			f.get(1, TimeUnit.MINUTES);
+		}
+		//sort
+		List<JDTTypeDTO> collect = lists.stream().sorted(Comparator.comparing(JDTTypeDTO::getType, ((o1, o2) -> {
+			return o1.getName().toString().compareTo(o2.getName().toString());
+		}))).collect(Collectors.toList());
+		return collect;
 	}
 
 	// 获取给定 ICompilationUnit 中所有方法及其参数和注解的方法
@@ -162,6 +187,9 @@ public class JdtSourceHandlers {
 				TypeDeclaration type = (TypeDeclaration) o;
 				HashMap<String, Map<String, Object>> typeAnnotations = retrieveAnnotations(type.modifiers());
 				if (!typeAnnotations.containsKey(RestConstant.RequestMapping)&&!typeAnnotations.containsKey(RestConstant.RestController)) {
+					continue;
+				}
+				if (typeAnnotations.containsKey(RestConstant.FeignClient)) {
 					continue;
 				}
 				JDTTypeDTO typeDTO = new JDTTypeDTO();
@@ -229,6 +257,17 @@ public class JdtSourceHandlers {
 			String string = annotation.toString();
 			hashMap.put(string, null);
 		}
+	}
+	
+	public static void setList(List<JDTTypeDTO> list) {
+		if (CollectionUtils.isNotEmpty(JdtSourceHandlers.list)) {
+			for (JDTTypeDTO jdtTypeDTO : JdtSourceHandlers.list) {
+				jdtTypeDTO.getAnnotations().clear();
+				jdtTypeDTO.getMethodName2DTOMap().clear();
+			}
+			JdtSourceHandlers.list.clear();
+		}
+		JdtSourceHandlers.list = list;
 	}
 
 	public static List<JDTTypeDTO>  getList() {

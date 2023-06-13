@@ -4,23 +4,27 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@NoArgsConstructor
 public class MyTreeInput {
 	private List<MyTreeElement> firstLevelElements;
 
 	public MyTreeInput(List<MyTreeElement> firstLevelElements) {
 		this.firstLevelElements = firstLevelElements;
 	}
-
+	
 	public List<MyTreeElement> getFirstLevelElements() {
 		return firstLevelElements;
 	}
+	/**
+	 * @param firstLevelElements the firstLevelElements to set
+	 */
+	public void setFirstLevelElements(List<MyTreeElement> firstLevelElements) {
+		if (this.firstLevelElements!=null) {
+			this.firstLevelElements.clear();
+		}
+		this.firstLevelElements = firstLevelElements;
+	}
+	
+	
 
 	public static MyTreeInput mockMyTreeInput(int size) {
 		List<MyTreeElement> firstLevelElements = mockFirstLevel(size);
@@ -44,4 +48,5 @@ public class MyTreeInput {
 		}
 		return firstLevelElements;
 	}
+	
 }
