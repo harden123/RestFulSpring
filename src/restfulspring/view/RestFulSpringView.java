@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.part.ViewPart;
 
 import restfulspring.view.tab.TabFolderFactory;
@@ -21,7 +22,7 @@ import restfulspring.view.tree.MyLabelProvider;
 import restfulspring.view.tree.TreeContentProvider;
 import restfulspring.view.tree.TreeViewFactory;
 
-public class RestFulSpringView extends ViewPart {
+public class RestFulSpringView extends ViewPart{
 
 	int commonStyle = SWT.BORDER;
 	public RestFulSpringView() {
@@ -156,5 +157,15 @@ public class RestFulSpringView extends ViewPart {
 	public void setFocus() {
 		// Set the focus
 	}
+	
+	/** 
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void saveState(IMemento memento) {
+		System.out.println("saveState");
+		super.saveState(memento);
+	}
+	
 
 }
