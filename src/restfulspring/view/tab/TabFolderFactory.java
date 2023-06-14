@@ -6,6 +6,8 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -46,7 +48,10 @@ public class TabFolderFactory {
 		Text bodyText = new Text(composite2, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		bodyText.setText("input head here.");
 		bodyText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
+		FontData[] fontData = bodyText.getFont().getFontData();
+		fontData[0].setHeight(10);
+		 Font font = new Font(composite2.getDisplay(),fontData[0]);
+		 bodyText.setFont(font);
 		
 		tab2.setControl(composite2);
 		

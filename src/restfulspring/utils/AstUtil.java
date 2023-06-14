@@ -3,6 +3,8 @@ package restfulspring.utils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
@@ -15,10 +17,15 @@ import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.Type;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
 import lombok.SneakyThrows;
-import restfulspring.dto.VariableBindingField;
+import restfulspring.constant.RestConstant;
 
 public class AstUtil {
+   static Pattern listPattern = Pattern.compile("^java.util.[^\\.]*List$");
+   static Pattern mapPattern = Pattern.compile("^java.util.[^\\.]*Map$");
 
 	// 获取给定modifiers中所有注解
 	/**
@@ -125,23 +132,122 @@ public class AstUtil {
 		return null;
 	}
 
-	public static VariableBindingField getFields(Type type) {
-		VariableBindingField obj = new VariableBindingField();
+	public static Object getFields(Type type) {
+		if (type.isPrimitiveType()) {
+			ITypeBinding resolveBinding = type.resolveBinding();
+			return initJdkVal(resolveBinding);
+		}
 		if (type instanceof ParameterizedType) {
 			// 如果是泛型类型，需要先获取原始类型
 			type = ((ParameterizedType) type).getType();
 		}
 		if (type instanceof SimpleType) {
 			ITypeBinding typeBinding = ((SimpleType) type).resolveBinding();
-			if (typeBinding != null && typeBinding.isClass()) {
-				IVariableBinding[] fields = typeBinding.getDeclaredFields();
-				for (IVariableBinding field : fields) {
-					obj.getCur().add(field);
-				}
+			if (typeBinding == null) {
+				return null;
 			}
+			return iterParse(typeBinding);
 		}
-		return obj;
-
+		return null;
 	}
 
+	private static Object iterParse(ITypeBinding typeBinding) {
+		if (typeBinding == null) {
+			return null;
+		}
+		if (typeBinding.isArray() ) {
+			JSONArray array = new JSONArray();
+			ITypeBinding elementType = typeBinding.getElementType();
+			if (elementType == null||elementType.isWildcardType()) {
+				return array;
+			}
+			Object iterParse = iterParse(elementType);
+			if (iterParse != null) {
+				array.add(iterParse);
+			}
+			return array;
+		}else if(isQuailifyList(typeBinding)) {
+			  // 获取泛型参数
+			 JSONArray array = new JSONArray();
+			 if (typeBinding.getTypeArguments()!=null&&typeBinding.getTypeArguments().length>0) {
+				 ITypeBinding iTypeBinding = typeBinding.getTypeArguments()[0];
+			    // 如果泛型参数为通配符类型，则返回 "?"，否则返回参数类型的全名
+			    if (iTypeBinding.isWildcardType()) {
+					return array;
+				}
+			    Object iterParse = iterParse(iTypeBinding);
+				if (iterParse != null) {
+					array.add(iterParse);
+				}
+			}
+			return array;
+		}else{
+			if (isJdkType(typeBinding)) {
+				 // 处理JDK内置类...
+				return initJdkVal(typeBinding);
+		    }else {
+		    	// 处理非JDK内置类...
+				JSONObject obj = new JSONObject();
+		    	IVariableBinding[] fields = typeBinding.getDeclaredFields();
+				for (IVariableBinding field : fields) {
+					obj.put(field.getName(), iterParse(field.getType()));
+				}
+				return obj;
+		    }
+		}
+	}
+
+	private static boolean isQuailifyList(ITypeBinding typeBinding) {
+		ITypeBinding erasure = typeBinding.getErasure();
+		String qualifiedName = Optional.ofNullable(erasure).orElse(typeBinding).getQualifiedName();
+		return listPattern.matcher(qualifiedName).matches();
+	}
+	
+	private static boolean isQuailifyMap(ITypeBinding typeBinding) {
+		ITypeBinding erasure = typeBinding.getErasure();
+		String qualifiedName = Optional.ofNullable(erasure).orElse(typeBinding).getQualifiedName();
+		
+		return mapPattern.matcher(qualifiedName).matches();
+	}
+
+	public static boolean isJdkType(ITypeBinding typeBinding) {
+		if (typeBinding.getPackage()==null||typeBinding.isPrimitive()) {
+			return true;
+		}
+		return typeBinding.getPackage().getName().startsWith("java.");
+	}
+	
+
+	private static Object initJdkVal(ITypeBinding typeBinding) {
+		ITypeBinding erasure = typeBinding.getErasure();
+		String qualifiedName = Optional.ofNullable(erasure).orElse(typeBinding).getQualifiedName();
+		if (RestConstant.java_lang_String.equals(qualifiedName)||"char".equals(qualifiedName)||"java.lang.Character".equals(qualifiedName)) {
+			return "";
+		}else if( "byte".equals(qualifiedName)||"java.lang.Byte".equals(qualifiedName)
+		            || "short".equals(qualifiedName)||"java.lang.Short".equals(qualifiedName)
+		            || "int".equals(qualifiedName)||"java.lang.Integer".equals(qualifiedName)
+		            || "long".equals(qualifiedName)||"java.lang.Long".equals(qualifiedName)
+				) {
+		  // 判断类型名称是否为数字类型"byte".equals(typeName)
+		    return 0;
+		}else if( "float".equals(qualifiedName)||"java.lang.Float".equals(qualifiedName)) {
+			 return 1.0f;
+		}else if( "double".equals(qualifiedName)||"java.lang.Double".equals(qualifiedName)) {
+			 return 1.0d;
+		}else if("boolean".equals(qualifiedName)||"java.lang.Boolean".equals(qualifiedName)) {
+			return false;
+		}else if(isQuailifyList(typeBinding)) {
+			 return new JSONArray();
+		}else if(isQuailifyMap(typeBinding)) {
+			 return new JSONObject();
+		}else if(typeBinding.isArray()) {
+			 return new JSONArray();
+		}
+		return null;
+		
+	}
+	
+	
 }
+
+

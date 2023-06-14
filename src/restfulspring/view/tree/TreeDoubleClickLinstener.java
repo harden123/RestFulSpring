@@ -5,11 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -19,12 +18,15 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.google.common.collect.Maps;
 
 import lombok.SneakyThrows;
 import restfulspring.constant.RestConstant;
 import restfulspring.dto.JDTMethodDTO;
-import restfulspring.dto.VariableBindingField;
 import restfulspring.utils.AstUtil;
 import restfulspring.utils.CollectionUtils;
 import restfulspring.view.tab.TabGroupDTO;
@@ -70,16 +72,24 @@ public class TreeDoubleClickLinstener implements IDoubleClickListener {
 					String paramName = singleVariableDeclaration.getName().toString();
 					HashMap<String, Map<String, Object>> retrieveAnnotations = AstUtil.retrieveAnnoByModifiers(modifiers);
 					if (retrieveAnnotations.containsKey(RestConstant.RequestBody)) {
-						VariableBindingField fields = AstUtil.getFields(type);
-						bodyStr.set(initBodyStr(fields));
+						Object obj = AstUtil.getFields(type);
+						
+						bodyStr.set(JSON.toJSONString(obj,new SerializerFeature[] {
+								SerializerFeature.WriteMapNullValue,
+								SerializerFeature.PrettyFormat,
+								SerializerFeature.SortField,
+								SerializerFeature.MapSortField})
+								);
 					}else if (retrieveAnnotations.containsKey(RestConstant.RequestParam)) {
 						Object param = AstUtil.getValByAnoAndKey(retrieveAnnotations, RestConstant.RequestParam, RestConstant.RequestMapping_value);
 						if (StringUtils.isBlank(Objects.toString(param, null))) {
 							param = paramName;
 						}
-						getParamKVMap.put(param.toString(), initParamVal(param.toString(),type));
+						Object obj = AstUtil.getFields(type);
+						getParamKVMap.put(param.toString(), obj);
 					}else {
-						getParamKVMap.put(paramName, initParamVal(paramName,type));
+						Object obj = AstUtil.getFields(type);
+						getParamKVMap.put(paramName, obj);
 					}
 				}
 			
@@ -93,8 +103,11 @@ public class TreeDoubleClickLinstener implements IDoubleClickListener {
 							getCombo.select(0);
 						}
 						urlText.setText(url+initGetParam(getParamKVMap));
+						tabGroupDTO.getFolder().setSelection(1);
 						if (StringUtils.isNotBlank(bodyStr.get())) {
 							tabGroupDTO.getBodyText().setText(bodyStr.get());
+						}else {
+							tabGroupDTO.getBodyText().setText("");
 						}
 					}
 					
@@ -122,31 +135,25 @@ public class TreeDoubleClickLinstener implements IDoubleClickListener {
 		StringBuffer sb = new StringBuffer("?");
 		for (Map.Entry<String, Object> entry : map.entrySet()) {
 			String key = entry.getKey();
-			String encodedParamValue = URLEncoder.encode(entry.getValue()+"", "UTF-8").replaceAll("+", "%20");
+			Object value = Optional.ofNullable(entry.getValue()).orElse("");
+			if (value instanceof JSONArray) {
+				if (((JSONArray)value).size()>0) {
+					value=((JSONArray)value).get(0);
+				}else {
+					value = "";
+				}
+				
+			}else if (value instanceof JSONObject) {
+				value = "";
+			}
+			String encodedParamValue = URLEncoder.encode(value+"", "UTF-8").replaceAll("\\+", "%20");
 			sb.append(key).append("=").append(encodedParamValue).append("&");
 		}
 		sb = sb.deleteCharAt(sb.length()-1);
 		return sb.toString();
 	}
 
-	/**
-	 * TODO
-	 */
-	private String initBodyStr(VariableBindingField fields) {
-		// TODO:hsl Auto-generated method stub
-		return null;
-	}
 
-	/**
-	 * TODO
-	 */
-	private Object initParamVal(String paramName, Type type) {
-		ITypeBinding typeBinding = ((SimpleType) type).resolveBinding();
-		String qualifiedName = typeBinding.getQualifiedName();
-		System.out.println(qualifiedName);
-
-		return null;
-	}
 
 
 
