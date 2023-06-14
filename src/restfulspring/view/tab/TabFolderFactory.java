@@ -17,8 +17,7 @@ import restfulspring.view.SWTFactory;
 
 public class TabFolderFactory {
 
-	public static void create(Composite parent) {
-
+	public static TabGroupDTO create(Composite parent) {
 		// 创建 CTabFolder 控件
 		CTabFolder folder = new CTabFolder(parent, SWT.BORDER);
 		folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -30,9 +29,9 @@ public class TabFolderFactory {
 		Composite composite1 = SWTFactory.createComposite(folder);
 		composite1.setLayout(new GridLayout());
 
-		Text text1 = new Text(composite1, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		text1.setText("input head here.");
-		text1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		Text headText = new Text(composite1, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		headText.setText("input head here.");
+		headText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		tab1.setControl(composite1);
 		/*------------------------- body-----------------------------*/
@@ -44,9 +43,9 @@ public class TabFolderFactory {
 		Composite composite2 = SWTFactory.createComposite(folder);
 		composite2.setLayout(new GridLayout());
 
-		Text text2 = new Text(composite2, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		text2.setText("input head here.");
-		text2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		Text bodyText = new Text(composite2, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		bodyText.setText("input head here.");
+		bodyText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		
 		tab2.setControl(composite2);
@@ -59,9 +58,9 @@ public class TabFolderFactory {
 		Composite composite3 = SWTFactory.createComposite(folder);
 		composite3.setLayout(new GridLayout());
 
-		StyledText styledText = new StyledText(composite3, SWT.MULTI | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
-		styledText.setText("Multiline read-only text");
-		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		StyledText responseText = new StyledText(composite3, SWT.MULTI | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
+		responseText.setText("Multiline read-only text");
+		responseText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		tab3.setControl(composite3);
 		
@@ -70,14 +69,14 @@ public class TabFolderFactory {
 		/*------------------------- ToolItem-----------------------------*/
 		  // 创建工具栏按钮并添加到 CTabFolder 中
         ToolBar toolBar = new ToolBar(folder, SWT.FLAT);
-        ToolItem toolItem = new ToolItem(toolBar, SWT.PUSH);
-        toolItem.setText("reset");
+        ToolItem resetItem = new ToolItem(toolBar, SWT.PUSH);
+        resetItem.setText("reset");
         ToolItem formatItem = new ToolItem(toolBar, SWT.PUSH);
         formatItem.setText("format");
         
         folder.setTopRight(toolBar);
         // 添加工具栏按钮的事件监听器
-        toolItem.addSelectionListener(new SelectionAdapter() {
+        resetItem.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
             	CTabItem selection = folder.getSelection();
@@ -85,6 +84,15 @@ public class TabFolderFactory {
             }
         });
         
+        TabGroupDTO tabGroupDTO = new TabGroupDTO();
+        tabGroupDTO.setFormatItem(formatItem);
+        tabGroupDTO.setHeadText(headText);
+        tabGroupDTO.setResponseText(responseText);
+        tabGroupDTO.setBodyText(bodyText);
+        tabGroupDTO.setFolder(folder);
+        tabGroupDTO.setResetItem(resetItem);
+        return tabGroupDTO;
+
 
 	}
 }

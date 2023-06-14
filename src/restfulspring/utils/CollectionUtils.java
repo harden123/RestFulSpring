@@ -2,6 +2,7 @@ package restfulspring.utils;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import restfulspring.dto.JDTTypeDTO;
 
@@ -22,5 +23,13 @@ public class CollectionUtils {
 
 	public static boolean isNotEmpty(List<JDTTypeDTO> list) {
 		return !isEmpty(list);
+	}
+
+	public static boolean isNotEmpty(Map map) {
+		return map!=null&&!map.isEmpty();
+	}
+
+	public static boolean isEmpty(Map map) {
+		return map==null||map.isEmpty();
 	}
 }

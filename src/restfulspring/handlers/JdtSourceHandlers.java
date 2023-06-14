@@ -25,16 +25,10 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.IAnnotationBinding;
-import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
-import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.NormalAnnotation;
-import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.ui.IEditorPart;
@@ -49,6 +43,7 @@ import lombok.SneakyThrows;
 import restfulspring.constant.RestConstant;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.JDTTypeDTO;
+import restfulspring.utils.AstUtil;
 import restfulspring.utils.CollectionUtils;
 import restfulspring.view.RestFulSpringView;
 
@@ -193,7 +188,7 @@ public class JdtSourceHandlers {
 		for (Object o : astRoot.types()) {
 			if (o instanceof TypeDeclaration) {
 				TypeDeclaration type = (TypeDeclaration) o;
-				HashMap<String, Map<String, Object>> typeAnnotations = retrieveAnnotations(type.modifiers());
+				HashMap<String, Map<String, Object>> typeAnnotations = AstUtil.retrieveAnnoByModifiers(type.modifiers());
 				
 				JDTTypeDTO typeDTO = new JDTTypeDTO();
 				typeDTO.setType(type);
@@ -202,7 +197,7 @@ public class JdtSourceHandlers {
 				HashMap<String, JDTMethodDTO> methodName2DTOMap = Maps.newHashMap();
 				for (MethodDeclaration method : type.getMethods()) {
 					// 获取方法中所有注解信息
-					HashMap<String, Map<String, Object>> methodAnnotations = retrieveAnnotations(method.modifiers());
+					HashMap<String, Map<String, Object>> methodAnnotations = AstUtil.retrieveAnnoByModifiers(method.modifiers());
 					if (!methodAnnotations.containsKey(RestConstant.RequestMapping)){
 						continue;
 					}
@@ -216,51 +211,15 @@ public class JdtSourceHandlers {
 					}
 					methodName2DTOMap.put(method.getName().getIdentifier(), jDTMethodDTO);
 				}
-				typeDTO.setMethodName2DTOMap(methodName2DTOMap);
-				jDTTypeDTOs.add(typeDTO);
+				if (CollectionUtils.isNotEmpty(methodName2DTOMap)) {
+					typeDTO.setMethodName2DTOMap(methodName2DTOMap);
+					jDTTypeDTOs.add(typeDTO);
+				}
 			}
 		}
 	}
 
-	// 获取给定方法中所有注解
-	/**
-	 * <annoKey:<key,val>>
-	 */
-	private static HashMap<String, Map<String, Object>> retrieveAnnotations(List list) throws JavaModelException {
-		HashMap<String,Map<String,Object>> hashMap = new HashMap<>();
-		for (Object annotation : list) {
-			if (annotation instanceof NormalAnnotation) {
-				NormalAnnotation normalAnnotation = (NormalAnnotation) annotation;
-				IAnnotationBinding binding = normalAnnotation.resolveAnnotationBinding();
-				extractedAnnoBinds(hashMap, binding,annotation);
-			}else if(annotation instanceof MarkerAnnotation) {
-				MarkerAnnotation markerAnnotation = (MarkerAnnotation) annotation;
-				IAnnotationBinding binding = markerAnnotation.resolveAnnotationBinding();
-				extractedAnnoBinds(hashMap, binding,annotation);
-			}else if (annotation instanceof SingleMemberAnnotation) {
-				SingleMemberAnnotation singleMemberAnnotation = (SingleMemberAnnotation) annotation;
-				IAnnotationBinding binding = singleMemberAnnotation.resolveAnnotationBinding();
-				extractedAnnoBinds(hashMap, binding,annotation);
-			}
-		}
-		return hashMap;
-	}
-
-	private static void extractedAnnoBinds(HashMap<String, Map<String, Object>> hashMap, IAnnotationBinding binding, Object annotation) {
-		if (binding != null) {
-			IMemberValuePairBinding[] allMemberValuePairs = binding.getAllMemberValuePairs();
-			HashMap<String,Object> values = new HashMap<>();
-			for (IMemberValuePairBinding pair : allMemberValuePairs) {
-				String name = pair.getName();
-				Object value = pair.getValue();
-				values.put(name, value);
-			}
-			hashMap.put(binding.getName(), values);
-		}else {
-			String string = annotation.toString();
-			hashMap.put(string, null);
-		}
-	}
+	
 	
 	public static void setList(List<JDTTypeDTO> list) {
 		if (CollectionUtils.isNotEmpty(JdtSourceHandlers.list)) {

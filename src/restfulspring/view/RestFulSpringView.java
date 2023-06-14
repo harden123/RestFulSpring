@@ -30,9 +30,11 @@ import restfulspring.dto.JDTTypeDTO;
 import restfulspring.handlers.JdtSourceHandlers;
 import restfulspring.utils.CollectionUtils;
 import restfulspring.view.tab.TabFolderFactory;
+import restfulspring.view.tab.TabGroupDTO;
 import restfulspring.view.tree.MyTreeElement;
 import restfulspring.view.tree.MyTreeInput;
 import restfulspring.view.tree.TreeContentProvider;
+import restfulspring.view.tree.TreeDoubleClickLinstener;
 import restfulspring.view.tree.TreeLabelProvider;
 import restfulspring.view.tree.TreeViewFactory;
 
@@ -83,11 +85,11 @@ public class RestFulSpringView extends ViewPart {
 		// label1.setBackground(new Color(100, 100, 100));
 		// label1.setLayoutData(new GridData(50, 50)); // 设置高度为 50
 		// GridData FILLGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		Button treeScroll = new Button(toolRow, SWT.NONE);
+		Button treeScroll = new Button(toolRow, SWT.NONE);//<代码关联树滚动>将树滚动到当前激活类,并展开
 		treeScroll.setText("treeScroll");
 
-		Button editorScroll = new Button(toolRow, SWT.NONE);
-		editorScroll.setText("editorScroll");
+//		Button editorScroll = new Button(toolRow, SWT.NONE);
+//		editorScroll.setText("editorScroll");
 
 		Button expand = new Button(toolRow, SWT.NONE);
 		expand.setText("expand");
@@ -125,26 +127,26 @@ public class RestFulSpringView extends ViewPart {
 		GridLayout rowLayout = SWTFactory.createGridLayout(3);
 		queryRow.setLayout(rowLayout);
 
-		Combo combo = new Combo(queryRow, SWT.READ_ONLY);
-		combo.setItems(new String[] { "GET", "POST" });
-		combo.select(0); // 设置选中第一个选项
+		Combo getCombo = new Combo(queryRow, SWT.READ_ONLY);
+		getCombo.setItems(new String[] { "GET", "POST" });
+		getCombo.select(0); // 设置选中第一个选项
 		// 添加选项变更监听器
-		combo.addSelectionListener(new SelectionAdapter() {
+		getCombo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				System.out.println("选择了：" + combo.getText());
+//				System.out.println("选择了：" + getCombo.getText());
 			}
 		});
 
-		// 创建 Text 控件
-		Text text = new Text(queryRow, SWT.BORDER);
-		text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false)); // 设置布局数据
+		//urlText
+		Text urlText = new Text(queryRow, SWT.BORDER);
+		urlText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false)); // 设置布局数据
 
 		// 添加文本变更监听器
-		text.addModifyListener(new ModifyListener() {
+		urlText.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
-				System.out.println("文本内容已修改为：" + text.getText());
+//				System.out.println("文本内容已修改为：" + urlText.getText());
 			}
 		});
 
@@ -155,14 +157,24 @@ public class RestFulSpringView extends ViewPart {
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		resultRow.setLayoutData(gridData);
 		resultRow.setLayout(SWTFactory.createGridLayout(1));
-		TabFolderFactory.create(resultRow);
+		TabGroupDTO tabGroupDTO = TabFolderFactory.create(resultRow);
 
+		
+		
+		/*-------------------------initial -----------------------------*/
 		createActions();
 		// Uncomment if you wish to add code to initialize the toolbar
 		// initializeToolBar();
 		initializeMenu();
 		
 		initialDatas();
+		
+		
+		/*-------------------------linsteners -----------------------------*/
+
+		
+		treeViewer.addDoubleClickListener(new TreeDoubleClickLinstener(getCombo,urlText,tabGroupDTO));
+
 		
 
 	}
@@ -198,10 +210,11 @@ public class RestFulSpringView extends ViewPart {
 					for (Map.Entry<String, JDTMethodDTO> entry : methodName2DTOMap.entrySet()) {
 						String methodName = entry.getKey();
 						JDTMethodDTO jDTMethodDTO = entry.getValue();
-						MyTreeElement method = new MyTreeElement();
-						method.setName(methodName);
-						method.setJDTMethodDTO(jDTMethodDTO);
-						children.add(method);
+						MyTreeElement child = new MyTreeElement();
+						child.setName(methodName);
+						child.setJDTMethodDTO(jDTMethodDTO);
+						child.setParent(typeElement);
+						children.add(child);
 					}
 					typeElements.add(typeElement);
 				}
