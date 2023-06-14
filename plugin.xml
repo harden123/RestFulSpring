@@ -19,16 +19,14 @@
       </category>
    </extension>
    
-     <extension
-         point="org.eclipse.core.runtime.products">
-      <product
-            name="My Product"
-            application="org.eclipse.ui.ide.workbench">
-            
-      </product>
-              
-		<property
-		   name="osgi.splashPath"
-		   value="-nosplash"/>
-	   </extension>
+	   
+	   <extension
+		     point="org.eclipse.ui.preferencePages">
+		  <page
+		        name="RestFulSpringPage"
+		        class="restfulspring.preference.MyPreferencesPage"
+		        id="restfulspring.view.RestFulSpringView.preferences">
+		  </page>
+		</extension>
+	   
 </plugin>

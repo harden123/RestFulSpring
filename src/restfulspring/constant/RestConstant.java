@@ -23,6 +23,11 @@ public class RestConstant {
 	/*-------------------------qualifiedName -----------------------------*/
 	public static final String java_lang_String = "java.lang.String";
 	public static final String java_lang_Integer = "java.lang.Integer";
+	
+	
+	/*-------------------------sp -----------------------------*/
+
+	public static final String UrlPrefix = "urlPrefix";
 
 
 }

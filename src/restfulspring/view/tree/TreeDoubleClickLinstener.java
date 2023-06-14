@@ -25,6 +25,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.google.common.collect.Maps;
 
 import lombok.SneakyThrows;
+import restfulspring.Activator;
 import restfulspring.constant.RestConstant;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.utils.AstUtil;
@@ -102,7 +103,8 @@ public class TreeDoubleClickLinstener implements IDoubleClickListener {
 						}else {
 							getCombo.select(0);
 						}
-						urlText.setText(url+initGetParam(getParamKVMap));
+						String UrlPrefix = Activator.getDefault().getPreferenceStore().getString(RestConstant.UrlPrefix);
+						urlText.setText(UrlPrefix+url+initGetParam(getParamKVMap));
 						tabGroupDTO.getFolder().setSelection(1);
 						if (StringUtils.isNotBlank(bodyStr.get())) {
 							tabGroupDTO.getBodyText().setText(bodyStr.get());
