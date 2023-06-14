@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import restfulspring.view.tree.MyTreeElement;
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,4 +19,6 @@ public class TabGroupDTO {
 	private StyledText responseText;
 	private ToolItem resetItem;
 	private ToolItem formatItem;
+	
+	private MyTreeElement selectedTreeNode ;
 }

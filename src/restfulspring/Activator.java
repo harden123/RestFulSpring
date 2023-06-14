@@ -1,8 +1,12 @@
 package restfulspring;
 
+import java.util.HashMap;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+
+import com.google.common.collect.Maps;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -16,6 +20,7 @@ public class Activator extends AbstractUIPlugin {
 	private static Activator plugin;
 	
     private static IPreferenceStore preferenceStore;
+    public static HashMap<String, String> MethodUrl2BodyTextCacheMap = Maps.newHashMap();
 
 	
 	public Activator() {

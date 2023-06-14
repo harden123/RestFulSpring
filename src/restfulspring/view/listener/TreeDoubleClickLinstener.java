@@ -2,15 +2,11 @@ package restfulspring.view.listener;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -18,17 +14,15 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.google.common.collect.Maps;
 
 import lombok.SneakyThrows;
 import restfulspring.Activator;
 import restfulspring.constant.RestConstant;
 import restfulspring.constant.RestTypeEnum;
 import restfulspring.dto.JDTMethodDTO;
+import restfulspring.dto.RestParamDTO;
 import restfulspring.utils.AstUtil;
 import restfulspring.utils.CollectionUtils;
 import restfulspring.view.tab.TabGroupDTO;
@@ -54,48 +48,14 @@ public class TreeDoubleClickLinstener implements IDoubleClickListener {
 			MyTreeElement node = (MyTreeElement) element;
 			JDTMethodDTO jdtMethodDTO = node.getJDTMethodDTO();
 			if (jdtMethodDTO!=null) {
-				Object type_url = null;//   /micro/accessory
-				MyTreeElement parent = node.getParent();
-				if (parent!=null&&parent.getJDTTypeDTO()!=null) {
-					HashMap<String, Map<String, Object>> type_Annotations = parent.getJDTTypeDTO().getAnnotations();
-					type_url = AstUtil.getValByAnoAndKey(type_Annotations, RestConstant.RequestMapping, RestConstant.RequestMapping_value);
-				}
+				tabGroupDTO.setSelectedTreeNode(node);
 				HashMap<String, Map<String, Object>> m_annotations = jdtMethodDTO.getAnnotations();
 				Object method_type = AstUtil.getValByAnoAndKey(m_annotations, RestConstant.RequestMapping, RestConstant.RequestMapping_Method);// POST
-				Object method_url = AstUtil.getValByAnoAndKey(m_annotations, RestConstant.RequestMapping, RestConstant.RequestMapping_value);//  /add
-				String url = normalizeReq(type_url)+normalizeReq(method_url);
-				//body
-				Map<String,Object> getParamKVMap = Maps.newHashMap();
-//				String requestBody = null;
-				AtomicReference<String> bodyStr = new AtomicReference<>();
-				List<SingleVariableDeclaration> reqVariable = jdtMethodDTO.getReqParams();
-				for (SingleVariableDeclaration singleVariableDeclaration : reqVariable) {
-					Type type = singleVariableDeclaration.getType();
-					List modifiers = singleVariableDeclaration.modifiers();
-					String paramName = singleVariableDeclaration.getName().toString();
-					HashMap<String, Map<String, Object>> retrieveAnnotations = AstUtil.retrieveAnnoByModifiers(modifiers);
-					if (retrieveAnnotations.containsKey(RestConstant.RequestBody)) {
-						Object obj = AstUtil.getFields(type);
-						
-						bodyStr.set(JSON.toJSONString(obj,new SerializerFeature[] {
-								SerializerFeature.WriteMapNullValue,
-								SerializerFeature.PrettyFormat,
-								SerializerFeature.SortField,
-								SerializerFeature.MapSortField})
-								);
-					}else if (retrieveAnnotations.containsKey(RestConstant.RequestParam)) {
-						Object param = AstUtil.getValByAnoAndKey(retrieveAnnotations, RestConstant.RequestParam, RestConstant.RequestMapping_value);
-						if (StringUtils.isBlank(Objects.toString(param, null))) {
-							param = paramName;
-						}
-						Object obj = AstUtil.getFields(type);
-						getParamKVMap.put(param.toString(), obj);
-					}else {
-						Object obj = AstUtil.getFields(type);
-						getParamKVMap.put(paramName, obj);
-					}
-				}
+				String methodUrl = AstUtil.getMethodUrl(node);
 			
+				RestParamDTO computeParam = AstUtil.computeParam(jdtMethodDTO);
+				AtomicReference<String> bodyStr = computeParam.getBodyStr();
+				Map<String, Object> getParamKVMap = computeParam.getGetParamKVMap();
 				Display.getDefault().asyncExec(new Runnable() {
 
 					@Override
@@ -106,29 +66,31 @@ public class TreeDoubleClickLinstener implements IDoubleClickListener {
 							getCombo.select(RestTypeEnum.GET.getKey());
 						}
 						String UrlPrefix = Activator.getDefault().getPreferenceStore().getString(RestConstant.UrlPrefix);
-						urlText.setText(UrlPrefix+url+initGetParam(getParamKVMap));
+						urlText.setText(UrlPrefix+methodUrl+initGetParam(getParamKVMap));
 						tabGroupDTO.getFolder().setSelection(1);
-						if (StringUtils.isNotBlank(bodyStr.get())) {
-							tabGroupDTO.getBodyText().setText(bodyStr.get());
+						
+						String memBodyStr = Activator.MethodUrl2BodyTextCacheMap.get(methodUrl);
+						if (StringUtils.isNotBlank(memBodyStr)) {
+							tabGroupDTO.getBodyText().setText(memBodyStr);
 						}else {
-							tabGroupDTO.getBodyText().setText("");
+							if (StringUtils.isNotBlank(bodyStr.get())) {
+								tabGroupDTO.getBodyText().setText(bodyStr.get());
+							}else {
+								tabGroupDTO.getBodyText().setText("");
+							}
 						}
-					}
 					
+					}
 				});
 			}
 		}
 
 	}
 	
-	private String normalizeReq(Object type_url) {
-		String string = StringUtils.trim(Objects.toString(type_url, ""));
-		String removeEnd = StringUtils.removeEnd(string, "/");
-		if (!StringUtils.startsWith(removeEnd, "/")) {
-			removeEnd="/"+removeEnd;
-		}
-		return removeEnd;
-	}
+	
+
+	
+
 	
 	
 	@SneakyThrows

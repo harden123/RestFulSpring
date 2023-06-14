@@ -3,9 +3,12 @@ package restfulspring.utils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -15,13 +18,19 @@ import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import lombok.SneakyThrows;
 import restfulspring.constant.RestConstant;
+import restfulspring.dto.JDTMethodDTO;
+import restfulspring.dto.RestParamDTO;
+import restfulspring.view.tree.MyTreeElement;
 
 public class AstUtil {
    static Pattern listPattern = Pattern.compile("^java.util.[^\\.]*List$");
@@ -248,6 +257,62 @@ public class AstUtil {
 	}
 	
 	
+	public static RestParamDTO computeParam(JDTMethodDTO jdtMethodDTO) {
+		RestParamDTO restParamDTO = new RestParamDTO();
+		AtomicReference<String> bodyStr = restParamDTO.getBodyStr();
+		Map<String, Object> getParamKVMap = restParamDTO.getGetParamKVMap();
+		List<SingleVariableDeclaration> reqVariable = jdtMethodDTO.getReqParams();
+		for (SingleVariableDeclaration singleVariableDeclaration : reqVariable) {
+			Type type = singleVariableDeclaration.getType();
+			List modifiers = singleVariableDeclaration.modifiers();
+			String paramName = singleVariableDeclaration.getName().toString();
+			HashMap<String, Map<String, Object>> retrieveAnnotations = AstUtil.retrieveAnnoByModifiers(modifiers);
+			if (retrieveAnnotations.containsKey(RestConstant.RequestBody)) {
+				Object obj = AstUtil.getFields(type);
+				
+				bodyStr.set(JSON.toJSONString(obj,new SerializerFeature[] {
+						SerializerFeature.WriteMapNullValue,
+						SerializerFeature.PrettyFormat,
+						SerializerFeature.SortField,
+						SerializerFeature.MapSortField})
+						);
+			}else if (retrieveAnnotations.containsKey(RestConstant.RequestParam)) {
+				Object param = AstUtil.getValByAnoAndKey(retrieveAnnotations, RestConstant.RequestParam, RestConstant.RequestMapping_value);
+				if (StringUtils.isBlank(Objects.toString(param, null))) {
+					param = paramName;
+				}
+				Object obj = AstUtil.getFields(type);
+				getParamKVMap.put(param.toString(), obj);
+			}else {
+				Object obj = AstUtil.getFields(type);
+				getParamKVMap.put(paramName, obj);
+			}
+		}
+		return restParamDTO;
+	}
+	
+	public static String getMethodUrl(MyTreeElement methodNode) {
+		Object type_url = null;//   /micro/accessory
+		MyTreeElement typeNode = methodNode.getParent();
+		if (typeNode!=null&&typeNode.getJDTTypeDTO()!=null) {
+			HashMap<String, Map<String, Object>> type_Annotations = typeNode.getJDTTypeDTO().getAnnotations();
+			type_url = AstUtil.getValByAnoAndKey(type_Annotations, RestConstant.RequestMapping, RestConstant.RequestMapping_value);
+		}
+		JDTMethodDTO jdtMethodDTO = methodNode.getJDTMethodDTO();
+		HashMap<String, Map<String, Object>> m_annotations = jdtMethodDTO.getAnnotations();
+		Object method_url = AstUtil.getValByAnoAndKey(m_annotations, RestConstant.RequestMapping, RestConstant.RequestMapping_value);//  /add
+		String url = normalizeReq(type_url)+normalizeReq(method_url);
+		return url;
+	}
+	
+	private static String normalizeReq(Object type_url) {
+		String string = StringUtils.trim(Objects.toString(type_url, ""));
+		String removeEnd = StringUtils.removeEnd(string, "/");
+		if (!StringUtils.startsWith(removeEnd, "/")) {
+			removeEnd="/"+removeEnd;
+		}
+		return removeEnd;
+	}
 }
 
 
