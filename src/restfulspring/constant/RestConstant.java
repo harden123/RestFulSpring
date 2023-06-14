@@ -29,5 +29,7 @@ public class RestConstant {
 
 	public static final String UrlPrefix = "urlPrefix";
 
+	
+
 
 }

@@ -21,6 +21,6 @@ public class MyPreferencesPage extends FieldEditorPreferencePage implements IWor
     @Override
     public void init(IWorkbench workbench) {
         setPreferenceStore(Activator.getDefault().getPreferenceStore());
-        setDescription("RestfulSpring配置");
+        setDescription("预设配置");
     }
 }

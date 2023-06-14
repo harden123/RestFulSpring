@@ -25,16 +25,18 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.common.collect.Lists;
 
+import restfulspring.constant.RestTypeEnum;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.JDTTypeDTO;
 import restfulspring.handlers.JdtSourceHandlers;
 import restfulspring.utils.CollectionUtils;
+import restfulspring.view.listener.SendButtonListener;
+import restfulspring.view.listener.TreeDoubleClickLinstener;
 import restfulspring.view.tab.TabFolderFactory;
 import restfulspring.view.tab.TabGroupDTO;
 import restfulspring.view.tree.MyTreeElement;
 import restfulspring.view.tree.MyTreeInput;
 import restfulspring.view.tree.TreeContentProvider;
-import restfulspring.view.tree.TreeDoubleClickLinstener;
 import restfulspring.view.tree.TreeLabelProvider;
 import restfulspring.view.tree.TreeViewFactory;
 
@@ -128,8 +130,8 @@ public class RestFulSpringView extends ViewPart {
 		queryRow.setLayout(rowLayout);
 
 		Combo getCombo = new Combo(queryRow, SWT.READ_ONLY);
-		getCombo.setItems(new String[] { "GET", "POST" });
-		getCombo.select(0); // 设置选中第一个选项
+		getCombo.setItems(new String[] { RestTypeEnum.GET.toString(), RestTypeEnum.POST.toString()});
+		getCombo.select(RestTypeEnum.GET.getKey()); // 设置选中第一个选项
 		// 添加选项变更监听器
 		getCombo.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -174,8 +176,7 @@ public class RestFulSpringView extends ViewPart {
 
 		
 		treeViewer.addDoubleClickListener(new TreeDoubleClickLinstener(getCombo,urlText,tabGroupDTO));
-
-		
+		send.addSelectionListener(new SendButtonListener(getCombo,urlText,tabGroupDTO));
 
 	}
 

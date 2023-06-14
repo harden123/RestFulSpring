@@ -1,4 +1,4 @@
-package restfulspring.view.tree;
+package restfulspring.view.listener;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -27,10 +27,12 @@ import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 import restfulspring.Activator;
 import restfulspring.constant.RestConstant;
+import restfulspring.constant.RestTypeEnum;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.utils.AstUtil;
 import restfulspring.utils.CollectionUtils;
 import restfulspring.view.tab.TabGroupDTO;
+import restfulspring.view.tree.MyTreeElement;
 
 public class TreeDoubleClickLinstener implements IDoubleClickListener {
 
@@ -98,10 +100,10 @@ public class TreeDoubleClickLinstener implements IDoubleClickListener {
 
 					@Override
 					public void run() {
-						if ("POST".equals(method_type)) {
-							getCombo.select(1);
+						if (RestTypeEnum.POST.toString().equals(method_type)) {
+							getCombo.select(RestTypeEnum.POST.getKey());
 						}else {
-							getCombo.select(0);
+							getCombo.select(RestTypeEnum.GET.getKey());
 						}
 						String UrlPrefix = Activator.getDefault().getPreferenceStore().getString(RestConstant.UrlPrefix);
 						urlText.setText(UrlPrefix+url+initGetParam(getParamKVMap));

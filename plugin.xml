@@ -23,7 +23,7 @@
 	   <extension
 		     point="org.eclipse.ui.preferencePages">
 		  <page
-		        name="RestFulSpringPage"
+		        name="RestFulSpring"
 		        class="restfulspring.preference.MyPreferencesPage"
 		        id="restfulspring.view.RestFulSpringView.preferences">
 		  </page>
