@@ -48,11 +48,9 @@ public class TabFolderFactory {
 		Text bodyText = new Text(composite2, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		bodyText.setText("input head here.");
 		bodyText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		FontData[] fontData = bodyText.getFont().getFontData();
-		fontData[0].setHeight(10);
-		 Font font = new Font(composite2.getDisplay(),fontData[0]);
-		 bodyText.setFont(font);
-		
+		FontData fontData = bodyText.getFont().getFontData()[0];
+        Font font = new Font(composite2.getDisplay(), fontData.getName(), 10, fontData.getStyle());
+        bodyText.setFont(font);
 		tab2.setControl(composite2);
 		
 		/*------------------------- response-----------------------------*/
