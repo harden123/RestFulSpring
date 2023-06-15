@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Display;
 
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.RestParamDTO;
@@ -32,11 +33,20 @@ public class BodyResetItemListener implements SelectionListener{
 		TextCacheHandlers.remove(methodUrl);
 		RestParamDTO computeParam = AstUtil.computeParam(selectedJdtMethodDTO);
 		AtomicReference<String> bodyStr = computeParam.getBodyStr();
-		if (StringUtils.isNotBlank(bodyStr.get())) {
-			tabGroupDTO.getBodyText().setText(bodyStr.get());
-		}else {
-			tabGroupDTO.getBodyText().setText("");
-		}
+		Display.getDefault().asyncExec(new Runnable() {
+
+			@Override
+			public void run() {
+				if (StringUtils.isNotBlank(bodyStr.get())) {
+					tabGroupDTO.getBodyText().setText(bodyStr.get());
+				}else {
+					tabGroupDTO.getBodyText().setText("");
+				}
+			}
+		});
+
+			
+	
 	}
 
 	/** 

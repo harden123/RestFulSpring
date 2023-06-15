@@ -37,6 +37,7 @@ import restfulspring.view.listener.SendButtonListener;
 import restfulspring.view.listener.TreeCollapseListener;
 import restfulspring.view.listener.TreeDoubleClickLinstener;
 import restfulspring.view.listener.TreeExpandListener;
+import restfulspring.view.listener.TreeScrollListener;
 import restfulspring.view.tab.TabFolderFactory;
 import restfulspring.view.tab.TabGroupDTO;
 import restfulspring.view.tree.MyTreeElement;
@@ -92,8 +93,7 @@ public class RestFulSpringView extends ViewPart {
 		// label1.setBackground(new Color(100, 100, 100));
 		// label1.setLayoutData(new GridData(50, 50)); // 设置高度为 50
 		// GridData FILLGridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-		Button treeScroll = new Button(toolRow, SWT.NONE);//<代码关联树滚动>将树滚动到当前激活类,并展开
-		treeScroll.setText("treeScroll");
+
 
 //		Button editorScroll = new Button(toolRow, SWT.NONE);
 //		editorScroll.setText("editorScroll");
@@ -103,6 +103,9 @@ public class RestFulSpringView extends ViewPart {
 
 		Button collapse = new Button(toolRow, SWT.NONE);
 		collapse.setText("collapse");
+		
+		Button treeScroll = new Button(toolRow, SWT.NONE);//<代码关联树滚动>将树滚动到当前激活类,并展开
+		treeScroll.setText("scroll");
 
 		Combo workSpaceCombo = new Combo(toolRow, SWT.READ_ONLY);
 		workSpaceCombo.setToolTipText("select workSpace");
@@ -193,6 +196,8 @@ public class RestFulSpringView extends ViewPart {
 		collapse.addSelectionListener(new TreeCollapseListener(treeViewer));
 		
 		expand.addSelectionListener(new TreeExpandListener(treeViewer));
+		
+		treeScroll.addSelectionListener(new TreeScrollListener(treeViewer));
 
 	}
 

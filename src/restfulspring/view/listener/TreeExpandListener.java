@@ -26,7 +26,6 @@ public class TreeExpandListener implements SelectionListener{
 	 */
 	@Override
 	public void widgetDefaultSelected(SelectionEvent e) {
-		// TODO:hsl Auto-generated method stub
 		
 	}
 

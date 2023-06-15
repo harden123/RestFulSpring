@@ -52,7 +52,6 @@ public class BodyFormatItemListener implements SelectionListener{
 	 */
 	@Override
 	public void widgetDefaultSelected(SelectionEvent arg0) {
-		// TODO:hsl Auto-generated method stub
 		
 	}
 }
