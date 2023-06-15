@@ -54,4 +54,5 @@ public class Activator extends AbstractUIPlugin {
 //        preferenceStore.setDefault("control2.value", /* 控件2的默认值 */);
 	}
 
+
 }

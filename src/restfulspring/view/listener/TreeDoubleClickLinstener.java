@@ -23,6 +23,7 @@ import restfulspring.constant.RestConstant;
 import restfulspring.constant.RestTypeEnum;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.RestParamDTO;
+import restfulspring.handlers.TextCacheHandlers;
 import restfulspring.utils.AstUtil;
 import restfulspring.utils.CollectionUtils;
 import restfulspring.view.tab.TabGroupDTO;
@@ -69,7 +70,7 @@ public class TreeDoubleClickLinstener implements IDoubleClickListener {
 						urlText.setText(UrlPrefix+methodUrl+initGetParam(getParamKVMap));
 						tabGroupDTO.getFolder().setSelection(1);
 						
-						String memBodyStr = Activator.MethodUrl2BodyTextCacheMap.get(methodUrl);
+						String memBodyStr = TextCacheHandlers.getBeyKey(methodUrl);
 						if (StringUtils.isNotBlank(memBodyStr)) {
 							tabGroupDTO.getBodyText().setText(memBodyStr);
 						}else {

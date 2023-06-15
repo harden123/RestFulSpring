@@ -11,9 +11,9 @@ import org.eclipse.swt.widgets.Text;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.Feature;
 
-import restfulspring.Activator;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.RestParamDTO;
+import restfulspring.handlers.TextCacheHandlers;
 import restfulspring.utils.AstUtil;
 import restfulspring.view.tab.TabGroupDTO;
 import restfulspring.view.tree.MyTreeElement;
@@ -45,7 +45,7 @@ public class BodyTextFocusListener implements FocusListener{
 			MyTreeElement selectedTreeNode = tabGroupDTO.getSelectedTreeNode();
 			JDTMethodDTO selectedJdtMethodDTO = selectedTreeNode.getJDTMethodDTO();
 			String methodUrl = AstUtil.getMethodUrl(selectedTreeNode);
-			String methodBodyText = Activator.MethodUrl2BodyTextCacheMap.get(methodUrl);
+			String methodBodyText = TextCacheHandlers.getBeyKey(methodUrl);
 			if (StringUtils.isBlank(methodBodyText)) {
 				RestParamDTO computeParam = AstUtil.computeParam(selectedJdtMethodDTO);
 				AtomicReference<String> bodyStr = computeParam.getBodyStr();
@@ -55,9 +55,7 @@ public class BodyTextFocusListener implements FocusListener{
 			}
 			boolean judgeJsonEquals = judgeJsonEquals(StringUtils.trim(text),StringUtils.trim(methodBodyText));
 			if (!judgeJsonEquals) {
-				//FIXME:hsl 2023/06/14-saveToSP
-				//saveToMemory
-				Activator.MethodUrl2BodyTextCacheMap.put(methodUrl, text);
+				TextCacheHandlers.put(methodUrl, text);
 			}
 		}
 	}

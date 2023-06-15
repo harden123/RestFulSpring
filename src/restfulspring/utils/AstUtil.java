@@ -33,8 +33,10 @@ import restfulspring.dto.RestParamDTO;
 import restfulspring.view.tree.MyTreeElement;
 
 public class AstUtil {
-   static Pattern listPattern = Pattern.compile("^java.util.[^\\.]*List$");
-   static Pattern mapPattern = Pattern.compile("^java.util.[^\\.]*Map$");
+	private static Pattern listPattern = Pattern.compile("^java.util.[^\\.]*List$");
+   private static Pattern mapPattern = Pattern.compile("^java.util.[^\\.]*Map$");
+   private static final String DepencyLineSplitor = "->";
+
 
 	// 获取给定modifiers中所有注解
 	/**
@@ -155,22 +157,23 @@ public class AstUtil {
 			if (typeBinding == null) {
 				return null;
 			}
-			return iterParse(typeBinding);
+			String dependencyLine = "";
+			return iterParse(typeBinding,dependencyLine);
 		}
 		return null;
 	}
 
-	private static Object iterParse(ITypeBinding typeBinding) {
+	private static Object iterParse(ITypeBinding typeBinding,String dependencyLine) {
 		if (typeBinding == null) {
 			return null;
 		}
 		if (typeBinding.isArray() ) {
 			JSONArray array = new JSONArray();
-			ITypeBinding elementType = typeBinding.getElementType();
-			if (elementType == null||elementType.isWildcardType()) {
+			ITypeBinding iTypeBinding = typeBinding.getElementType();
+			if (iTypeBinding == null||iTypeBinding.isWildcardType()||judgeDependencyFieldConflict(dependencyLine, iTypeBinding.getQualifiedName())) {
 				return array;
 			}
-			Object iterParse = iterParse(elementType);
+			Object iterParse = iterParse(iTypeBinding,dependencyLine);
 			if (iterParse != null) {
 				array.add(iterParse);
 			}
@@ -181,10 +184,10 @@ public class AstUtil {
 			 if (typeBinding.getTypeArguments()!=null&&typeBinding.getTypeArguments().length>0) {
 				 ITypeBinding iTypeBinding = typeBinding.getTypeArguments()[0];
 			    // 如果泛型参数为通配符类型，则返回 "?"，否则返回参数类型的全名
-			    if (iTypeBinding.isWildcardType()) {
+			    if (iTypeBinding.isWildcardType()||judgeDependencyFieldConflict(dependencyLine, iTypeBinding.getQualifiedName())) {
 					return array;
 				}
-			    Object iterParse = iterParse(iTypeBinding);
+			    Object iterParse = iterParse(iTypeBinding,dependencyLine);
 				if (iterParse != null) {
 					array.add(iterParse);
 				}
@@ -195,11 +198,16 @@ public class AstUtil {
 				 // 处理JDK内置类...
 				return initJdkVal(typeBinding);
 		    }else {
-		    	// 处理非JDK内置类...
 				JSONObject obj = new JSONObject();
+		    	if (judgeDependencyFieldConflict(dependencyLine, typeBinding.getQualifiedName())) {
+					return obj;
+				}
+		    	dependencyLine = appendToDependencyLine(dependencyLine, typeBinding.getQualifiedName());
+		    	// 处理非JDK内置类...
+				//TODO:hsl 2023/06/15-防止迭代循环
 		    	IVariableBinding[] fields = typeBinding.getDeclaredFields();
 				for (IVariableBinding field : fields) {
-					obj.put(field.getName(), iterParse(field.getType()));
+					obj.put(field.getName(), iterParse(field.getType(),dependencyLine));
 				}
 				return obj;
 		    }
@@ -312,6 +320,31 @@ public class AstUtil {
 			removeEnd="/"+removeEnd;
 		}
 		return removeEnd;
+	}
+	
+	/**
+	 * fieldName加入到dependcyFieldLine
+	 */
+	private static String appendToDependencyLine(String dependencyFieldLine, String fieldName) {
+		if (StringUtils.isBlank(dependencyFieldLine)) {
+			return fieldName;
+		}
+		return dependencyFieldLine+=DepencyLineSplitor+fieldName;
+	}
+	
+	/**
+	 * 判断死循环冲突
+	 */
+	private static boolean judgeDependencyFieldConflict(String dependencyFieldLine,String fieldName) {
+		String[] split = dependencyFieldLine.split(DepencyLineSplitor);
+		int length = split.length;
+		for (int i = 0; i < length; i++) {
+			String string = split[i].trim();
+			if (string.equals(fieldName)&&i!=length-1) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 
