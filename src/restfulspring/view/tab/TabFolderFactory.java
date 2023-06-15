@@ -32,7 +32,7 @@ public class TabFolderFactory {
 		composite1.setLayout(new GridLayout());
 
 		Text headText = new Text(composite1, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		headText.setText("input head here.");
+		headText.setMessage("key1:value1\r\nkey2:value2");
 		headText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		tab1.setControl(composite1);
@@ -46,7 +46,7 @@ public class TabFolderFactory {
 		composite2.setLayout(new GridLayout());
 
 		Text bodyText = new Text(composite2, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		bodyText.setText("input head here.");
+		bodyText.setMessage("input json body here.");
 		bodyText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		FontData fontData = bodyText.getFont().getFontData()[0];
         Font font = new Font(composite2.getDisplay(), fontData.getName(), 10, fontData.getStyle());

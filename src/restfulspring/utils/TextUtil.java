@@ -1,8 +1,11 @@
 package restfulspring.utils;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -19,6 +22,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 
 import lombok.SneakyThrows;
 
@@ -98,6 +102,26 @@ public class TextUtil {
 	        return lineNumber;
 		}
 		return -1;
+	}
+	
+	public static Map<String, String> parseHeaders(String head) {
+		HashMap<String, String> kvMap = Maps.newHashMap();
+		if (StringUtils.isBlank(head)) {
+			return  kvMap;
+		}
+		String[] split = head.split("\r\n");
+		for (int i = 0; i < split.length; i++) {
+			String line = StringUtils.trimToEmpty(split[i]);
+			if (StringUtils.isBlank(line)) {
+				continue;
+			}
+			String[] kv = line.split(":");
+			if (kv==null||kv.length!=2) {
+				continue;
+			}
+			kvMap.put(StringUtils.trimToEmpty(kv[0]), StringUtils.trimToEmpty(kv[1]));
+		}
+		return kvMap;
 	}
 	
 }

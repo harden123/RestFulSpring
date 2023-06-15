@@ -96,11 +96,6 @@ public class TreeScrollListener implements SelectionListener{
 	private void mockDoubleClick(TreeViewer treeViewer, TreeItem childTreeItem) {
 	     // 模拟点击事件
 		treeViewer.setSelection(new StructuredSelection(childTreeItem.getData()));
-//		Event event = new Event();
-//		event.type = SWT.DefaultSelection;
-//		event.button = 1;
-//		event.count = 1;
-//        treeViewer.getTree().notifyListeners(SWT.DefaultSelection, event);
 	}
 
 }

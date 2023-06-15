@@ -16,6 +16,13 @@ public class MyPreferencesPage extends FieldEditorPreferencePage implements IWor
     @Override
     protected void createFieldEditors() {
         addField(new StringFieldEditor(RestConstant.UrlPrefix, "请求前缀:", getFieldEditorParent()));
+        // 创建多行文本框
+        MultiLineFieldEditor mt = new MultiLineFieldEditor(RestConstant.Headers,
+                "headers:",
+                getFieldEditorParent());
+
+        addField(mt);
+
     }
 
     @Override
