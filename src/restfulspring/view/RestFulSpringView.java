@@ -106,17 +106,17 @@ public class RestFulSpringView extends ViewPart {
 		Button treeScroll = new Button(toolRow, SWT.NONE);//<代码关联树滚动>将树滚动到当前激活类,并展开
 		treeScroll.setText("scroll");
 
-		Combo workSpaceCombo = new Combo(toolRow, SWT.READ_ONLY);
-		workSpaceCombo.setToolTipText("select workSpace");
-		workSpaceCombo.setItems(new String[] { "workSpace1", "workSpace2" });
-		workSpaceCombo.select(0); // 设置选中第一个选项
-		// 添加选项变更监听器
-		workSpaceCombo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				System.out.println("选择了：" + workSpaceCombo.getText());
-			}
-		});
+//		Combo workSpaceCombo = new Combo(toolRow, SWT.READ_ONLY);
+//		workSpaceCombo.setToolTipText("select workSpace");
+//		workSpaceCombo.setItems(new String[] { "workSpace1", "workSpace2" });
+//		workSpaceCombo.select(0); // 设置选中第一个选项
+//		// 添加选项变更监听器
+//		workSpaceCombo.addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				System.out.println("选择了：" + workSpaceCombo.getText());
+//			}
+//		});
 
 		/*------------------------- treeRow-----------------------------*/
 
