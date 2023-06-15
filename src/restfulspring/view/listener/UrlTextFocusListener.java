@@ -3,8 +3,10 @@ package restfulspring.view.listener;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 import restfulspring.constant.RestConstant;
@@ -53,6 +55,7 @@ public class UrlTextFocusListener implements FocusListener{
 			String urlParamText = TextUtil.getUrlParam(text);
 			if (!StringUtils.trimToEmpty(urlParamText).equals(StringUtils.trimToEmpty(methodUrlParamText))) {
 				RequestCacheHandlers.put(RestConstant.UrlText,methodUrl,urlParamText);
+				tabGroupDTO.getResetItem().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 			}
 		}
 		

@@ -4,8 +4,10 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 import com.alibaba.fastjson.JSON;
@@ -57,6 +59,7 @@ public class BodyTextFocusListener implements FocusListener{
 			boolean judgeJsonEquals = judgeJsonEquals(StringUtils.trim(text),StringUtils.trim(methodBodyText));
 			if (!judgeJsonEquals) {
 				RequestCacheHandlers.put(RestConstant.BodyText,methodUrl, text);
+				tabGroupDTO.getResetItem().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 			}
 		}
 	}

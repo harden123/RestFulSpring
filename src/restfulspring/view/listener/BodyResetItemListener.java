@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Display;
@@ -56,6 +57,7 @@ public class BodyResetItemListener implements SelectionListener{
 				//url
 				String UrlPrefix = Activator.getDefault().getPreferenceStore().getString(RestConstant.UrlPrefix);
 				urlText.setText(UrlPrefix+methodUrl+StringUtils.trimToEmpty(urlParam));
+				tabGroupDTO.getResetItem().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
 			}
 		});
 

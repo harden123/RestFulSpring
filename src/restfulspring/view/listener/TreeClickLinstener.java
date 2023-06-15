@@ -10,6 +10,8 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
@@ -67,6 +69,7 @@ public class TreeClickLinstener implements IDoubleClickListener,ISelectionChange
 
 					@Override
 					public void run() {
+						boolean hasCache = false;
 						if (RestTypeEnum.POST.toString().equals(method_type.get())) {
 							getCombo.select(RestTypeEnum.POST.getKey());
 						}else {
@@ -82,6 +85,8 @@ public class TreeClickLinstener implements IDoubleClickListener,ISelectionChange
 						String urlParamCache = RequestCacheHandlers.getBeyKey(RestConstant.UrlText,methodUrl);
 						if (StringUtils.isBlank(urlParamCache)) {
 							urlParamCache = TextUtil.initGetParam(getParamKVMap);
+						}else {
+							hasCache=true;
 						}
 						urlText.setText(UrlPrefix+methodUrl+StringUtils.trimToEmpty(urlParamCache));
 						
@@ -94,6 +99,8 @@ public class TreeClickLinstener implements IDoubleClickListener,ISelectionChange
 							}else {
 								bodyStrCache="";
 							}
+						}else {
+							hasCache = true;
 						}
 						tabGroupDTO.getBodyText().setText(bodyStrCache);
 
@@ -101,6 +108,15 @@ public class TreeClickLinstener implements IDoubleClickListener,ISelectionChange
 						if (clickTime==2) {
 							OpenEditorHandlers.openEditor(node);
 						}
+						
+						//如果有缓存，reset不同
+						Color color = null;
+						if (hasCache) {
+							color = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
+						}else {
+							color = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
+						}
+						tabGroupDTO.getResetItem().setForeground(color);
 					}
 				});
 			}
