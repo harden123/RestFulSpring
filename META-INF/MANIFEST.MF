@@ -6,7 +6,6 @@ Bundle-Version: 1.0.0
 Bundle-Activator: restfulspring.Activator
 Bundle-ClassPath: .,
  lib/commons-lang3-3.8.1.jar,
- lib/fastjson-1.2.83.jar,
  lib/guava-21.0.jar,
  lib/lombok.jar,
  lib/okhttp-3.4.1.jar
