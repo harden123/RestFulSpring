@@ -51,17 +51,21 @@ public class TreeDoubleClickLinstener implements IDoubleClickListener {
 			if (jdtMethodDTO!=null) {
 				tabGroupDTO.setSelectedTreeNode(node);
 				HashMap<String, Map<String, Object>> m_annotations = jdtMethodDTO.getAnnotations();
-				Object method_type = AstUtil.getValByAnoAndKey(m_annotations, RestConstant.RequestMapping, RestConstant.RequestMapping_Method);// POST
+				AtomicReference<Object> method_type = new AtomicReference<>();
+				method_type.set(AstUtil.getValByAnoAndKey(m_annotations, RestConstant.RequestMapping, RestConstant.RequestMapping_Method));;// POST
 				String methodUrl = AstUtil.getMethodUrl(node);
 			
 				RestParamDTO computeParam = AstUtil.computeParam(jdtMethodDTO);
 				AtomicReference<String> bodyStr = computeParam.getBodyStr();
+				if (StringUtils.isNotBlank(bodyStr.get())) {
+					method_type.set(RestTypeEnum.POST.toString());
+				}
 				Map<String, Object> getParamKVMap = computeParam.getGetParamKVMap();
 				Display.getDefault().asyncExec(new Runnable() {
 
 					@Override
 					public void run() {
-						if (RestTypeEnum.POST.toString().equals(method_type)) {
+						if (RestTypeEnum.POST.toString().equals(method_type.get())) {
 							getCombo.select(RestTypeEnum.POST.getKey());
 						}else {
 							getCombo.select(RestTypeEnum.GET.getKey());
