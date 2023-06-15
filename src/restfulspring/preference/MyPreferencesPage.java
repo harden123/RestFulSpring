@@ -15,7 +15,7 @@ public class MyPreferencesPage extends FieldEditorPreferencePage implements IWor
 
     @Override
     protected void createFieldEditors() {
-        addField(new StringFieldEditor(RestConstant.UrlPrefix, "请求前缀:", getFieldEditorParent()));
+        addField(new StringFieldEditor(RestConstant.UrlPrefix, "requestPrefix:", getFieldEditorParent()));
         // 创建多行文本框
         MultiLineFieldEditor mt = new MultiLineFieldEditor(RestConstant.Headers,
                 "headers:",
@@ -28,6 +28,6 @@ public class MyPreferencesPage extends FieldEditorPreferencePage implements IWor
     @Override
     public void init(IWorkbench workbench) {
         setPreferenceStore(Activator.getDefault().getPreferenceStore());
-        setDescription("预设配置");
+        setDescription("DefaultSettings");
     }
 }
