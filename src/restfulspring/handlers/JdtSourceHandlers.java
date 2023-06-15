@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
@@ -28,6 +29,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -193,6 +195,7 @@ public class JdtSourceHandlers {
 				JDTTypeDTO typeDTO = new JDTTypeDTO();
 				typeDTO.setType(type);
 				typeDTO.setAnnotations(typeAnnotations);
+				typeDTO.setTypeUnit(cu);
 //				System.out.println("type name: " + type.getName().toString());
 				HashMap<String, JDTMethodDTO> methodName2DTOMap = Maps.newHashMap();
 				for (MethodDeclaration method : type.getMethods()) {
@@ -202,6 +205,10 @@ public class JdtSourceHandlers {
 						continue;
 					}
 					JDTMethodDTO jDTMethodDTO = new JDTMethodDTO();
+					IBinding binding = method.resolveBinding();
+				    if (binding != null && binding.getKind() == IBinding.METHOD) {
+						jDTMethodDTO.setMethod((IMethod) binding.getJavaElement());
+				    }
 					jDTMethodDTO.setAnnotations(methodAnnotations);
 //					System.out.println("Method name: " + method.getName().getIdentifier());
 					// 获取所有方法参数的名称和类型

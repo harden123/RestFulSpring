@@ -3,6 +3,7 @@ package restfulspring.dto;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import lombok.Getter;
@@ -12,6 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class JDTTypeDTO {
+	private ICompilationUnit typeUnit;
 
 	private TypeDeclaration type;
 	/**
@@ -20,4 +22,5 @@ public class JDTTypeDTO {
 	private HashMap<String, Map<String, Object>> annotations;
 	
 	private HashMap<String, JDTMethodDTO> methodName2DTOMap ;
+
 }

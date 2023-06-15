@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 import com.google.common.collect.Lists;
@@ -30,5 +31,6 @@ public class JDTMethodDTO {
 	 */
 	private HashMap<String, Map<String, Object>> annotations;
 
+	private IMethod method;
 
 }

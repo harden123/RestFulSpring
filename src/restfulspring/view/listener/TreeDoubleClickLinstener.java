@@ -23,6 +23,7 @@ import restfulspring.constant.RestConstant;
 import restfulspring.constant.RestTypeEnum;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.RestParamDTO;
+import restfulspring.handlers.OpenEditorHandlers;
 import restfulspring.handlers.TextCacheHandlers;
 import restfulspring.utils.AstUtil;
 import restfulspring.utils.CollectionUtils;
@@ -84,6 +85,7 @@ public class TreeDoubleClickLinstener implements IDoubleClickListener {
 								tabGroupDTO.getBodyText().setText("");
 							}
 						}
+						OpenEditorHandlers.openEditor(node);
 					
 					}
 				});
