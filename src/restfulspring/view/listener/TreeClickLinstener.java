@@ -9,7 +9,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
@@ -30,13 +32,13 @@ import restfulspring.utils.CollectionUtils;
 import restfulspring.view.tab.TabGroupDTO;
 import restfulspring.view.tree.MyTreeElement;
 
-public class TreeDoubleClickLinstener implements IDoubleClickListener {
+public class TreeClickLinstener implements IDoubleClickListener,ISelectionChangedListener {
 
 	private Combo getCombo;
 	private Text urlText;
 	private TabGroupDTO tabGroupDTO;
 
-	public TreeDoubleClickLinstener(Combo getCombo, Text urlText, TabGroupDTO tabGroupDTO) {
+	public TreeClickLinstener(Combo getCombo, Text urlText, TabGroupDTO tabGroupDTO) {
 		this.getCombo = getCombo;
 		this.urlText = urlText;
 		this.tabGroupDTO = tabGroupDTO;
@@ -46,7 +48,12 @@ public class TreeDoubleClickLinstener implements IDoubleClickListener {
 	public void doubleClick(DoubleClickEvent event) {
 		IStructuredSelection selection = (IStructuredSelection) event.getSelection();
 		Object element = selection.getFirstElement();
-		if (element instanceof MyTreeElement) {
+		doSelect(element,2);
+
+	}
+
+	private void doSelect(Object element, int clickTime) {
+		if (element!=null&&element instanceof MyTreeElement) {
 			MyTreeElement node = (MyTreeElement) element;
 			JDTMethodDTO jdtMethodDTO = node.getJDTMethodDTO();
 			if (jdtMethodDTO!=null) {
@@ -85,13 +92,13 @@ public class TreeDoubleClickLinstener implements IDoubleClickListener {
 								tabGroupDTO.getBodyText().setText("");
 							}
 						}
-						OpenEditorHandlers.openEditor(node);
-					
+						if (clickTime==2) {
+							OpenEditorHandlers.openEditor(node);
+						}
 					}
 				});
 			}
 		}
-
 	}
 	
 	
@@ -124,6 +131,18 @@ public class TreeDoubleClickLinstener implements IDoubleClickListener {
 		}
 		sb = sb.deleteCharAt(sb.length()-1);
 		return sb.toString();
+	}
+
+	
+	/** 
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void selectionChanged(SelectionChangedEvent e) {
+		  IStructuredSelection selection = (IStructuredSelection) e.getSelection();
+		  Object firstElement = selection.getFirstElement();
+		  doSelect(firstElement,1);
+
 	}
 
 

@@ -34,8 +34,8 @@ import restfulspring.view.listener.BodyFormatItemListener;
 import restfulspring.view.listener.BodyResetItemListener;
 import restfulspring.view.listener.BodyTextFocusListener;
 import restfulspring.view.listener.SendButtonListener;
+import restfulspring.view.listener.TreeClickLinstener;
 import restfulspring.view.listener.TreeCollapseListener;
-import restfulspring.view.listener.TreeDoubleClickLinstener;
 import restfulspring.view.listener.TreeExpandListener;
 import restfulspring.view.listener.TreeScrollListener;
 import restfulspring.view.tab.TabFolderFactory;
@@ -182,8 +182,9 @@ public class RestFulSpringView extends ViewPart {
 		
 		/*-------------------------linsteners -----------------------------*/
 
-		
-		treeViewer.addDoubleClickListener(new TreeDoubleClickLinstener(getCombo,urlText,tabGroupDTO));
+		TreeClickLinstener treeClickLinstener = new TreeClickLinstener(getCombo,urlText,tabGroupDTO);
+		treeViewer.addDoubleClickListener(treeClickLinstener);
+		treeViewer.addSelectionChangedListener(treeClickLinstener);
 		send.addSelectionListener(new SendButtonListener(getCombo,urlText,tabGroupDTO));
 		
 		

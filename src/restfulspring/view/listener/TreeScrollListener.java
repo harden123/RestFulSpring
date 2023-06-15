@@ -6,10 +6,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorInput;
@@ -96,13 +94,13 @@ public class TreeScrollListener implements SelectionListener{
 	}
 
 	private void mockDoubleClick(TreeViewer treeViewer, TreeItem childTreeItem) {
-	     // 模拟双击事件
+	     // 模拟点击事件
 		treeViewer.setSelection(new StructuredSelection(childTreeItem.getData()));
-		Event event = new Event();
-		event.type = SWT.DefaultSelection;
-		event.button = 1;
-		event.count = 2;
-        treeViewer.getTree().notifyListeners(SWT.DefaultSelection, event);
+//		Event event = new Event();
+//		event.type = SWT.DefaultSelection;
+//		event.button = 1;
+//		event.count = 1;
+//        treeViewer.getTree().notifyListeners(SWT.DefaultSelection, event);
 	}
 
 }
