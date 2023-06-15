@@ -34,7 +34,9 @@ import restfulspring.view.listener.BodyFormatItemListener;
 import restfulspring.view.listener.BodyResetItemListener;
 import restfulspring.view.listener.BodyTextFocusListener;
 import restfulspring.view.listener.SendButtonListener;
+import restfulspring.view.listener.TreeCollapseListener;
 import restfulspring.view.listener.TreeDoubleClickLinstener;
+import restfulspring.view.listener.TreeExpandListener;
 import restfulspring.view.tab.TabFolderFactory;
 import restfulspring.view.tab.TabGroupDTO;
 import restfulspring.view.tree.MyTreeElement;
@@ -187,6 +189,10 @@ public class RestFulSpringView extends ViewPart {
 		tabGroupDTO.getResetItem().addSelectionListener(new BodyResetItemListener(tabGroupDTO));
 //		
 		tabGroupDTO.getFormatItem().addSelectionListener(new BodyFormatItemListener(tabGroupDTO));
+		
+		collapse.addSelectionListener(new TreeCollapseListener(treeViewer));
+		
+		expand.addSelectionListener(new TreeExpandListener(treeViewer));
 
 	}
 

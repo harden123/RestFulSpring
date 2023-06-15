@@ -18,13 +18,7 @@ import restfulspring.dto.JDTTypeDTO;
 import restfulspring.view.tree.MyTreeElement;
 
 public class OpenEditorHandlers {
-//    private static final String FILE_PATH = "/path/to/MyClass.java";
-//    private static final String METHOD_NAME = "myMethod";
 
-	/**
-	 * TODO
-	 * @param node 
-	 */
     @SneakyThrows
 	public static void openEditor(MyTreeElement node) {
     	JDTTypeDTO jdtTypeDTO = node.getJDTTypeDTO();

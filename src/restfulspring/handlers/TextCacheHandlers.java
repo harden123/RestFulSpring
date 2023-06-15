@@ -32,7 +32,7 @@ public class TextCacheHandlers {
 		if (inMemory) {
 			Activator.MethodUrl2BodyTextCacheMap.remove(decorateKey);
 		}else {
-			Activator.getDefault().getPreferenceStore().setValue(decorateKey, null);
+			Activator.getDefault().getPreferenceStore().setToDefault(decorateKey);
 		}
 	}
 	
