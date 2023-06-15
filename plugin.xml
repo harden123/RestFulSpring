@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-
    <extension
          point="org.eclipse.ui.views">
       <view
             allowMultiple="false"
-            category="com.RestFulSpring"
+            category="com.RestSpring"
             class="restfulspring.view.RestFulSpringView"
-            icon="icons/sample.png"
-            id="com.restfulspringview"
-            name="RestFulSpring"
+            id="com.restspringview"
+            name="RestSpring"
             restorable="true">
       </view>
       <category
-            id="com.RestFulSpring"
-            name="RestFulSpring">
+            id="com.RestSpring"
+            name="RestSpring">
       </category>
    </extension>
    
@@ -23,10 +21,9 @@
 	   <extension
 		     point="org.eclipse.ui.preferencePages">
 		  <page
-		        name="RestFulSpring"
+		        name="RestSpring"
 		        class="restfulspring.preference.MyPreferencesPage"
-		        id="restfulspring.view.RestFulSpringView.preferences">
+		        id="restspring.view.RestFulSpringView.preferences">
 		  </page>
 		</extension>
-	   
 </plugin>
