@@ -7,6 +7,7 @@
             allowMultiple="false"
             category="com.RestSpring"
             class="restfulspring.view.RestFulSpringView"
+            icon="icons/sample.png"
             id="com.restspringview"
             name="RestSpring"
             restorable="true">
