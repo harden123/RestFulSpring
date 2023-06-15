@@ -49,7 +49,7 @@ public class TreeScrollListener implements SelectionListener{
 		if (cursorMethod!=null) {
 			System.out.println(cursorMethod.getElementName());
 		}
-		selectTreeView(FileNameUtils.getPrefix(filename),treeViewer,cursorMethod);
+		boolean selectTreeView = selectTreeView(FileNameUtils.getPrefix(filename),treeViewer,cursorMethod);
 	}
 
 
@@ -59,11 +59,11 @@ public class TreeScrollListener implements SelectionListener{
 	}
 	
 
-	private void selectTreeView(String editorTitle, TreeViewer treeViewer, IMethod cursorMethod) {
+	private boolean selectTreeView(String editorTitle, TreeViewer treeViewer, IMethod cursorMethod) {
 		// 获取所有节点
 		Tree tree = treeViewer.getTree();
 		TreeItem[] items = tree.getItems();
-
+		boolean hit = false;
 		for (int i = 0; i < items.length; i++) {
 		    TreeItem item = items[i];
 		    MyTreeElement myTreeElement = (MyTreeElement)item.getData();
@@ -73,8 +73,10 @@ public class TreeScrollListener implements SelectionListener{
 		    	if (cursorMethod != null) {
 		    		traverseTreeItem(cursorMethod,treeViewer,item);
 				}
+		    	hit = true;
 			}
 		}
+		return hit;
 		
 	}
 	
