@@ -1,9 +1,7 @@
 package restfulspring.view.listener;
 
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,19 +14,15 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-
-import lombok.SneakyThrows;
 import restfulspring.Activator;
 import restfulspring.constant.RestConstant;
 import restfulspring.constant.RestTypeEnum;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.RestParamDTO;
 import restfulspring.handlers.OpenEditorHandlers;
-import restfulspring.handlers.TextCacheHandlers;
+import restfulspring.handlers.RequestCacheHandlers;
 import restfulspring.utils.AstUtil;
-import restfulspring.utils.CollectionUtils;
+import restfulspring.utils.TextUtil;
 import restfulspring.view.tab.TabGroupDTO;
 import restfulspring.view.tree.MyTreeElement;
 
@@ -78,20 +72,32 @@ public class TreeClickLinstener implements IDoubleClickListener,ISelectionChange
 						}else {
 							getCombo.select(RestTypeEnum.GET.getKey());
 						}
-						String UrlPrefix = Activator.getDefault().getPreferenceStore().getString(RestConstant.UrlPrefix);
-						urlText.setText(UrlPrefix+methodUrl+initGetParam(getParamKVMap));
-						tabGroupDTO.getFolder().setSelection(1);
+					
+						//head
+						String headers = Activator.getDefault().getPreferenceStore().getString(RestConstant.Headers);
+						tabGroupDTO.getHeadText().setText(headers);
 						
-						String memBodyStr = TextCacheHandlers.getBeyKey(methodUrl);
-						if (StringUtils.isNotBlank(memBodyStr)) {
-							tabGroupDTO.getBodyText().setText(memBodyStr);
-						}else {
+						//url
+						String UrlPrefix = Activator.getDefault().getPreferenceStore().getString(RestConstant.UrlPrefix);
+						String urlParamCache = RequestCacheHandlers.getBeyKey(RestConstant.UrlText,methodUrl);
+						if (StringUtils.isBlank(urlParamCache)) {
+							urlParamCache = TextUtil.initGetParam(getParamKVMap);
+						}
+						urlText.setText(UrlPrefix+methodUrl+StringUtils.trimToEmpty(urlParamCache));
+						
+						//body
+						tabGroupDTO.getFolder().setSelection(1);
+						String bodyStrCache = RequestCacheHandlers.getBeyKey(RestConstant.BodyText,methodUrl);
+						if (StringUtils.isBlank(bodyStrCache)) {
 							if (StringUtils.isNotBlank(bodyStr.get())) {
-								tabGroupDTO.getBodyText().setText(bodyStr.get());
+								bodyStrCache = bodyStr.get();
 							}else {
-								tabGroupDTO.getBodyText().setText("");
+								bodyStrCache="";
 							}
 						}
+						tabGroupDTO.getBodyText().setText(bodyStrCache);
+
+						
 						if (clickTime==2) {
 							OpenEditorHandlers.openEditor(node);
 						}
@@ -107,31 +113,7 @@ public class TreeClickLinstener implements IDoubleClickListener,ISelectionChange
 
 	
 	
-	@SneakyThrows
-	protected String initGetParam(Map<String, Object> map) {
-		if (CollectionUtils.isEmpty(map)) {
-			return "";
-		}
-		StringBuffer sb = new StringBuffer("?");
-		for (Map.Entry<String, Object> entry : map.entrySet()) {
-			String key = entry.getKey();
-			Object value = Optional.ofNullable(entry.getValue()).orElse("");
-			if (value instanceof JSONArray) {
-				if (((JSONArray)value).size()>0) {
-					value=((JSONArray)value).get(0);
-				}else {
-					value = "";
-				}
-				
-			}else if (value instanceof JSONObject) {
-				value = "";
-			}
-			String encodedParamValue = URLEncoder.encode(value+"", "UTF-8").replaceAll("\\+", "%20");
-			sb.append(key).append("=").append(encodedParamValue).append("&");
-		}
-		sb = sb.deleteCharAt(sb.length()-1);
-		return sb.toString();
-	}
+
 
 	
 	/** 

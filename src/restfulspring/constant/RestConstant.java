@@ -30,6 +30,8 @@ public class RestConstant {
 	public static final String UrlPrefix = "urlPrefix";
 	public static final String Headers = "Headers";
 	public static final String BodyText = "bodyText:";
+	public static final String UrlText = "urlText:";
+
 
 	
 

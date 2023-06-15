@@ -8,8 +8,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -38,6 +36,7 @@ import restfulspring.view.listener.TreeClickLinstener;
 import restfulspring.view.listener.TreeCollapseListener;
 import restfulspring.view.listener.TreeExpandListener;
 import restfulspring.view.listener.TreeScrollListener;
+import restfulspring.view.listener.UrlTextFocusListener;
 import restfulspring.view.tab.TabFolderFactory;
 import restfulspring.view.tab.TabGroupDTO;
 import restfulspring.view.tree.MyTreeElement;
@@ -152,14 +151,6 @@ public class RestFulSpringView extends ViewPart {
 		Text urlText = new Text(queryRow, SWT.BORDER);
 		urlText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false)); // 设置布局数据
 
-		// 添加文本变更监听器
-		urlText.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-//				System.out.println("文本内容已修改为：" + urlText.getText());
-			}
-		});
-
 		Button send = new Button(queryRow, SWT.NONE);
 		send.setText("send");
 		/*-------------------------resultRow -----------------------------*/
@@ -188,9 +179,11 @@ public class RestFulSpringView extends ViewPart {
 		send.addSelectionListener(new SendButtonListener(getCombo,urlText,tabGroupDTO));
 		
 		
+		urlText.addFocusListener(new UrlTextFocusListener(tabGroupDTO));
+		
 		tabGroupDTO.getBodyText().addFocusListener(new BodyTextFocusListener(tabGroupDTO));
 		
-		tabGroupDTO.getResetItem().addSelectionListener(new BodyResetItemListener(tabGroupDTO));
+		tabGroupDTO.getResetItem().addSelectionListener(new BodyResetItemListener(tabGroupDTO,urlText));
 //		
 		tabGroupDTO.getFormatItem().addSelectionListener(new BodyFormatItemListener(tabGroupDTO));
 		

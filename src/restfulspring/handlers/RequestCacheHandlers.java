@@ -1,15 +1,14 @@
 package restfulspring.handlers;
 
 import restfulspring.Activator;
-import restfulspring.constant.RestConstant;
 
-public class TextCacheHandlers {
+public class RequestCacheHandlers {
 
 	private static boolean inMemory;
 	
 	
-	public static String getBeyKey(String methodUrl) {
-		String decorateKey = getDecorateKey(methodUrl);
+	public static String getBeyKey(String prefix,String methodUrl) {
+		String decorateKey = prefix+methodUrl;
 		if (inMemory) {
 			return  Activator.MethodUrl2BodyTextCacheMap.get(decorateKey);
 		}else {
@@ -17,8 +16,8 @@ public class TextCacheHandlers {
 		}
 	}
 	
-	public static void put(String methodUrl,String text) {
-		String decorateKey = getDecorateKey(methodUrl);
+	public static void put(String prefix,String methodUrl,String text) {
+		String decorateKey = prefix+methodUrl;
 		if (inMemory) {
 			Activator.MethodUrl2BodyTextCacheMap.put(decorateKey, text);
 		}else {
@@ -27,8 +26,8 @@ public class TextCacheHandlers {
 
 	}
 
-	public static void remove(String methodUrl) {
-		String decorateKey = getDecorateKey(methodUrl);
+	public static void remove(String prefix,String methodUrl) {
+		String decorateKey = prefix+methodUrl;
 		if (inMemory) {
 			Activator.MethodUrl2BodyTextCacheMap.remove(decorateKey);
 		}else {
@@ -36,8 +35,4 @@ public class TextCacheHandlers {
 		}
 	}
 	
-	private static String getDecorateKey(String methodUrl) {
-		return RestConstant.BodyText+methodUrl;
-
-	}
 }

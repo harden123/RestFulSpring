@@ -1,8 +1,10 @@
 package restfulspring.utils;
 
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -124,4 +126,37 @@ public class TextUtil {
 		return kvMap;
 	}
 	
+	@SneakyThrows
+	public static String initGetParam(Map<String, Object> map) {
+		if (CollectionUtils.isEmpty(map)) {
+			return "";
+		}
+		StringBuffer sb = new StringBuffer("?");
+		for (Map.Entry<String, Object> entry : map.entrySet()) {
+			String key = entry.getKey();
+			Object value = Optional.ofNullable(entry.getValue()).orElse("");
+			if (value instanceof JSONArray) {
+				if (((JSONArray)value).size()>0) {
+					value=((JSONArray)value).get(0);
+				}else {
+					value = "";
+				}
+				
+			}else if (value instanceof JSONObject) {
+				value = "";
+			}
+			String encodedParamValue = URLEncoder.encode(value+"", "UTF-8").replaceAll("\\+", "%20");
+			sb.append(key).append("=").append(encodedParamValue).append("&");
+		}
+		sb = sb.deleteCharAt(sb.length()-1);
+		return sb.toString();
+	}
+	
+	public static String getUrlParam(String url) {
+		if (!StringUtils.contains(url, "?")) {
+			return "";
+		}
+		String substringAfter = "?"+StringUtils.substringAfter(url, "?");
+		return substringAfter;
+	}
 }

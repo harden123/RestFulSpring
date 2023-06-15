@@ -11,9 +11,10 @@ import org.eclipse.swt.widgets.Text;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.Feature;
 
+import restfulspring.constant.RestConstant;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.RestParamDTO;
-import restfulspring.handlers.TextCacheHandlers;
+import restfulspring.handlers.RequestCacheHandlers;
 import restfulspring.utils.AstUtil;
 import restfulspring.view.tab.TabGroupDTO;
 import restfulspring.view.tree.MyTreeElement;
@@ -45,7 +46,7 @@ public class BodyTextFocusListener implements FocusListener{
 			MyTreeElement selectedTreeNode = tabGroupDTO.getSelectedTreeNode();
 			JDTMethodDTO selectedJdtMethodDTO = selectedTreeNode.getJDTMethodDTO();
 			String methodUrl = AstUtil.getMethodUrl(selectedTreeNode);
-			String methodBodyText = TextCacheHandlers.getBeyKey(methodUrl);
+			String methodBodyText = RequestCacheHandlers.getBeyKey(RestConstant.BodyText,methodUrl);
 			if (StringUtils.isBlank(methodBodyText)) {
 				RestParamDTO computeParam = AstUtil.computeParam(selectedJdtMethodDTO);
 				AtomicReference<String> bodyStr = computeParam.getBodyStr();
@@ -55,7 +56,7 @@ public class BodyTextFocusListener implements FocusListener{
 			}
 			boolean judgeJsonEquals = judgeJsonEquals(StringUtils.trim(text),StringUtils.trim(methodBodyText));
 			if (!judgeJsonEquals) {
-				TextCacheHandlers.put(methodUrl, text);
+				RequestCacheHandlers.put(RestConstant.BodyText,methodUrl, text);
 			}
 		}
 	}
