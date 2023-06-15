@@ -30,8 +30,9 @@ import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.JDTTypeDTO;
 import restfulspring.handlers.JdtSourceHandlers;
 import restfulspring.utils.CollectionUtils;
-import restfulspring.view.listener.BodyTextFocusListener;
+import restfulspring.view.listener.BodyFormatItemListener;
 import restfulspring.view.listener.BodyResetItemListener;
+import restfulspring.view.listener.BodyTextFocusListener;
 import restfulspring.view.listener.SendButtonListener;
 import restfulspring.view.listener.TreeDoubleClickLinstener;
 import restfulspring.view.tab.TabFolderFactory;
@@ -185,7 +186,7 @@ public class RestFulSpringView extends ViewPart {
 		
 		tabGroupDTO.getResetItem().addSelectionListener(new BodyResetItemListener(tabGroupDTO));
 //		
-
+		tabGroupDTO.getFormatItem().addSelectionListener(new BodyFormatItemListener(tabGroupDTO));
 
 	}
 

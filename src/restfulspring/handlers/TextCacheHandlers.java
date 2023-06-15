@@ -15,8 +15,6 @@ public class TextCacheHandlers {
 		}else {
 			return Activator.getDefault().getPreferenceStore().getString(decorateKey);
 		}
-
-
 	}
 	
 	public static void put(String methodUrl,String text) {
