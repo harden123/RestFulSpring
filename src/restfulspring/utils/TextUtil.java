@@ -107,7 +107,7 @@ public class TextUtil {
 	}
 	
 	public static Map<String, String> parseHeaders(String head) {
-		HashMap<String, String> kvMap = Maps.newHashMap();
+		HashMap<String, String> kvMap = Maps.newLinkedHashMap();
 		if (StringUtils.isBlank(head)) {
 			return  kvMap;
 		}

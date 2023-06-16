@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class RestParamDTO {
-	Map<String,Object> getParamKVMap = Maps.newHashMap();
+	Map<String,Object> getParamKVMap = Maps.newLinkedHashMap();
 //	String requestBody = null;
 	AtomicReference<String> bodyStr = new AtomicReference<>();
 }
