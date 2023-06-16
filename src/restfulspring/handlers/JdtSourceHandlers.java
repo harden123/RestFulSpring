@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IAnnotation;
@@ -53,7 +52,7 @@ public class JdtSourceHandlers {
 	
 	private static List<JDTTypeDTO> list;
 	private static AtomicBoolean running = new AtomicBoolean();
-	private static final ExecutorService executor = new ThreadPoolExecutor(8, 8, 0L, TimeUnit.MICROSECONDS, new LinkedBlockingQueue<>(100),
+	private static final ExecutorService executor = new ThreadPoolExecutor(4, 4, 30L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(20),
 			new ThreadPoolExecutor.CallerRunsPolicy());
 
 	public static void handle() {
@@ -152,13 +151,13 @@ public class JdtSourceHandlers {
 		List<JDTTypeDTO> lists = Lists.newArrayListWithExpectedSize(allJavaFiles.size());
 		ArrayList<Future<?>> submits = Lists.newArrayListWithExpectedSize(allJavaFiles.size());
 		for (ICompilationUnit iCompilationUnit : allJavaFiles) {
-			String elementName = iCompilationUnit.getElementName();
-			if (StringUtils.containsIgnoreCase(elementName, RestConstant.Controller)||StringUtils.containsIgnoreCase(elementName, RestConstant.Service)) {
+//			String elementName = iCompilationUnit.getElementName();
+//			if (StringUtils.containsIgnoreCase(elementName, RestConstant.Controller)||StringUtils.containsIgnoreCase(elementName, RestConstant.Service)) {
 				Future<?> submit = executor.submit(()->{
 					parseAllMethods(iCompilationUnit,lists);
 				});
 				submits.add(submit);
-			}
+//			}
 		}
 		for (Future<?> f : submits) {
 			f.get(1, TimeUnit.MINUTES);

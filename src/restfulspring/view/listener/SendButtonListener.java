@@ -18,7 +18,7 @@ import restfulspring.utils.TextUtil;
 import restfulspring.view.tab.TabGroupDTO;
 
 public class SendButtonListener implements SelectionListener {
-	private static final ExecutorService executor = new ThreadPoolExecutor(4, 4, 0L, TimeUnit.MICROSECONDS, new LinkedBlockingQueue<>(10),
+	private static final ExecutorService executor = new ThreadPoolExecutor(2, 4, 30L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(4),
 			new ThreadPoolExecutor.CallerRunsPolicy());
 
     private Combo getCombo;
