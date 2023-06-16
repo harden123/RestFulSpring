@@ -197,8 +197,9 @@ public class JdtSourceHandlers {
 				typeDTO.setAnnotations(typeAnnotations);
 				typeDTO.setTypeUnit(cu);
 //				System.out.println("type name: " + type.getName().toString());
-				HashMap<String, JDTMethodDTO> methodName2DTOMap = Maps.newHashMap();
-				for (MethodDeclaration method : type.getMethods()) {
+				HashMap<String, JDTMethodDTO> methodName2DTOMap = Maps.newLinkedHashMap();
+				MethodDeclaration[] methods = type.getMethods();
+				for (MethodDeclaration method : methods) {
 					// 获取方法中所有注解信息
 					HashMap<String, Map<String, Object>> methodAnnotations = AstUtil.retrieveAnnoByModifiers(method.modifiers());
 					if (!methodAnnotations.containsKey(RestConstant.RequestMapping)){
@@ -226,8 +227,7 @@ public class JdtSourceHandlers {
 		}
 	}
 
-	
-	
+
 	public static void setList(List<JDTTypeDTO> list) {
 		if (CollectionUtils.isNotEmpty(JdtSourceHandlers.list)) {
 			for (JDTTypeDTO jdtTypeDTO : JdtSourceHandlers.list) {
