@@ -52,7 +52,7 @@ public class JdtSourceHandlers {
 	
 	private static List<JDTTypeDTO> list;
 	private static AtomicBoolean running = new AtomicBoolean();
-	private static final ExecutorService executor = new ThreadPoolExecutor(4, 4, 30L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(20),
+	private static final ExecutorService executor = new ThreadPoolExecutor(4, 4, 30L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(40),
 			new ThreadPoolExecutor.CallerRunsPolicy());
 
 	public static void handle() {
