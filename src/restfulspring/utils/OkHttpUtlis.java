@@ -164,4 +164,9 @@ public class OkHttpUtlis {
 	    }
 		return null;
 	}
+	
+	public static void main(String[] args) {
+		String doGet = doGet(null, null, "https://www.baidu.com");
+		System.out.println(doGet);
+	}
 }
