@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
+import restfulspring.config.Log;
 import restfulspring.constant.RestTypeEnum;
 import restfulspring.utils.OkHttpUtlis;
 import restfulspring.utils.TextUtil;
@@ -42,13 +43,21 @@ public class SendButtonListener implements SelectionListener {
 		
 		if (RestTypeEnum.GET.toString().equals(restType)) {
 			executor.execute(()->{
-				String r = OkHttpUtlis.doGet(null, headers, url);
-				showResult(r);
+				try {
+					String r = OkHttpUtlis.doGet(null, headers, url);
+					showResult(r);
+				} catch (Exception e1) {
+					Log.error(e1.getMessage(), e1);
+				}
 			});
 		}else if(RestTypeEnum.POST.toString().equals(restType)) {
 			executor.execute(()->{
-				String r = OkHttpUtlis.doPostJSON(body, headers, url);
-				showResult(r);
+				try {
+					String r = OkHttpUtlis.doPostJSON(body, headers, url);
+					showResult(r);
+				} catch (Exception e1) {
+					Log.error(e1.getMessage(), e1);
+				}
 			});
 		}
 		
