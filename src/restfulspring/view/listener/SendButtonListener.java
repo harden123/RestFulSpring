@@ -46,8 +46,9 @@ public class SendButtonListener implements SelectionListener {
 				try {
 					String r = OkHttpUtlis.doGet(null, headers, url);
 					showResult(r);
-				} catch (Exception e1) {
+				} catch (Throwable e1) {
 					Log.error(e1.getMessage(), e1);
+					throw e1;
 				}
 			});
 		}else if(RestTypeEnum.POST.toString().equals(restType)) {
@@ -55,8 +56,9 @@ public class SendButtonListener implements SelectionListener {
 				try {
 					String r = OkHttpUtlis.doPostJSON(body, headers, url);
 					showResult(r);
-				} catch (Exception e1) {
+				} catch (Throwable e1) {
 					Log.error(e1.getMessage(), e1);
+					throw e1;
 				}
 			});
 		}

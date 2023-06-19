@@ -41,6 +41,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import lombok.SneakyThrows;
+import restfulspring.config.Log;
 import restfulspring.constant.RestConstant;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.JDTTypeDTO;
@@ -154,7 +155,12 @@ public class JdtSourceHandlers {
 //			String elementName = iCompilationUnit.getElementName();
 //			if (StringUtils.containsIgnoreCase(elementName, RestConstant.Controller)||StringUtils.containsIgnoreCase(elementName, RestConstant.Service)) {
 				Future<?> submit = executor.submit(()->{
-					parseAllMethods(iCompilationUnit,lists);
+					try {
+						parseAllMethods(iCompilationUnit,lists);
+					} catch (Throwable e) {
+						Log.error(e.getMessage(), e);
+						throw e;
+					}
 				});
 				submits.add(submit);
 //			}
