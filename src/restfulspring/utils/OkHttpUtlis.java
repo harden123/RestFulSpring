@@ -1,335 +1,154 @@
 package restfulspring.utils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.SocketTimeoutException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import org.apache.commons.lang3.StringUtils;
+
+import lombok.SneakyThrows;
 
 public class OkHttpUtlis {
-    private static OkHttpClient client;
-    private static final MediaType JSON_TYPE = MediaType.parse("application/json; charset=utf-8");
-    static {
-        client = new OkHttpClient.Builder()
-                .sslSocketFactory(createSSLSocketFactory(), (X509TrustManager) new TrustManager[]{new TrustAllCerts()}[0])
-//        .sslSocketFactory(createSSLSocketFactory())
-                .connectTimeout(7, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS)
-                .hostnameVerifier(new TrustAllHostnameVerifier()).build();
-    }
+//    private static OkHttpClient client;
+//    private static final MediaType JSON_TYPE = MediaType.parse("application/json; charset=utf-8");
+//    static {
+//        client = new OkHttpClient.Builder()
+//                .sslSocketFactory(createSSLSocketFactory(), (X509TrustManager) new TrustManager[]{new TrustAllCerts()}[0])
+////        .sslSocketFactory(createSSLSocketFactory())
+//                .connectTimeout(7, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).writeTimeout(30, TimeUnit.SECONDS)
+//                .hostnameVerifier(new TrustAllHostnameVerifier()).build();
+//    }
 
-    public static String doGet(Map<String,Object> params, Map<String,String> headers, String url){
-        try {
-            Request.Builder builder = new Request.Builder();
-            HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
-            if (CollectionUtils.isNotEmpty(params)) {
-                params.forEach((key, value) -> {
-                    urlBuilder.addQueryParameter(key, String.valueOf(value));
-                });
-            }
-            if (CollectionUtils.isNotEmpty(headers)) {
-                headers.forEach((key, value) -> {
-                    builder.header(key, String.valueOf(value));
-                });
-            }
-            builder.url(urlBuilder.build());
-            Request request = builder.get()
-                    .build();
-            Response response = client.newCall(request).execute();
-            return response.body().string();
-        }catch (SocketTimeoutException e){
-            System.out.println(e.getMessage());
-            return e.getMessage();
-        }catch (Exception e){
-            e.printStackTrace();
-            return e.getMessage();
-        }
-    }
+	static {
+	    TrustManager[] trustAllCerts = new TrustManager[]{
+		    new X509TrustManager() {
+		        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
+		        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {}
+		        public X509Certificate[] getAcceptedIssuers() {return new X509Certificate[0];}
+		    }
+		};
+		SSLContext sslContext;
+		try {
+			sslContext = SSLContext.getInstance("TLS");
+			sslContext.init(null, trustAllCerts, new SecureRandom());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-    public static String doGet2(Map<String,Object> params, Map<String,String> headers, String url){
-        try {
-            Request.Builder builder = new Request.Builder();
-            HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
-            if (CollectionUtils.isNotEmpty(params)) {
-                params.forEach((key, value) -> {
-                    urlBuilder.addQueryParameter(key, String.valueOf(value));
-                });
-            }
-            if (CollectionUtils.isNotEmpty(headers)) {
-                headers.forEach((key, value) -> {
-                    builder.header(key, String.valueOf(value));
-                });
-            }
-            builder.url(urlBuilder.build());
-            Request request = builder.get()
-                    .build();
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    System.out.println("》》》》》》》》》》》》》》》》》》》 okhttp返回了 失败："+e.toString());
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    System.out.println("》》》》》》》》》》》》》》》》》》》 okhttp返回了 成功："+response.body().toString());
-                }
-            });
-            return "";
-        }catch (Exception e){
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    public static String doGet(Map<String,Object> params, String url){
-        return doGet(params, null, url);
-    }
-
-
-    public static String doPost(Map<String,Object> params, Map<String,String> headers, String url){
-        try {
-            Request.Builder builder = new Request.Builder();
-            MultipartBody.Builder multBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-            params.forEach((key, value) -> {
-                multBuilder.addFormDataPart(key, String.valueOf(value));
-            });
-            if (CollectionUtils.isNotEmpty(headers)) {
-                headers.forEach((key, value) -> {
-                    builder.header(key, String.valueOf(value));
-                });
-            }
-            Request request = builder
-                    .header("Content-Type","text/html; charset=utf-8;")
-                    .url(url)
-                    .post(multBuilder.build())
-                    .build();
-            Response response = client.newCall(request).execute();
-            return response.body().string();
-        }catch (SocketTimeoutException e){
-            System.out.println(e.getMessage());
-            return "";
-        }catch (Exception e){
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    public static String doPost(Map<String,Object> params, String url){
-        return doPost(params, null, url);
-    }
-
+	@SneakyThrows
     public static String doPostJSON(String json, Map<String,String> headers, String url){
-        try {
-            Request.Builder builder = new Request.Builder();
-            RequestBody body = RequestBody.create(JSON_TYPE, json);
-            if (CollectionUtils.isNotEmpty(headers)) {
-                headers.forEach((key, value) -> {
-                    builder.header(key, String.valueOf(value));
-                });
-            }
-            Request request = builder
-                    .header("Content-Type","application/json; charset=utf-8;")
-                    .url(url)
-                    .post(body)
-                    .build();
-            Response response = client.newCall(request).execute();
-            return response.body().string();
-        }catch (SocketTimeoutException e){
-            System.out.println(e.getMessage());
-            return e.getMessage();
-        }catch (Exception e){
-            e.printStackTrace();
-            return e.getMessage();
-        }
+		try {
+			URL apiUrl = new URL(url);
+			HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
+			connection.setRequestMethod("POST");
+			connection.setConnectTimeout(5000); // 设置连接超时时间为 5 秒
+			connection.setReadTimeout(30000);
+			connection.setRequestProperty("Content-Type", "application/json; utf-8"); // 设置请求头为 JSON 格式
+			if (CollectionUtils.isNotEmpty(headers)) {
+				for (Map.Entry<String, String> entry : headers.entrySet()) {
+					String key = entry.getKey();
+					String val = entry.getValue();
+					connection.addRequestProperty(key, val);
+				}
+			}
+			
+			connection.setDoOutput(true); // 允许向服务器输出内容
+			OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
+			writer.write(json);
+			writer.flush();
+			
+			int responseCode = connection.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_OK) {
+			    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			    String line;
+			    StringBuilder response = new StringBuilder();
+			    while ((line = in.readLine()) != null) {
+			        response.append(line);
+			    }
+			    in.close();
+			    String responseBody = response.toString();
+				return responseBody;
+			} else {
+				// 处理响应错误
+				String errorMsg = getErrorMsg(connection);
+				return responseCode+":"+errorMsg;
+			}
+		} catch (Exception e) {
+			return e.getMessage();
+		}
+	}
+    
+    public static String doGet(Map<String,Object> params, Map<String,String> headers, String url){
+		try {
+			if (CollectionUtils.isNotEmpty(params)) {
+				String initGetParam = TextUtil.initGetParam(params);
+				if (StringUtils.contains(url, "?")) {
+					url+="&"+StringUtils.removeStart(initGetParam, "?");
+				}else {
+					url+=initGetParam;
+				}
+			}
+			URL apiUrl = new URL(url);
+			HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
+			connection.setRequestMethod("GET");
+			connection.setConnectTimeout(5000); // 设置连接超时时间为 5 秒
+			connection.setReadTimeout(30000);
+			if (CollectionUtils.isNotEmpty(headers)) {
+				for (Map.Entry<String, String> entry : headers.entrySet()) {
+					String key = entry.getKey();
+					String val = entry.getValue();
+					connection.addRequestProperty(key, val);
+				}
+			}
+			
+			int responseCode = connection.getResponseCode();
+			if (responseCode == HttpURLConnection.HTTP_OK) {
+			    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			    String line;
+			    StringBuilder response = new StringBuilder();
+			    while ((line = in.readLine()) != null) {
+			        response.append(line);
+			    }
+			    in.close();
+			    String responseBody = response.toString();
+				return responseBody;
+			} else {
+				// 处理响应错误
+				String errorMsg = getErrorMsg(connection);
+				return responseCode+":"+errorMsg;
+			}
+		} catch (Exception e) {
+			return e.getMessage();
+		}
     }
 
-    public static String doPostJSON(String json, String url){
-        return doPostJSON(json, null, url);
-    }
-
-    public static byte[] doPostJSONAndReturnBytes(String json, Map<String,String> headers, String url){
-        try {
-            Request.Builder builder = new Request.Builder();
-            RequestBody body = RequestBody.create(JSON_TYPE, json);
-            if (CollectionUtils.isNotEmpty(headers)) {
-                headers.forEach((key, value) -> {
-                    builder.header(key, String.valueOf(value));
-                });
-            }
-            Request request = builder
-                    .header("Content-Type","application/json; charset=utf-8;")
-                    .url(url)
-                    .post(body)
-                    .build();
-            Response response = client.newCall(request).execute();
-            return response.body().bytes();
-        }catch (SocketTimeoutException e){
-            System.out.println(e.getMessage());
-            return new byte[0];
-        }catch (Exception e){
-            e.printStackTrace();
-            return new byte[0];
-        }
-    }
-    public static String doPostForm(Map<String,Object> params, Map<String,String> headers, String url){
-        Request.Builder builder = new Request.Builder();
-        FormBody.Builder formEncodingBuilder = new FormBody.Builder();
-        try {
-            params.forEach((key, value) -> {
-                formEncodingBuilder.add(key, String.valueOf(value));
-            });
-            if (CollectionUtils.isNotEmpty(headers)) {
-                headers.forEach((key, value) -> {
-                    builder.header(key, String.valueOf(value));
-                });
-            }
-            Request request = builder
-                    .header("Content-Type","application/x-www-form-urlencoded; charset=utf-8;")
-                    .url(url)
-                    .post(formEncodingBuilder.build())
-                    .build();
-            Response response = client.newCall(request).execute();
-            return response.body().string();
-        }catch (SocketTimeoutException e){
-            System.out.println(e.getMessage());
-            return "";
-        }catch (Exception e){
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    public static String doPostForm(Map<String,Object> params, String url){
-        return doPostForm(params, null, url);
-    }
-
-
-    public static String doDelete(Map<String,Object> params, Map<String,String> headers, String url){
-        try {
-            Request.Builder builder = new Request.Builder();
-            HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
-            params.forEach((key, value) -> {
-                urlBuilder.addQueryParameter(key, String.valueOf(value));
-            });
-            if (CollectionUtils.isNotEmpty(headers)) {
-                headers.forEach((key, value) -> {
-                    builder.header(key, String.valueOf(value));
-                });
-            }
-            Request request = builder
-                    .url(url)
-                    .delete()
-                    .build();
-            Response response = client.newCall(request).execute();
-            return response.body().string();
-        }catch (SocketTimeoutException e){
-            System.out.println(e.getMessage());
-            return "";
-        }catch (Exception e){
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    public static String doDelete(Map<String,Object> params, String url){
-        return doDelete(params,null,url);
-    }
-
-    public static String doPut(Map<String, Object> params, Map<String, String> headers, String url) {
-//        log.info("url=" + url + "," + params);
-        try {
-            Request.Builder builder = new Request.Builder();
-            FormBody.Builder multBuilder = new FormBody.Builder();
-            params.forEach((key, value) -> {
-                multBuilder.add(key, String.valueOf(value));
-            });
-            if (CollectionUtils.isNotEmpty(headers)) {
-                headers.forEach((key, value) -> {
-                    builder.header(key, String.valueOf(value));
-                });
-            }
-            Request request = builder
-                    .url(url)
-                    .put(multBuilder.build())
-                    .build();
-            Response response = client.newCall(request).execute();
-            return response.body().string();
-        }catch (SocketTimeoutException e){
-            System.out.println(e.getMessage());
-            return "";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "";
-        }
-    }
-
-    public static String doPut(Map<String, Object> params, String url) {
-        return doPut(params, null, url);
-    }
-
-
-    public static OkHttpClient getOkHttpClient(){
-        return client;
-    }
-
-    /**
-     * 默认信任所有的证书
-     *
-     * @return
-     */
-    private static SSLSocketFactory createSSLSocketFactory() {
-        SSLSocketFactory sSLSocketFactory = null;
-        try {
-            SSLContext sc = SSLContext.getInstance("TLS");
-            sc.init(null, new TrustManager[]{new TrustAllCerts()},
-                    new SecureRandom());
-            sSLSocketFactory = sc.getSocketFactory();
-        } catch (Exception e) {
-        }
-        return sSLSocketFactory;
-    }
-
-
-    private static class TrustAllCerts implements X509TrustManager {
-        @Override
-        public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, String s) throws java.security.cert.CertificateException {
-
-        }
-
-        @Override
-        public void checkServerTrusted(java.security.cert.X509Certificate[] x509Certificates, String s) throws java.security.cert.CertificateException {
-
-        }
-
-        @Override
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-            return new java.security.cert.X509Certificate[0];
-        }
-    }
-
-    private static class TrustAllHostnameVerifier implements HostnameVerifier {
-        @Override
-        public boolean verify(String hostname, SSLSession session) {
-            return true;
-        }
-    }
-
-
+    
+	private static String getErrorMsg(HttpURLConnection connection) throws IOException {
+		InputStream errorStream = connection.getErrorStream();
+	    if (errorStream != null) {
+	        BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream));
+	        String line;
+	        StringBuilder builder = new StringBuilder();
+	        while ((line = reader.readLine()) != null) {
+	            builder.append(line);
+	            builder.append(System.getProperty("line.separator"));
+	        }
+	        return builder.toString();
+	    }
+		return null;
+	}
 }
