@@ -13,7 +13,10 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -32,6 +35,8 @@ public class OkHttpUtlis {
 //                .hostnameVerifier(new TrustAllHostnameVerifier()).build();
 //    }
 
+//	private static HostnameVerifier trustAllHostnameVerifier;
+
 	static {
 	    TrustManager[] trustAllCerts = new TrustManager[]{
 		    new X509TrustManager() {
@@ -40,13 +45,21 @@ public class OkHttpUtlis {
 		        public X509Certificate[] getAcceptedIssuers() {return new X509Certificate[0];}
 		    }
 		};
-		SSLContext sslContext;
+		SSLContext sslContext = null;
 		try {
 			sslContext = SSLContext.getInstance("TLS");
 			sslContext.init(null, trustAllCerts, new SecureRandom());
+		    HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	    HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+			
+			@Override
+			public boolean verify(String var1, SSLSession var2) {
+				return true;
+			}
+		});
 	}
 
 	@SneakyThrows
