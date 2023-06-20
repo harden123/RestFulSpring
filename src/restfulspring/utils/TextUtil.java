@@ -22,8 +22,10 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.google.common.collect.Maps;
 
 import lombok.SneakyThrows;
@@ -159,4 +161,26 @@ public class TextUtil {
 		String substringAfter = "?"+StringUtils.substringAfter(url, "?");
 		return substringAfter;
 	}
+	
+	public static String prettyJSON(Object parse) {
+		if (parse!=null) {
+			if (parse instanceof JSON) {
+				return JSON.toJSONString(parse,new SerializerFeature[] {
+						SerializerFeature.WriteMapNullValue,
+						SerializerFeature.PrettyFormat,
+						SerializerFeature.SortField,
+						SerializerFeature.MapSortField,});
+			}else if(JSON.isValid(parse+"")) {
+				Object parse2 = JSON.parse(parse+"");
+				return JSON.toJSONString(parse2,new SerializerFeature[] {
+						SerializerFeature.WriteMapNullValue,
+						SerializerFeature.PrettyFormat,
+						SerializerFeature.SortField,
+						SerializerFeature.MapSortField,	});
+			}
+			
+		}
+		return parse+"";
+	}
+
 }

@@ -7,8 +7,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 
+import restfulspring.utils.TextUtil;
 import restfulspring.view.tab.TabGroupDTO;
 
 public class BodyFormatItemListener implements SelectionListener{
@@ -33,12 +33,7 @@ public class BodyFormatItemListener implements SelectionListener{
 
 				@Override
 				public void run() {
-					tabGroupDTO.getBodyText().setText(JSON.toJSONString(parse,new SerializerFeature[] {
-							SerializerFeature.WriteMapNullValue,
-							SerializerFeature.PrettyFormat,
-							SerializerFeature.SortField,
-							SerializerFeature.MapSortField})
-							);
+					tabGroupDTO.getBodyText().setText(TextUtil.prettyJSON(parse));
 				}
 			});
 		}

@@ -62,7 +62,7 @@ public class TabFolderFactory {
 		composite3.setLayout(new GridLayout());
 
 		StyledText responseText = new StyledText(composite3, SWT.MULTI | SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
-		responseText.setText("Multiline read-only text");
+		responseText.setText("response read-only text");
 		responseText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		tab3.setControl(composite3);

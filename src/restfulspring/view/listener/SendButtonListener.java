@@ -73,7 +73,14 @@ public class SendButtonListener implements SelectionListener {
 			@Override
 			public void run() {
 				tabGroupDTO.getFolder().setSelection(2);
-				tabGroupDTO.getResponseText().setText(result);
+				String prettyJSON = TextUtil.prettyJSON(result);
+				byte[] bytesUtf8;
+				try {
+					bytesUtf8 = prettyJSON.getBytes("UTF-8");
+					tabGroupDTO.getResponseText().setText(new String (bytesUtf8, "UTF-8"));
+				} catch (Exception e) {
+					Log.error(e.getMessage(), e);
+				}
 			}
 		});
 	}

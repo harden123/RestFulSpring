@@ -21,10 +21,8 @@ import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 
 import lombok.SneakyThrows;
 import restfulspring.constant.RestConstant;
@@ -277,13 +275,7 @@ public class AstUtil {
 			HashMap<String, Map<String, Object>> retrieveAnnotations = AstUtil.retrieveAnnoByModifiers(modifiers);
 			if (retrieveAnnotations.containsKey(RestConstant.RequestBody)) {
 				Object obj = AstUtil.getFields(type);
-				
-				bodyStr.set(JSON.toJSONString(obj,new SerializerFeature[] {
-						SerializerFeature.WriteMapNullValue,
-						SerializerFeature.PrettyFormat,
-						SerializerFeature.SortField,
-						SerializerFeature.MapSortField})
-						);
+				bodyStr.set(TextUtil.prettyJSON(obj));
 			}else if (retrieveAnnotations.containsKey(RestConstant.RequestParam)) {
 				Object param = AstUtil.getValByAnoAndKey(retrieveAnnotations, RestConstant.RequestParam, RestConstant.RequestMapping_value);
 				if (StringUtils.isBlank(Objects.toString(param, null))) {
