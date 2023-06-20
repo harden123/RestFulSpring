@@ -117,6 +117,7 @@ public class OkHttpUtlis {
 			}
 			URL apiUrl = new URL(url);
 			HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
+			connection.setRequestProperty("Content-Type", "application/json; utf-8"); // 设置请求头为 JSON 格式
 			connection.setRequestMethod("GET");
 			connection.setConnectTimeout(5000); // 设置连接超时时间为 5 秒
 			connection.setReadTimeout(30000);

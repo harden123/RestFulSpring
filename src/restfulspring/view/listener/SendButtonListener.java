@@ -1,4 +1,5 @@
 package restfulspring.view.listener;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -74,12 +75,12 @@ public class SendButtonListener implements SelectionListener {
 			public void run() {
 				tabGroupDTO.getFolder().setSelection(2);
 				String prettyJSON = TextUtil.prettyJSON(result);
-				byte[] bytesUtf8;
 				try {
-					bytesUtf8 = prettyJSON.getBytes("UTF-8");
-					tabGroupDTO.getResponseText().setText(new String (bytesUtf8, "UTF-8"));
-				} catch (Exception e) {
-					Log.error(e.getMessage(), e);
+					byte[] bytes = prettyJSON.getBytes();
+					String string = new String (bytes,"UTF-8");
+					tabGroupDTO.getResponseText().setText(string);
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
 				}
 			}
 		});
