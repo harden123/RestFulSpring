@@ -43,13 +43,13 @@
                    style="push">
              </command>
              <command
-                   commandId="restspring.generate.feignFile"
-                   label="FeignFile"
-                   style="push">
-             </command>
-              <command
                    commandId="restspring.generate.correctPackage"
                    label="CorrectPackage"
+                   style="push">
+             </command>
+             <command
+                   commandId="restspring.generate.feignFile"
+                   label="FeignFile"
                    style="push">
              </command>
           </menu>
@@ -67,12 +67,12 @@
              name="controllerMethod">
        </command>
        <command
-             id="restspring.generate.feignFile"
-             name="feignFile">
-       </command>
-       <command
              id="restspring.generate.correctPackage"
              name="correctPackage">
+       </command>
+       <command
+             id="restspring.generate.feignFile"
+             name="feignFile">
        </command>
     </extension>
 
@@ -86,13 +86,13 @@
                 class="tool.method.ControllerMethod"
                 commandId="restspring.generate.controllerMethod">
           </handler>
+           <handler
+                class="tool.correctPackage.CorrectPackage"
+                commandId="restspring.generate.correctPackage">
+          </handler>
           <handler
                 class="tool.feignFile.FeignFile"
                 commandId="restspring.generate.feignFile">
-          </handler>
-          <handler
-                class="tool.correctPackage.CorrectPackage"
-                commandId="restspring.generate.correctPackage">
           </handler>
        </extension>
     	
