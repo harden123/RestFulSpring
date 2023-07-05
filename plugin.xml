@@ -19,12 +19,84 @@
    </extension>
    
 	   
-	   <extension
-		     point="org.eclipse.ui.preferencePages">
-		  <page
-		        name="RestSpring"
-		        class="restfulspring.preference.MyPreferencesPage"
-		        id="restspring.view.RestFulSpringView.preferences">
-		  </page>
-		</extension>
+   <extension
+	     point="org.eclipse.ui.preferencePages">
+	  <page
+	        name="RestSpring"
+	        class="restfulspring.preference.MyPreferencesPage"
+	        id="restspring.view.RestFulSpringView.preferences">
+	  </page>
+	</extension>
+	
+	
+    <extension point="org.eclipse.ui.menus">
+       <menuContribution locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+          <menu label="RestFulSpring">
+             <command
+                   commandId="restspring.generate.serviceMethod"
+                   label="ServiceMethod"
+                   style="push">
+             </command>
+             <command
+                   commandId="restspring.generate.controllerMethod"
+                   label="ControllerMethod"
+                   style="push">
+             </command>
+             <command
+                   commandId="restspring.generate.feignFile"
+                   label="FeignFile"
+                   style="push">
+             </command>
+              <command
+                   commandId="restspring.generate.correctPackage"
+                   label="CorrectPackage"
+                   style="push">
+             </command>
+          </menu>
+       </menuContribution>
+    </extension>
+    
+  
+    <extension point="org.eclipse.ui.commands">
+       <command
+             id="restspring.generate.serviceMethod"
+             name="serviceMethod">
+       </command>
+       <command
+             id="restspring.generate.controllerMethod"
+             name="controllerMethod">
+       </command>
+       <command
+             id="restspring.generate.feignFile"
+             name="feignFile">
+       </command>
+       <command
+             id="restspring.generate.correctPackage"
+             name="correctPackage">
+       </command>
+    </extension>
+
+
+      <extension point="org.eclipse.ui.handlers">
+          <handler
+                class="tool.method.ServiceMethod"
+                commandId="restspring.generate.serviceMethod">
+          </handler>
+          <handler
+                class="tool.method.ControllerMethod"
+                commandId="restspring.generate.controllerMethod">
+          </handler>
+          <handler
+                class="tool.feignFile.FeignFile"
+                commandId="restspring.generate.feignFile">
+          </handler>
+          <handler
+                class="tool.correctPackage.CorrectPackage"
+                commandId="restspring.generate.correctPackage">
+          </handler>
+       </extension>
+    	
+    	
+        	
+	
 </plugin>

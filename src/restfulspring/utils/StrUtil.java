@@ -1,5 +1,7 @@
 package restfulspring.utils;
 
+import java.util.function.Predicate;
+
 public class StrUtil {
 	public static final int INDEX_NOT_FOUND = -1;
 
@@ -221,4 +223,72 @@ public class StrUtil {
 
 
 	// ------------------------------------------------------------------------ Blank
+	/**
+	 * 除去字符串头部的空白，如果字符串是{@code null}，则返回{@code null}。
+	 *
+	 * <p>
+	 * 注意，和{@link String#trim()}不同，此方法使用{@link CharUtil#isBlankChar(char)} 来判定空白， 因而可以除去英文字符集之外的其它空白，如中文空格。
+	 *
+	 * <pre>
+	 * trimStart(null)         = null
+	 * trimStart(&quot;&quot;)           = &quot;&quot;
+	 * trimStart(&quot;abc&quot;)        = &quot;abc&quot;
+	 * trimStart(&quot;  abc&quot;)      = &quot;abc&quot;
+	 * trimStart(&quot;abc  &quot;)      = &quot;abc  &quot;
+	 * trimStart(&quot; abc &quot;)      = &quot;abc &quot;
+	 * </pre>
+	 *
+	 * @param str 要处理的字符串
+	 * @return 除去空白的字符串，如果原字串为{@code null}或结果字符串为{@code ""}，则返回 {@code null}
+	 */
+	public static String trimStart(CharSequence str) {
+		return trim(str, -1);
+	}
+	
+	/**
+	 * 除去字符串头尾部的空白符，如果字符串是{@code null}，依然返回{@code null}。
+	 *
+	 * @param str  要处理的字符串
+	 * @param mode {@code -1}表示trimStart，{@code 0}表示trim全部， {@code 1}表示trimEnd
+	 * @return 除去指定字符后的的字符串，如果原字串为{@code null}，则返回{@code null}
+	 */
+	public static String trim(CharSequence str, int mode) {
+		return trim(str, mode, CharUtil::isBlankChar);
+	}
+	/**
+	 * 按照断言，除去字符串头尾部的断言为真的字符，如果字符串是{@code null}，依然返回{@code null}。
+	 *
+	 * @param str       要处理的字符串
+	 * @param mode      {@code -1}表示trimStart，{@code 0}表示trim全部， {@code 1}表示trimEnd
+	 * @param predicate 断言是否过掉字符，返回{@code true}表述过滤掉，{@code false}表示不过滤
+	 * @return 除去指定字符后的的字符串，如果原字串为{@code null}，则返回{@code null}
+	 * @since 5.7.4
+	 */
+	public static String trim(CharSequence str, int mode, Predicate<Character> predicate) {
+		String result;
+		if (str == null) {
+			result = null;
+		} else {
+			int length = str.length();
+			int start = 0;
+			int end = length;// 扫描字符串头部
+			if (mode <= 0) {
+				while ((start < end) && (predicate.test(str.charAt(start)))) {
+					start++;
+				}
+			}// 扫描字符串尾部
+			if (mode >= 0) {
+				while ((start < end) && (predicate.test(str.charAt(end - 1)))) {
+					end--;
+				}
+			}
+			if ((start > 0) || (end < length)) {
+				result = str.toString().substring(start, end);
+			} else {
+				result = str.toString();
+			}
+		}
+
+		return result;
+	}
 }
