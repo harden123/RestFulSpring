@@ -1,8 +1,5 @@
 package tool.mybatis;
 
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.util.Date;
 import java.util.List;
 
@@ -22,16 +19,14 @@ import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ToolTip;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.ResourceUtil;
 
-public class Dto2MybatisFragment extends AbstractHandler{
+import tool.utils.ViewUtil;
+
+public class CopyDto2MybatisFragment extends AbstractHandler{
 
 	/** 
 	 * {@inheritDoc}
@@ -113,7 +108,7 @@ public class Dto2MybatisFragment extends AbstractHandler{
 								+ "   <foreach collection=\""+name+"\" item=\""+name+"Item\" index=\"index\" open=\"(\" close=\")\" separator=\",\">\r\n"
 								+ "      #{"+name+"Item}\r\n"
 								+ "   </foreach>\r\n"
-								+ "</if>"
+								+ "</if>\r\n"
 								);
 					}
 				}else{
@@ -121,34 +116,10 @@ public class Dto2MybatisFragment extends AbstractHandler{
 				}
 		}
 		
-		// 创建一个 StringSelection 对象，将要复制的字符串作为参数传入
-		StringSelection stringSelection = new StringSelection(sb.toString());
-		// 获取系统剪贴板
-		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		// 将 StringSelection 对象设置为剪贴板的内容
-		clipboard.setContents(stringSelection, null);
-		
-
-		Display display = Display.getCurrent();
-		ToolTip toolTip = new ToolTip(display.getActiveShell(), SWT.BALLOON | SWT.ICON_INFORMATION);
-		// 设置提示文本
-		toolTip.setMessage("已复制到剪贴板");
-
-		// 设置提示的标题
-		toolTip.setText("提示");
-        Point cursorLocation = display.getCursorLocation();
-		toolTip.setLocation(cursorLocation.x-100, cursorLocation.y-100);
-		toolTip.setAutoHide(true);
-		toolTip.setVisible(true);
-		
-		// 定时关闭提示
-		display.timerExec(1000, new Runnable() {
-		    public void run() {
-		        toolTip.setVisible(false);
-		        toolTip.dispose(); // 在不需要时手动释放资源
-		    }
-		});
+		ViewUtil.copyAndToolTip(sb.toString());
 	}
+
+	
 
 	public static String camel2under(String c) {
 		return c.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();

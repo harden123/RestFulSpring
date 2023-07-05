@@ -56,8 +56,13 @@
              </command>
             <separator name="separator2" visible="true"  groupId="RestFulSpringMenu/group1"></separator>
              <command
-                   commandId="restspring.generate.Dto2MybatisFragment"
-                   label="Dto2MybatisFragment"
+                   commandId="restspring.generate.CopyDto2MybatisFragment"
+                   label="CopyDto2MybatisFragment"
+                   style="push">
+             </command>
+              <command
+                   commandId="restspring.generate.CopyDTOSetMethods"
+                   label="CopyDTOSetMethods"
                    style="push">
              </command>
           </menu>
@@ -83,8 +88,12 @@
              name="feignFile">
        </command>
        <command
-             id="restspring.generate.Dto2MybatisFragment"
-             name="Dto2MybatisFragment">
+             id="restspring.generate.CopyDto2MybatisFragment"
+             name="CopyDto2MybatisFragment">
+       </command>
+       <command
+             id="restspring.generate.CopyDTOSetMethods"
+             name="CopyDTOSetMethods">
        </command>
     </extension>
 
@@ -107,8 +116,12 @@
                 commandId="restspring.generate.feignFile">
           </handler>
           <handler
-                class="tool.mybatis.Dto2MybatisFragment"
-                commandId="restspring.generate.Dto2MybatisFragment">
+                class="tool.mybatis.CopyDto2MybatisFragment"
+                commandId="restspring.generate.CopyDto2MybatisFragment">
+          </handler>
+          <handler
+                class="tool.mybatis.CopyDTOSetMethods"
+                commandId="restspring.generate.CopyDTOSetMethods">
           </handler>
        </extension>
     	
