@@ -54,6 +54,12 @@
                    label="FeignFile"
                    style="push">
              </command>
+            <separator name="separator2" visible="true"  groupId="RestFulSpringMenu/group1"></separator>
+             <command
+                   commandId="restspring.generate.Dto2MybatisFragment"
+                   label="Dto2MybatisFragment"
+                   style="push">
+             </command>
           </menu>
        </menuContribution>
     </extension>
@@ -76,6 +82,10 @@
              id="restspring.generate.feignFile"
              name="feignFile">
        </command>
+       <command
+             id="restspring.generate.Dto2MybatisFragment"
+             name="Dto2MybatisFragment">
+       </command>
     </extension>
 
 
@@ -95,6 +105,10 @@
           <handler
                 class="tool.feignFile.FeignFile"
                 commandId="restspring.generate.feignFile">
+          </handler>
+          <handler
+                class="tool.mybatis.Dto2MybatisFragment"
+                commandId="restspring.generate.Dto2MybatisFragment">
           </handler>
        </extension>
     	
