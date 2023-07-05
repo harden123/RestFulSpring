@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
+import org.apache.commons.io.IOUtils;
+
 /**
  * General file manipulation utilities.
  * <p>

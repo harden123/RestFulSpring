@@ -13,23 +13,25 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
-import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.ResourceUtil;
 
-import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Maps;
 
-import cn.com.gogen.alps.alps.feign.generator.utils.ScannerUtils;
 import cn.hutool.core.io.FileUtil;
 import lombok.SneakyThrows;
+import restfulspring.utils.CollectionUtils;
 
 public class CorrectPackage extends AbstractHandler{
 
@@ -37,6 +39,7 @@ public class CorrectPackage extends AbstractHandler{
 	 * {@inheritDoc}
 	 */
 	@Override
+	@SneakyThrows
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		ISelection selection = HandlerUtil.getCurrentSelection(event);
 		String path = null;
@@ -44,13 +47,12 @@ public class CorrectPackage extends AbstractHandler{
 	        IStructuredSelection structuredSelection = (IStructuredSelection) selection;
 	        Object firstElement = structuredSelection.getFirstElement();
 	        if (firstElement instanceof IPackageFragment) {
-	        	IPath packagePath = ((IPackageFragment)firstElement).getPath();
-	        	path = packagePath.toFile().getAbsolutePath();
-	        }else if(firstElement instanceof CompilationUnit) {
-	        	CompilationUnit cpu =  ((CompilationUnit)firstElement);
-	        	String absolutePath = cpu.getJavaElement().getResource().getLocation().toFile().getAbsolutePath();
-	        	path = absolutePath;
-
+	        	path = ((IPackageFragment)firstElement).getResource().getLocation().toOSString();
+	        }else if (firstElement instanceof IPackageFragmentRoot) {
+	        	path = ((IPackageFragmentRoot)firstElement).getResource().getLocation().toOSString();
+	        }else if(firstElement instanceof ICompilationUnit ) {
+	        	ICompilationUnit cpu =  ((ICompilationUnit)firstElement);
+	        	path = cpu.getUnderlyingResource().getLocation().toOSString();
 	        }
 	    }else if(selection instanceof ITextSelection) {
 //	    	ITextSelection iTextSelection = (ITextSelection) selection;
@@ -58,11 +60,12 @@ public class CorrectPackage extends AbstractHandler{
 		    IFile file = ResourceUtil.getFile(editorPart.getEditorInput());
         	path = file.getLocation().toFile().getAbsolutePath();
 	    }
+	    doCorrectPackage(path);
 		return null;
 	}
 
 	@SneakyThrows
-	public static void main(String[] args) {
+	public void doCorrectPackage(String s) {
 		String pathPrefix = "\\src\\main\\java\\";
 		List<File> loopFiles = FileUtil.loopFiles(s, new SuffixFileFilter(".java"));
 		HashMap<File, List<String>> newHashMap = Maps.newHashMap();
@@ -95,21 +98,32 @@ public class CorrectPackage extends AbstractHandler{
 			rightPackageMap.put(file, rightPackageStr);
 			newHashMap.put(file, readUtf8Lines);
 		}
-		List<String> collect = newHashMap.keySet().stream().map(x->{
+		List<String> showPathList = newHashMap.keySet().stream().map(x->{
+			try {
+				String canonicalPath = x.getCanonicalPath();
+				int lastOrdinalIndexOf = StringUtils.lastOrdinalIndexOf(canonicalPath, File.separator, 3)+1;
+				return StringUtils.substring(canonicalPath, lastOrdinalIndexOf, canonicalPath.length());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			try {
 				return x.getCanonicalPath();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			return pathPrefix;
+			return null;
 		}).collect(Collectors.toList());
-		System.out.println(JSON.toJSONString(collect, true));
-		System.out.print("是否修改package,确认请输入yes: ");
-		String readLine = ScannerUtils.readLine();
-		if (!StringUtils.equalsIgnoreCase(readLine, "yes")) {
-			System.out.println("不修改package");
+		if (CollectionUtils.isEmpty(showPathList)) {
 			return ;
 		}
+		Display display = Display.getDefault();
+		String join = StringUtils.join(showPathList,System.getProperty("line.separator") );
+		boolean result = MessageDialog.open(MessageDialog.QUESTION, display.getActiveShell(), "是否修改package", join, SWT.NONE);
+         if (!result) {
+        	  // 用户点击了取消按钮或关闭了对话框
+ 			return ;
+         }
+         // 用户点击了确定按钮
 		for (Map.Entry<File, List<String>> entry : newHashMap.entrySet()) {
 			File key = entry.getKey();
 			List<String> value = entry.getValue();

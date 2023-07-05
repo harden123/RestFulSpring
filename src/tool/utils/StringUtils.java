@@ -1,5 +1,6 @@
 package tool.utils;
 
+
 public class StringUtils {
 	
 	  /**

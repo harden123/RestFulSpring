@@ -17,8 +17,8 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
+import cn.hutool.core.io.file.FileNameUtil;
 import restfulspring.dto.JDTMethodDTO;
-import restfulspring.utils.FileNameUtils;
 import restfulspring.utils.TextUtil;
 import restfulspring.view.tree.MyTreeElement;
 
@@ -49,7 +49,7 @@ public class TreeScrollListener implements SelectionListener{
 		if (cursorMethod!=null) {
 			System.out.println(cursorMethod.getElementName());
 		}
-		boolean selectTreeView = selectTreeView(FileNameUtils.getPrefix(filename),treeViewer,cursorMethod);
+		boolean selectTreeView = selectTreeView(FileNameUtil.getPrefix(filename),treeViewer,cursorMethod);
 	}
 
 
