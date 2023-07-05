@@ -55,12 +55,13 @@ public class CorrectPackage extends AbstractHandler{
 	        	path = cpu.getUnderlyingResource().getLocation().toOSString();
 	        }
 	    }else if(selection instanceof ITextSelection) {
-//	    	ITextSelection iTextSelection = (ITextSelection) selection;
 	    	IEditorPart editorPart = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		    IFile file = ResourceUtil.getFile(editorPart.getEditorInput());
         	path = file.getLocation().toFile().getAbsolutePath();
 	    }
-	    doCorrectPackage(path);
+	    if (StringUtils.isNotBlank(path)) {
+	    	doCorrectPackage(path);
+		}
 		return null;
 	}
 
