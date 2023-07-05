@@ -70,6 +70,11 @@
                    label="CopyDTOGetMethods"
                    style="push">
              </command>
+              <command
+                   commandId="restspring.generate.CopyDTOSetGetMethods"
+                   label="CopyDTOSetGetMethods"
+                   style="push">
+             </command>
           </menu>
        </menuContribution>
     </extension>
@@ -102,7 +107,11 @@
        </command>
        <command
              id="restspring.generate.CopyDTOGetMethods"
-             name="CopyDTOSetMethods">
+             name="CopyDTOGetMethods">
+       </command>
+       <command
+             id="restspring.generate.CopyDTOSetGetMethods"
+             name="CopyDTOSetGetMethods">
        </command>
     </extension>
 
@@ -135,6 +144,10 @@
            <handler
                 class="tool.mybatis.CopyDTOGetMethods"
                 commandId="restspring.generate.CopyDTOGetMethods">
+          </handler>
+           <handler
+                class="tool.mybatis.CopyDTOSetGetMethods"
+                commandId="restspring.generate.CopyDTOSetGetMethods">
           </handler>
        </extension>
     	
