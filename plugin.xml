@@ -75,6 +75,11 @@
                    label="CopyDTOSetGetMethods"
                    style="push">
              </command>
+              <command
+                   commandId="restspring.generate.CopyDTOJson"
+                   label="CopyDTOJson"
+                   style="push">
+             </command>
           </menu>
        </menuContribution>
     </extension>
@@ -113,6 +118,10 @@
              id="restspring.generate.CopyDTOSetGetMethods"
              name="CopyDTOSetGetMethods">
        </command>
+       <command
+             id="restspring.generate.CopyDTOJson"
+             name="CopyDTOJson">
+       </command>
     </extension>
 
 
@@ -148,6 +157,10 @@
            <handler
                 class="tool.mybatis.CopyDTOSetGetMethods"
                 commandId="restspring.generate.CopyDTOSetGetMethods">
+          </handler>
+          <handler
+                class="tool.mybatis.CopyDTOJson"
+                commandId="restspring.generate.CopyDTOJson">
           </handler>
        </extension>
     	

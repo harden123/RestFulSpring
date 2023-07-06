@@ -141,6 +141,9 @@ public class AstUtil {
 		return null;
 	}
 
+	/**
+	 * type获取json格式内容
+	 */
 	public static Object getFields(Type type) {
 		if (type.isPrimitiveType()) {
 			ITypeBinding resolveBinding = type.resolveBinding();
@@ -161,7 +164,7 @@ public class AstUtil {
 		return null;
 	}
 
-	private static Object iterParse(ITypeBinding typeBinding,String dependencyLine) {
+	public static Object iterParse(ITypeBinding typeBinding,String dependencyLine) {
 		if (typeBinding == null) {
 			return null;
 		}

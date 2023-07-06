@@ -33,7 +33,7 @@ public class ViewUtil {
 		toolTip.setVisible(true);
 		
 		// 定时关闭提示
-		display.timerExec(1000, new Runnable() {
+		display.timerExec(300, new Runnable() {
 		    public void run() {
 		        toolTip.setVisible(false);
 		        toolTip.dispose(); // 在不需要时手动释放资源
