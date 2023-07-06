@@ -17,10 +17,14 @@ import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import  org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.jface.text.Document;
+import org.eclipse.text.edits.TextEdit;
 import org.junit.Test;
 
 import cn.hutool.core.io.FileUtil;
@@ -28,12 +32,12 @@ import cn.hutool.core.io.FileUtil;
 public class TestAst {
 	@Test
 	public void testASTParser() throws Exception {
-		ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
 //		String sourceCode = "List<String> list;";
 //      IWorkspace workspace = ResourcesPlugin.getWorkspace();
 //      IProject project = workspace.getRoot().getProject("RestFulSpring");
 //      IJavaProject javaProject = JavaCore.create(project);
 //		parser.setProject(javaProject);
+		ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
 		String sourceCode = FileUtil.readUtf8String("C:\\env\\wit\\wit-baseService\\baseService-app\\src\\main\\java\\cn\\com\\gogen\\wit\\service\\impl\\authCount\\NewDoorPermServiceImpl.java");
 //		String sourceCode = FileUtil.readUtf8String("C:\\env\\wit\\RestFulSpring\\src\\tool\\mybatis\\CopyDTOSetMethods.java");
 		parser.setResolveBindings(true);
@@ -155,5 +159,74 @@ public class TestAst {
 		        // ...
 		    }
 		}
+	}
+	
+	
+	@Test
+	public void rewriteName() throws Exception {
+		ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
+		String sourceCode = FileUtil.readUtf8String("C:\\env\\wit\\wit-baseService\\baseService-app\\src\\main\\java\\cn\\com\\gogen\\wit\\service\\impl\\authCount\\NewDoorPermServiceImpl.java");
+//		String sourceCode = FileUtil.readUtf8String("C:\\env\\wit\\RestFulSpring\\src\\tool\\mybatis\\CopyDTOSetMethods.java");
+		parser.setResolveBindings(true);
+		parser.setSource(sourceCode.toCharArray());
+		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
+        TypeDeclaration typeDeclaration = (TypeDeclaration) compilationUnit.types().get(0);
+//        获取要修改的 ASTNode 对象。这可以是整个 CompilationUnit、TypeDeclaration、MethodDeclaration，或者其他 ASTNode。
+        SimpleName name = typeDeclaration.getName();
+//        创建一个 ASTRewrite 实例，并获取其重写对象。
+        AST ast = name.getAST();
+        ASTRewrite rewrite = ASTRewrite.create(ast);
+        
+//        将修改后的 ASTNode 添加到 ASTRewrite 中。这可以是创建新的 ASTNode，或者通过修改现有的 ASTNode 来实现。
+        SimpleName newSimpleName = ast.newSimpleName("newName");
+        rewrite.replace(name, newSimpleName, null);
+        
+//        将修改应用到源代码中。
+        Document document = new Document(sourceCode); // 原始的源代码文档
+        TextEdit edits = rewrite.rewriteAST(document, null);
+        edits.apply(document);
+        
+        String modifiedSourceCode = document.get();
+        System.out.println(modifiedSourceCode);
+        
+//		// 将修改后的源代码保存到文件中
+//		FileWriter writer = new FileWriter(document);
+//		writer.write(document.get());
+//		writer.close();
+	}
+	
+	@Test
+	public void rewriteMethod() throws Exception {
+		ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
+		String sourceCode = FileUtil.readUtf8String("C:\\env\\wit\\wit-baseService\\baseService-app\\src\\main\\java\\cn\\com\\gogen\\wit\\service\\impl\\authCount\\NewDoorPermServiceImpl.java");
+//		String sourceCode = FileUtil.readUtf8String("C:\\env\\wit\\RestFulSpring\\src\\tool\\mybatis\\CopyDTOSetMethods.java");
+		parser.setResolveBindings(true);
+		parser.setSource(sourceCode.toCharArray());
+		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
+        TypeDeclaration typeDeclaration = (TypeDeclaration) compilationUnit.types().get(0);
+//        获取要修改的 ASTNode 对象。这可以是整个 CompilationUnit、TypeDeclaration、MethodDeclaration，或者其他 ASTNode。
+		MethodDeclaration[] methods = typeDeclaration.getMethods();
+		MethodDeclaration methodDeclaration = methods[0];
+//        创建一个 ASTRewrite 实例，并获取其重写对象。
+        AST ast = methodDeclaration.getAST();
+        ASTRewrite rewrite = ASTRewrite.create(ast);
+        
+//        将修改后的 ASTNode 添加到 ASTRewrite 中。这可以是创建新的 ASTNode，或者通过修改现有的 ASTNode 来实现。
+        Block newBlock = ast.newBlock();
+        newBlock.statements().add(ast.newExpressionStatement(ast.newMethodInvocation()));
+        rewrite.replace(methodDeclaration.getBody(), newBlock, null);
+        
+//        将修改应用到源代码中。
+        Document document = new Document(sourceCode); // 原始的源代码文档
+        TextEdit edits = rewrite.rewriteAST(document, null);
+        edits.apply(document);
+        
+        String modifiedSourceCode = document.get();
+        System.out.println(modifiedSourceCode);
+        
+//		// 将修改后的源代码保存到文件中
+//		FileWriter writer = new FileWriter(document);
+//		writer.write(document.get());
+//		writer.close();
 	}
 }
