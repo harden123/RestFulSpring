@@ -17,3 +17,4 @@ logs/
 .settings/
 build.cmd
 bin/
+binTest/
