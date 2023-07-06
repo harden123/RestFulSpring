@@ -3,13 +3,13 @@ package tool.feignFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import cn.hutool.core.io.FileUtil;
 
 public class ServiceImplFacade {
 	String requestMappingTemp = "    @RequestMapping(value = \"$1/$2\")";
@@ -34,7 +34,7 @@ public class ServiceImplFacade {
 		for (int i = 0; i < 4; i++) {
 			servicePath = servicePath.substring(0, servicePath.lastIndexOf("\\"));
 		}
-		Collection<File> listFiles = FileUtils.listFiles(new File(servicePath), new String[]{"java"}, true);
+        List<File> listFiles = FileUtil.loopFiles(new File(servicePath), file -> file.getName().endsWith(".java"));
 		File implFile = null;
 		String implFileName = getfileName();
 		if (implFileName.endsWith("Impl")) {
@@ -50,7 +50,7 @@ public class ServiceImplFacade {
 			}
 		}
 		if(implFile!=null) {
-			List<String> lines = FileUtils.readLines(implFile);
+			List<String> lines = FileUtil.readUtf8Lines(implFile);
 			Pattern p = Pattern.compile("^\\s*@RequestMapping.+\"(.*)\".+", Pattern.CASE_INSENSITIVE);
 			for (String line : lines) {
 				Matcher mathcer = p.matcher(line);

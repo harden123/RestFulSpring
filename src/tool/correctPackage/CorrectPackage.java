@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -68,7 +67,7 @@ public class CorrectPackage extends AbstractHandler{
 	@SneakyThrows
 	public void doCorrectPackage(String s) {
 		String pathPrefix = "\\src\\main\\java\\";
-		List<File> loopFiles = FileUtil.loopFiles(s, new SuffixFileFilter(".java"));
+        List<File> loopFiles = FileUtil.loopFiles(new File(s), file -> file.getName().endsWith(".java"));
 		HashMap<File, List<String>> newHashMap = Maps.newHashMap();
 		HashMap<File, String> rightPackageMap = Maps.newHashMap();
 

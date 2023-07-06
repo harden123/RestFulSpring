@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -83,7 +82,7 @@ public class FeignFile extends AbstractHandler{
 			return ;
 		}
 		if (FileUtil.isDirectory(filePath)) {
-			List<File> loopFiles = FileUtil.loopFiles(filePath, new SuffixFileFilter(".java"));
+	        List<File> loopFiles = FileUtil.loopFiles(filePath, file -> file.getName().endsWith(".java"));
 			for (File file : loopFiles) {
 				String name = file.getName();
 				if (StringUtils.endsWithIgnoreCase(name, "Service.java")) {

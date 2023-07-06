@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-import org.apache.commons.io.IOUtils;
+import cn.hutool.core.io.IoUtil;
 
 /**
  * General file manipulation utilities.
@@ -55,10 +55,10 @@ public class FileUtils {
         OutputStream out = null;
         try {
             out = openOutputStream(file, append);
-            IOUtils.write(data, out, encoding);
+            IoUtil.write(out, encoding, false,data);
             out.close(); // don't swallow close Exception if copy completes normally
         } finally {
-            IOUtils.closeQuietly(out);
+        	IoUtil.close(out);
         }
     }
 

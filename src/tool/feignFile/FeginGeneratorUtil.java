@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
 import cn.hutool.core.io.FileUtil;
 import lombok.SneakyThrows;
 
@@ -13,7 +11,7 @@ public class FeginGeneratorUtil {
 
 	public static boolean headReq=true;
 	
-	private static String desktop = FileUtils.getUserDirectoryPath()+"\\Desktop";
+	private static String desktop = FileUtil.getUserHomePath()+"\\Desktop";
 	
 	public static String dtoSuffix = "";
 //	public static String dtoSuffix = "Feign";
@@ -22,7 +20,7 @@ public class FeginGeneratorUtil {
 	public static void generator(String filePath,String feignClientName) {
 		String requestMappingHead = null; // "/fc/configBaisc"
 		File file = new File(filePath);
-		List<String> serviceLines = FileUtils.readLines(file);
+		List<String> serviceLines = FileUtil.readUtf8Lines(file);
 		List<String> list = new ArrayList<String>();
 		ServiceImplFacade serviceImplFacade = new ServiceImplFacade(filePath);
 		requestMappingHead = serviceImplFacade.getRequestMappingHeadFromImpl();
@@ -57,7 +55,7 @@ public class FeginGeneratorUtil {
 		String dir = desktop+"\\feignOutput";
 		FileUtil.mkdir(dir);
 		String newFilePath = dir+"\\"+serviceImplFacade.getfileName()+dtoSuffix+".java";
-		FileUtils.writeLines(new File(newFilePath), "UTF-8", list);
+		FileUtil.writeUtf8Lines(list, new File(newFilePath));
 	}
 	
 }
