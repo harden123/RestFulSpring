@@ -9,8 +9,11 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolTip;
 
+import lombok.SneakyThrows;
+
 public class ViewUtil {
 
+	@SneakyThrows
 	public static void copyAndToolTip(String content) {
 		// 创建一个 StringSelection 对象，将要复制的字符串作为参数传入
 		StringSelection stringSelection = new StringSelection(content);
@@ -23,10 +26,10 @@ public class ViewUtil {
 		Display display = Display.getCurrent();
 		ToolTip toolTip = new ToolTip(display.getActiveShell(), SWT.BALLOON | SWT.ICON_INFORMATION);
 		// 设置提示文本
-		toolTip.setMessage("已复制到剪贴板");
+		toolTip.setMessage(new String ("已复制到剪贴板".getBytes(),"UTF-8"));
 
 		// 设置提示的标题
-		toolTip.setText("提示");
+		toolTip.setText(new String ("提示".getBytes(),"UTF-8"));
         Point cursorLocation = display.getCursorLocation();
 		toolTip.setLocation(cursorLocation.x-100, cursorLocation.y-100);
 		toolTip.setAutoHide(true);
