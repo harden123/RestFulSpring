@@ -55,7 +55,7 @@ public class CopyDTOGetMethods extends AbstractHandler{
 	private void doExecute(FieldDeclaration[] fields, String typeName) {
 		StringBuffer sb = new StringBuffer();
 		for (FieldDeclaration field : fields) {
-			String binaryName = field.getType().resolveBinding().getBinaryName();
+			String binaryName = field.getType().resolveBinding().getName();
 			String name = field.fragments().get(0).toString();
 			sb.append(binaryName + " " + name + " = dto.get" + StringUtils.capitalize(name) + "();\r\n");
 		}

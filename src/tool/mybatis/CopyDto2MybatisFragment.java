@@ -12,8 +12,10 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ArrayType;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -69,9 +71,11 @@ public class CopyDto2MybatisFragment extends AbstractHandler{
 		            SimpleType simpleType = (SimpleType) type;
 		            fullyQualifiedName = simpleType.resolveBinding().getQualifiedName();
 		        } else if (type.isParameterizedType()) {
-		        	fullyQualifiedName = type.resolveBinding().getBinaryName();
+		        	ParameterizedType parameterizedType = (ParameterizedType)type;
+		        	fullyQualifiedName = parameterizedType.resolveBinding().getErasure().getName();
 		        } else if (type.isArrayType()) {
-		        	System.out.println(type);
+		        	ArrayType arrayType = (ArrayType)type;
+		        	fullyQualifiedName = arrayType.resolveBinding().getQualifiedName();
 		        }
 				
 				
@@ -112,7 +116,7 @@ public class CopyDto2MybatisFragment extends AbstractHandler{
 								);
 					}
 				}else{
-					sb.append("name:" + name + "\r\n");
+					sb.append(name + "\r\n");
 				}
 		}
 		
