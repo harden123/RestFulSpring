@@ -25,22 +25,22 @@ public class NumberChineseFormatter {
 	 * 中文形式，奇数位置是简体，偶数位置是记账繁体，0共用<br>
 	 * 使用混合数组提高效率和数组复用
 	 **/
-	private static final char[] DIGITS = {'零', '一', '壹', '二', '贰', '三', '叁', '四', '肆', '五', '伍',
-			'六', '陆', '七', '柒', '八', '捌', '九', '玖'};
+	private static final char[] DIGITS = {'\u96f6', '\u4e00', '\u58f9', '\u4e8c', '\u8d30', '\u4e09', '\u53c1', '\u56db', '\u8086', '\u4e94', '\u4f0d',
+			'\u516d', '\u9646', '\u4e03', '\u67d2', '\u516b', '\u634c', '\u4e5d', '\u7396'};
 
 	/**
 	 * 汉字转阿拉伯数字的
 	 */
 	private static final ChineseUnit[] CHINESE_NAME_VALUE = {
 			new ChineseUnit(' ', 1, false),
-			new ChineseUnit('十', 10, false),
-			new ChineseUnit('拾', 10, false),
-			new ChineseUnit('百', 100, false),
-			new ChineseUnit('佰', 100, false),
-			new ChineseUnit('千', 1000, false),
-			new ChineseUnit('仟', 1000, false),
-			new ChineseUnit('万', 1_0000, true),
-			new ChineseUnit('亿', 1_0000_0000, true),
+			new ChineseUnit('\u5341', 10, false),
+			new ChineseUnit('\u62fe', 10, false),
+			new ChineseUnit('\u767e', 100, false),
+			new ChineseUnit('\u4f70', 100, false),
+			new ChineseUnit('\u5343', 1000, false),
+			new ChineseUnit('\u4edf', 1000, false),
+			new ChineseUnit('\u4e07', 1_0000, true),
+			new ChineseUnit('\u4ebf', 1_0000_0000, true),
 	};
 
 	/**
@@ -396,7 +396,7 @@ public class NumberChineseFormatter {
 			chineseStr.insert(0, partChinese + "万");
 		}
 
-		if (StrUtil.isNotEmpty(chineseStr) && '零' == chineseStr.charAt(0)) {
+		if (StrUtil.isNotEmpty(chineseStr) && '\u96f6' == chineseStr.charAt(0)) {
 			return chineseStr.substring(1);
 		}
 
@@ -531,9 +531,9 @@ public class NumberChineseFormatter {
 	 * @since 5.6.4
 	 */
 	private static int chineseToNumber(char chinese) {
-		if ('两' == chinese) {
+		if ('\u4e24' == chinese) {
 			// 口语纠正
-			chinese = '二';
+			chinese = '\u4e8c';
 		}
 		final int i = ArrayUtil.indexOf(DIGITS, chinese);
 		if (i > 0) {
@@ -610,8 +610,8 @@ public class NumberChineseFormatter {
 			return;
 		}
 		final char c = chineseStr.charAt(0);
-		if ('零' != c) {
-			chineseStr.insert(0, '零');
+		if ('\u96f6' != c) {
+			chineseStr.insert(0, '\u96f6');
 		}
 	}
 }

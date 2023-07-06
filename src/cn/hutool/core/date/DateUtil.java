@@ -967,7 +967,7 @@ public class DateUtil extends CalendarUtil {
 		}
 		String dateStr = dateCharSequence.toString();
 		// 去掉两边空格并去掉中文日期中的“日”和“秒”，以规范长度
-		dateStr = StrUtil.removeAll(dateStr.trim(), '日', '秒');
+		dateStr = StrUtil.removeAll(dateStr.trim(), '\u65e5', '\u79d2');
 		int length = dateStr.length();
 
 		if (NumberUtil.isNumber(dateStr)) {

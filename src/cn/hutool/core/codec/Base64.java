@@ -359,7 +359,7 @@ public class Base64 {
 		for (byte base64Byte : base64Bytes) {
 			if (hasPadding) {
 				if ('=' != base64Byte) {
-					// 前一个字符是'='，则后边的字符都必须是'='，即'='只能都位于结尾
+					// 前一个字符是'='\uff0c5219540e8fb976845b577b2690fd5fc5987b662f'='\uff0c5373'='只能都位于结尾
 					return false;
 				}
 			} else if ('=' == base64Byte) {

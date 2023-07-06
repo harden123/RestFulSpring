@@ -146,7 +146,7 @@ public class Calculator {
 	 *
 	 * @param firstValue  第一个值
 	 * @param secondValue 第二个值
-	 * @param currentOp   算数符，只支持'+'、'-'、'*'、'/'、'%'
+	 * @param currentOp   算数符，只支持'+'\u3001'-'\u3001'*'\u3001'/'\u3001'%'
 	 * @return 结果
 	 */
 	private BigDecimal calculate(String firstValue, String secondValue, char currentOp) {

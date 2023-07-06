@@ -339,9 +339,9 @@ public class CharUtil implements CharPool {
 	/**
 	 * 将字母、数字转换为带圈的字符：
 	 * <pre>
-	 *     '1' -》 '①'
-	 *     'A' -》 'Ⓐ'
-	 *     'a' -》 'ⓐ'
+	 *     '1' -》 '\u2460'
+	 *     'A' -》 '\u24b6'
+	 *     'a' -》 '\u24d0'
 	 * </pre>
 	 * <p>
 	 * 获取带圈数字 /封闭式字母数字 ，从1-20,超过1-20报错
@@ -355,11 +355,11 @@ public class CharUtil implements CharPool {
 	public static char toCloseChar(char c) {
 		int result = c;
 		if (c >= '1' && c <= '9') {
-			result = '①' + c - '1';
+			result = '\u2460' + c - '1';
 		} else if (c >= 'A' && c <= 'Z') {
-			result = 'Ⓐ' + c - 'A';
+			result = '\u24b6' + c - 'A';
 		} else if (c >= 'a' && c <= 'z') {
-			result = 'ⓐ' + c - 'a';
+			result = '\u24d0' + c - 'a';
 		}
 		return (char) result;
 	}
@@ -367,9 +367,9 @@ public class CharUtil implements CharPool {
 	/**
 	 * 将[1-20]数字转换为带圈的字符：
 	 * <pre>
-	 *     1 -》 '①'
-	 *     12 -》 '⑫'
-	 *     20 -》 '⑳'
+	 *     1 -》 '\u2460'
+	 *     12 -》 '\u246b'
+	 *     20 -》 '\u2473'
 	 * </pre>
 	 * 也称作：封闭式字符，英文：Enclosed Alphanumerics
 	 *
@@ -386,6 +386,6 @@ public class CharUtil implements CharPool {
 		if (number > 20) {
 			throw new IllegalArgumentException("Number must be [1-20]");
 		}
-		return (char) ('①' + number - 1);
+		return (char) ('\u2460' + number - 1);
 	}
 }

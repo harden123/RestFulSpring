@@ -592,20 +592,20 @@ public class CalendarUtil {
 		for (int i = 0; i < length; i++) {
 			result.append(NumberChineseFormatter.numberCharToChinese(year.charAt(i), false));
 		}
-		result.append('年');
+		result.append('\u5e74');
 
 		// 月
 		int month = calendar.get(Calendar.MONTH) + 1;
 		result.append(NumberChineseFormatter.formatThousand(month, false));
-		result.append('月');
+		result.append('\u6708');
 
 		// 日
 		int day = calendar.get(Calendar.DAY_OF_MONTH);
 		result.append(NumberChineseFormatter.formatThousand(day, false));
-		result.append('日');
+		result.append('\u65e5');
 
 		// 只替换年月日，时分秒中零不需要替换
-		String temp = result.toString().replace('零', '〇');
+		String temp = result.toString().replace('\u96f6', '\u3007');
 		result.delete(0, result.length());
 		result.append(temp);
 
@@ -614,15 +614,15 @@ public class CalendarUtil {
 			// 时
 			int hour = calendar.get(Calendar.HOUR_OF_DAY);
 			result.append(NumberChineseFormatter.formatThousand(hour, false));
-			result.append('时');
+			result.append('\u65f6');
 			// 分
 			int minute = calendar.get(Calendar.MINUTE);
 			result.append(NumberChineseFormatter.formatThousand(minute, false));
-			result.append('分');
+			result.append('\u5206');
 			// 秒
 			int second = calendar.get(Calendar.SECOND);
 			result.append(NumberChineseFormatter.formatThousand(second, false));
-			result.append('秒');
+			result.append('\u79d2');
 		}
 
 		return result.toString();

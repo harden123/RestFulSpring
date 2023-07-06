@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class ConsoleTable {
 
-	private static final char ROW_LINE = '－';
+	private static final char ROW_LINE = '\uff0d';
 	private static final char COLUMN_LINE = '|';
 	private static final char CORNER = '+';
 	private static final char SPACE = '\u3000';
