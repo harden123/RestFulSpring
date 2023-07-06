@@ -75,6 +75,14 @@ public class TestAst {
         TypeDeclaration typeDeclaration = (TypeDeclaration) compilationUnit.types().get(0);
 		MethodDeclaration[] methods = typeDeclaration.getMethods();
 		for (MethodDeclaration methodDeclaration : methods) {
+			  // 获取方法声明对应的 IMethodBinding
+		    IMethodBinding methodBinding = methodDeclaration.resolveBinding();
+		    if (methodBinding != null) {
+		        // 处理绑定信息
+		        ITypeBinding declaringClass = methodBinding.getDeclaringClass();
+		         String name = methodBinding.getName();
+		        // ...
+		    }
 			 // 获取方法的名称
 		    String methodName = methodDeclaration.getName().getIdentifier();
 		    
@@ -129,14 +137,7 @@ public class TestAst {
 		        // ...
 		    }
 
-		    // 获取方法声明对应的 IMethodBinding
-		    IMethodBinding methodBinding = methodDeclaration.resolveBinding();
-		    if (methodBinding != null) {
-		        // 处理绑定信息
-		        ITypeBinding declaringClass = methodBinding.getDeclaringClass();
-		         String name = methodBinding.getName();
-		        // ...
-		    }
+		  
 		}
 
 
