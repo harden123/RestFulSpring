@@ -26,32 +26,47 @@ import org.junit.Test;
 import cn.hutool.core.io.FileUtil;
 
 public class TestAst {
-	public static void main(String[] args) throws Exception {
-		TestAst obj = new TestAst();
-		obj.testASTParser();
-	}
-
 	@Test
 	public void testASTParser() throws Exception {
 		ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
 //		String sourceCode = "List<String> list;";
-		String sourceCode = FileUtil.readUtf8String("C:\\env\\wit\\RestFulSpring\\src\\tool\\mybatis\\CopyDTOSetMethods.java");
-		parser.setSource(sourceCode.toCharArray());
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+//      IWorkspace workspace = ResourcesPlugin.getWorkspace();
+//      IProject project = workspace.getRoot().getProject("RestFulSpring");
+//      IJavaProject javaProject = JavaCore.create(project);
+//		parser.setProject(javaProject);
+		String sourceCode = FileUtil.readUtf8String("C:\\env\\wit\\wit-baseService\\baseService-app\\src\\main\\java\\cn\\com\\gogen\\wit\\service\\impl\\authCount\\NewDoorPermServiceImpl.java");
+//		String sourceCode = FileUtil.readUtf8String("C:\\env\\wit\\RestFulSpring\\src\\tool\\mybatis\\CopyDTOSetMethods.java");
 		parser.setResolveBindings(true);
+		parser.setSource(sourceCode.toCharArray());
+		String[] classpathEntries = new String[] {
+//				"C:\\env\\wit\\RestFulSpring\\bin"
+//				,"C:\\dev\\eclipse-jee-2022-12-R-win32-x86_64\\eclipse\\plugins\\org.eclipse.core.commands_3.10.300.v20221024-2137.jar"
+//				"C:\\env\\wit\\wit-baseService\\baseService-app\\target",
+//				"C:\\env\\wit\\wit-baseService\\baseService-api\\target"
+
+		}; // 替换为类路径的需要
+		String[] sourceEntries = new String[] { 
+//				"C:\\env\\wit\\RestFulSpring\\src" 
+				"C:\\env\\wit\\wit-baseService\\baseService-api\\src\\main\\java",
+				"C:\\env\\wit\\wit-baseService\\baseService-app\\src\\main\\java",
+				
+		}; // 替换为源文件目录的位置
+		String unitName = "NewDoorPermServiceImpl.java"; // 替换为编译单元的名称
+		parser.setUnitName(unitName);
+		parser.setEnvironment(classpathEntries, sourceEntries, null, true);
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null);
 		PackageDeclaration packageDeclaration = compilationUnit.getPackage();
 		String packageName = "";
 		if (packageDeclaration != null) {
 		    packageName = packageDeclaration.getName().getFullyQualifiedName();
 		}
-		System.out.println("包名：" + packageName);
+//		System.out.println("包名：" + packageName);
 		
 //		获取导入的类：
 		List<ImportDeclaration> importDeclarations = compilationUnit.imports();
 		for (ImportDeclaration importDeclaration : importDeclarations) {
 		    String importedClassName = importDeclaration.getName().getFullyQualifiedName();
-		    System.out.println("导入的类：" + importedClassName);
+//		    System.out.println("导入的类：" + importedClassName);
 		}
 
 //		获取类型声明（类、接口、枚举等）：
@@ -65,7 +80,7 @@ public class TestAst {
 		compilationUnit.accept(new ASTVisitor() {
 	        @Override
 	        public boolean visit(MethodDeclaration node) {
-	            System.out.println("Method: " + node.getName());
+//	            System.out.println("Method: " + node.getName());
 	            return super.visit(node);
 	        }
 	    });
@@ -75,14 +90,7 @@ public class TestAst {
         TypeDeclaration typeDeclaration = (TypeDeclaration) compilationUnit.types().get(0);
 		MethodDeclaration[] methods = typeDeclaration.getMethods();
 		for (MethodDeclaration methodDeclaration : methods) {
-			  // 获取方法声明对应的 IMethodBinding
-		    IMethodBinding methodBinding = methodDeclaration.resolveBinding();
-		    if (methodBinding != null) {
-		        // 处理绑定信息
-		        ITypeBinding declaringClass = methodBinding.getDeclaringClass();
-		         String name = methodBinding.getName();
-		        // ...
-		    }
+			
 			 // 获取方法的名称
 		    String methodName = methodDeclaration.getName().getIdentifier();
 		    
@@ -114,7 +122,7 @@ public class TestAst {
 					IMemberValuePairBinding[] allMemberValuePairs = binding.getAllMemberValuePairs();	
 			        // ...
 				}else {
-					System.out.println(annotation.toString());
+//					System.out.println(annotation.toString());
 				}
 			}
 
@@ -136,10 +144,16 @@ public class TestAst {
 		        // 处理异常信息
 		        // ...
 		    }
-
-		  
+		    
+		    // 获取方法声明对应的 IMethodBinding
+		    IMethodBinding methodBinding = methodDeclaration.resolveBinding();
+		    if (methodBinding != null) {
+		        // 处理绑定信息
+		         ITypeBinding declaringClass = methodBinding.getDeclaringClass();
+		         String name = methodBinding.getName();
+		         System.out.println(methodBinding.toString());
+		        // ...
+		    }
 		}
-
-
 	}
 }
