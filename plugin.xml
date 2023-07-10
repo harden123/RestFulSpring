@@ -16,7 +16,7 @@
             allowMultiple="false"
             category="com.RestSpring"
             class="restfulspring.view.views.sqlJson.SqlJsonView"
-            icon="icons/sample.png"
+            icon="icons/sql.png"
             id="SqlJsonView"
             name="SqlJson"
             restorable="true">

@@ -29,7 +29,7 @@ public class SqlJsonView extends ViewPart {
 		sqlRow.setLayout(SWTFactory.createGridLayout(1));
 
 		StyledText sqlText = new StyledText(sqlRow, SWT.MULTI  | SWT.WRAP | SWT.V_SCROLL);
-		sqlText.setText("sql text");
+		sqlText.setText("sql");
 		sqlText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		Composite buttonRow = SWTFactory.createComposite(composite);
@@ -38,9 +38,21 @@ public class SqlJsonView extends ViewPart {
 		buttonRow.setLayout(SWTFactory.createGridLayout(1));
 
 
-		Button refresh = new Button(buttonRow, SWT.NONE);
-		refresh.setText("change");
-		refresh.addSelectionListener(new SqlJsonChangeListener());
+		Button changeBtn = new Button(buttonRow, SWT.NONE);
+		changeBtn.setText("change");
+		
+		
+		Composite resultRow = SWTFactory.createComposite(composite);
+		GridData resultRowData = new GridData(SWT.FILL, SWT.FILL, true, true);
+//		resultRowData.heightHint = 200;
+		resultRow.setLayoutData(resultRowData);
+		resultRow.setLayout(SWTFactory.createGridLayout(1));
+		
+		StyledText resultText = new StyledText(resultRow, SWT.MULTI   | SWT.WRAP | SWT.V_SCROLL);
+		resultText.setText("result");
+		resultText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		
+		changeBtn.addSelectionListener(new SqlJsonChangeListener(sqlText,resultText));
 
 	}
 
