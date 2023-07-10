@@ -16,6 +16,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 
+import cn.hutool.core.util.StrUtil;
 import restfulspring.utils.TextUtil;
 
 public class SqlJsonChangeListener implements SelectionListener{
@@ -75,7 +76,8 @@ public class SqlJsonChangeListener implements SelectionListener{
 				Matcher matcher2 = fields.matcher(fieldtext);
 				while(matcher2.find()) {
 					String group = matcher2.group(1);
-					fieldList.add(group);
+					String camelCase = StrUtil.toCamelCase(group);
+					fieldList.add(camelCase);
 				}
 //				('00001c4ac78911edbaf5005056b63bdb', '9aef83d0bcc611edbaf5005056b63bdb', '0033000100050001000300010001001000020002', 'H004001001', '2024-03-21 00:00:00', '大象国际中心1幢10单元2层202室', '0', NULL, NULL, NULL, NULL, '1', '2023-03-21 09:37:54', 'sysadmin', '2023-04-27 16:43:22', 'sysadmin7', '1', '0', '0', NULL)
 				String valuetext = matcher.group(2).trim();
