@@ -6,10 +6,19 @@
       <view
             allowMultiple="false"
             category="com.RestSpring"
-            class="restfulspring.view.RestFulSpringView"
+            class="restfulspring.view.views.restSpring.RestFulSpringView"
             icon="icons/sample.png"
-            id="com.restspringview"
+            id="RestFulSpringView"
             name="RestSpring"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            category="com.RestSpring"
+            class="restfulspring.view.views.sqlJson.SqlJsonView"
+            icon="icons/sample.png"
+            id="SqlJsonView"
+            name="SqlJson"
             restorable="true">
       </view>
       <category
@@ -24,7 +33,7 @@
 	  <page
 	        name="RestSpring"
 	        class="restfulspring.preference.MyPreferencesPage"
-	        id="restspring.view.RestFulSpringView.preferences">
+	        id="RestFulSpringView.preferences">
 	  </page>
 	</extension>
 	

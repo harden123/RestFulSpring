@@ -1,4 +1,4 @@
-package restfulspring.view.tab;
+package restfulspring.view.tab.restSpring;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;

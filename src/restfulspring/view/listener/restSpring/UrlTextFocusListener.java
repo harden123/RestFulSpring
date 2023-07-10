@@ -1,4 +1,4 @@
-package restfulspring.view.listener;
+package restfulspring.view.listener.restSpring;
 
 import java.util.Map;
 
@@ -15,8 +15,8 @@ import restfulspring.dto.RestParamDTO;
 import restfulspring.handlers.RequestCacheHandlers;
 import restfulspring.utils.AstUtil;
 import restfulspring.utils.TextUtil;
-import restfulspring.view.tab.TabGroupDTO;
-import restfulspring.view.tree.MyTreeElement;
+import restfulspring.view.tab.restSpring.TabGroupDTO;
+import restfulspring.view.tree.restSpring.MyTreeElement;
 
 public class UrlTextFocusListener implements FocusListener{
 

@@ -1,4 +1,4 @@
-package restfulspring.view.tab;
+package restfulspring.view.tab.restSpring;
 
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.StyledText;
@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import restfulspring.view.tree.MyTreeElement;
+import restfulspring.view.tree.restSpring.MyTreeElement;
 @Getter
 @Setter
 @NoArgsConstructor

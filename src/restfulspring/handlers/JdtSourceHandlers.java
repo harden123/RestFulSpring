@@ -47,7 +47,7 @@ import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.JDTTypeDTO;
 import restfulspring.utils.AstUtil;
 import restfulspring.utils.CollectionUtils;
-import restfulspring.view.RestFulSpringView;
+import restfulspring.view.views.restSpring.RestFulSpringView;
 
 public class JdtSourceHandlers {
 	

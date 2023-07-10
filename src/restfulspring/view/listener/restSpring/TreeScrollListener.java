@@ -1,4 +1,4 @@
-package restfulspring.view.listener;
+package restfulspring.view.listener.restSpring;
 
 import java.util.Optional;
 
@@ -20,7 +20,7 @@ import org.eclipse.ui.PlatformUI;
 import cn.hutool.core.io.file.FileNameUtil;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.utils.TextUtil;
-import restfulspring.view.tree.MyTreeElement;
+import restfulspring.view.tree.restSpring.MyTreeElement;
 
 public class TreeScrollListener implements SelectionListener{
 

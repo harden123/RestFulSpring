@@ -1,4 +1,4 @@
-package restfulspring.view.tree;
+package restfulspring.view.tree.restSpring;
 
 import java.util.List;
 

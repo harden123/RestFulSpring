@@ -1,4 +1,4 @@
-package restfulspring.view.listener;
+package restfulspring.view.listener.restSpring;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.events.SelectionEvent;
@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Text;
 import com.alibaba.fastjson.JSON;
 
 import restfulspring.utils.TextUtil;
-import restfulspring.view.tab.TabGroupDTO;
+import restfulspring.view.tab.restSpring.TabGroupDTO;
 
 public class BodyFormatItemListener implements SelectionListener{
 

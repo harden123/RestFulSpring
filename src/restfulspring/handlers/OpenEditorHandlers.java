@@ -15,7 +15,7 @@ import org.eclipse.ui.part.FileEditorInput;
 import lombok.SneakyThrows;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.JDTTypeDTO;
-import restfulspring.view.tree.MyTreeElement;
+import restfulspring.view.tree.restSpring.MyTreeElement;
 
 public class OpenEditorHandlers {
 

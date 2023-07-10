@@ -1,4 +1,4 @@
-package restfulspring.view;
+package restfulspring.view.views.restSpring;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,22 +28,23 @@ import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.JDTTypeDTO;
 import restfulspring.handlers.JdtSourceHandlers;
 import restfulspring.utils.CollectionUtils;
-import restfulspring.view.listener.BodyFormatItemListener;
-import restfulspring.view.listener.BodyResetItemListener;
-import restfulspring.view.listener.BodyTextFocusListener;
-import restfulspring.view.listener.SendButtonListener;
-import restfulspring.view.listener.TreeClickLinstener;
-import restfulspring.view.listener.TreeCollapseListener;
-import restfulspring.view.listener.TreeExpandListener;
-import restfulspring.view.listener.TreeScrollListener;
-import restfulspring.view.listener.UrlTextFocusListener;
-import restfulspring.view.tab.TabFolderFactory;
-import restfulspring.view.tab.TabGroupDTO;
-import restfulspring.view.tree.MyTreeElement;
-import restfulspring.view.tree.MyTreeInput;
-import restfulspring.view.tree.TreeContentProvider;
-import restfulspring.view.tree.TreeLabelProvider;
-import restfulspring.view.tree.TreeViewFactory;
+import restfulspring.view.SWTFactory;
+import restfulspring.view.listener.restSpring.BodyFormatItemListener;
+import restfulspring.view.listener.restSpring.BodyResetItemListener;
+import restfulspring.view.listener.restSpring.BodyTextFocusListener;
+import restfulspring.view.listener.restSpring.SendButtonListener;
+import restfulspring.view.listener.restSpring.TreeClickLinstener;
+import restfulspring.view.listener.restSpring.TreeCollapseListener;
+import restfulspring.view.listener.restSpring.TreeExpandListener;
+import restfulspring.view.listener.restSpring.TreeScrollListener;
+import restfulspring.view.listener.restSpring.UrlTextFocusListener;
+import restfulspring.view.tab.restSpring.TabFolderFactory;
+import restfulspring.view.tab.restSpring.TabGroupDTO;
+import restfulspring.view.tree.restSpring.MyTreeElement;
+import restfulspring.view.tree.restSpring.MyTreeInput;
+import restfulspring.view.tree.restSpring.TreeContentProvider;
+import restfulspring.view.tree.restSpring.TreeLabelProvider;
+import restfulspring.view.tree.restSpring.TreeViewFactory;
 
 public class RestFulSpringView extends ViewPart {
 

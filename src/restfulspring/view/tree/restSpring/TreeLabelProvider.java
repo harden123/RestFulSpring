@@ -1,4 +1,4 @@
-package restfulspring.view.tree;
+package restfulspring.view.tree.restSpring;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;

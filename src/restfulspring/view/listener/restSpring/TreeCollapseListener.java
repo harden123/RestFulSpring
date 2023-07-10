@@ -1,4 +1,4 @@
-package restfulspring.view.listener;
+package restfulspring.view.listener.restSpring;
 
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.events.SelectionEvent;

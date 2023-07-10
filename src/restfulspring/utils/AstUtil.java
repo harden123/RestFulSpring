@@ -28,7 +28,7 @@ import lombok.SneakyThrows;
 import restfulspring.constant.RestConstant;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.RestParamDTO;
-import restfulspring.view.tree.MyTreeElement;
+import restfulspring.view.tree.restSpring.MyTreeElement;
 
 public class AstUtil {
 	private static Pattern listPattern = Pattern.compile("^java.util.[^\\.]*List$");
