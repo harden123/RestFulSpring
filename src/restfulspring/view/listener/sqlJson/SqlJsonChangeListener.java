@@ -85,6 +85,10 @@ public class SqlJsonChangeListener implements SelectionListener{
 				while(matcher3.find()) {
 					String group = Optional.ofNullable(matcher3.group(1)).orElse(matcher3.group(2));
 					group = Optional.ofNullable(group).orElse(matcher3.group(3));
+					if (StringUtils.startsWith(group, "'")&&StringUtils.endsWith(group, "'")) {
+						group = StringUtils.removeStart(group, "'");
+						group = StringUtils.removeEnd(group, "'");
+					}
 					if (StringUtils.equalsIgnoreCase(group, "null")) {
 						valueList.add(null);
 					}else if ("0".equals(group)|"1".equals(group)|"2".equals(group)) {
