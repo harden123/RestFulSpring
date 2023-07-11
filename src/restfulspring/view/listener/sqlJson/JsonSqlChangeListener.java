@@ -63,7 +63,7 @@ public class JsonSqlChangeListener implements SelectionListener{
 
 	private String doParse(String jsontext, String toSqlDateText) {
 		if (!JSON.isValid(jsontext)) {
-			return null;
+			return "";
 		}
 		jsontext = jsontext.replaceAll("(\r\n|\r|\n|\n\r|↵|')","");
 		StringBuffer sb = new StringBuffer();
