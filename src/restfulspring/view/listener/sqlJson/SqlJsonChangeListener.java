@@ -1,6 +1,7 @@
 package restfulspring.view.listener.sqlJson;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,9 +21,11 @@ import cn.hutool.core.util.StrUtil;
 import restfulspring.utils.TextUtil;
 
 public class SqlJsonChangeListener implements SelectionListener{
+	public static final Pattern sqlsCompile = Pattern.compile("\\)\\s*;\\s*(?=INSERT)*",Pattern.CASE_INSENSITIVE);
 	public static final Pattern compile = Pattern.compile("(\\(.+\\))\\s*values\\s*(\\(.+\\))",Pattern.CASE_INSENSITIVE);
 	public static final Pattern fields = Pattern.compile("(?<!\\\\)`(.+?)(?<!\\\\)`\\s*,",Pattern.CASE_INSENSITIVE);
 	public static final Pattern values = Pattern.compile("(?<!\\\\)'(.+?)(?<!\\\\)'|(?<=,)\\s*(NULL)\\s*(?=[,\\)])|(?<=[\\(,])\\s*(.+?)\\s*(?=[\\),])",Pattern.CASE_INSENSITIVE);
+
 
 	private StyledText sqlText;
 	private StyledText resultText;
@@ -62,7 +65,14 @@ public class SqlJsonChangeListener implements SelectionListener{
 
 	
 	private JSON doParse(String text) {
-		String[] split = text.split(";");
+		List<String> split = Lists.newArrayList();
+		Matcher sqlsMatcher = sqlsCompile.matcher(text);
+		int startIndex = 0;
+        while (sqlsMatcher.find()) {
+            String statement = text.substring(startIndex, sqlsMatcher.end()).trim();
+            split.add(statement);
+            startIndex = sqlsMatcher.end();
+        }
 		JSONArray array = new JSONArray();
 //		ArrayList<JSONObject> objs = Lists.newArrayList();
 		for (String sql : split) {
@@ -134,15 +144,26 @@ public class SqlJsonChangeListener implements SelectionListener{
 //			}
 //		}
 		
-		String s = "(00001c4ac78911edbaf5005056b63bdb, 9aef83d0bcc611edbaf5005056b63bdb, 0033000100050001000300010001001000020002, H004001001, 2024-03-21 00:00:00, 大象国际中心1幢10单元2层202室, 0, NULL, NULL, NULL, NULL, 1, 2023-03-21 09:37:54, sysadmin, 2023-04-27 16:43:22, sysadmin7, 1, 0, 0, NULL)";
-		Matcher matcher3 = values.matcher(s);
-		while(matcher3.find()) {
-			String group = Optional.ofNullable(matcher3.group(1)).orElse(matcher3.group(2));
-			group = Optional.ofNullable(group).orElse(matcher3.group(3));
-			System.out.println(group);
-			
-			
-		}
+//		String s = "(00001c4ac78911edbaf5005056b63bdb, 9aef83d0bcc611edbaf5005056b63bdb, 0033000100050001000300010001001000020002, H004001001, 2024-03-21 00:00:00, 大象国际中心1幢10单元2层202室, 0, NULL, NULL, NULL, NULL, 1, 2023-03-21 09:37:54, sysadmin, 2023-04-27 16:43:22, sysadmin7, 1, 0, 0, NULL)";
+//		Matcher matcher3 = values.matcher(s);
+//		while(matcher3.find()) {
+//			String group = Optional.ofNullable(matcher3.group(1)).orElse(matcher3.group(2));
+//			group = Optional.ofNullable(group).orElse(matcher3.group(3));
+//			System.out.println(group);
+//		}
+		
+		
+//		String s ="INSERT INTO `wit_test_b`.`notice_manage` (`id`, `title`, `intro`, `content`, `gmt_start`, `gmt_end`, `type`, `top`, `hot`, `sort`, `status`, `status_desc`, `gmt_issue`, `issuer`, `draft`, `link_type`, `link_url`, `range_type`, `creator`, `modifier`, `gmt_create`, `gmt_modify`, `deleted`) VALUES ('283912b941c811ecb9fa005056b63bdb', '测试公共1的风格是大法官是大法官恢诡谲怪监管就会高锦库', NULL, '<p>沙发范德萨范德萨ffsdafasdf</p>\\n<p>&nbsp;</p>\\n<p>sdafsdfsdafasdfsdfsaf</p>\\n<p>发色</p>', '2021-12-14 00:00:00', '2025-01-31 00:00:00', '1', NULL, NULL, '1', 'show', NULL, '2021-11-10 00:00:00', 'sysadmin3', '0', NULL, NULL, '1', 'sysadmin3', 'sysadmin4', '2021-11-10 09:47:27', '2023-02-13 10:28:12', '0');  "
+//				+ "";
+//		Matcher matcher = sqlsCompile.matcher(s);
+//		int startIndex = 0;
+//        while (matcher.find()) {
+//            String statement = s.substring(startIndex, matcher.end()).trim();
+//            System.out.println(statement);
+//            startIndex = matcher.end();
+//        }
+	        
+
 	}
 
 }
