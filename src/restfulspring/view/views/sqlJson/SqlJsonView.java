@@ -9,6 +9,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.ViewPart;
 
 import restfulspring.Activator;
@@ -39,10 +40,12 @@ public class SqlJsonView extends ViewPart {
 		sqlText.setText("sql");
 		sqlText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
+		/*------------------------- buttonRow-----------------------------*/
+
 		Composite buttonRow = SWTFactory.createComposite(composite);
 		GridData buttonRowData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		buttonRow.setLayoutData(buttonRowData);
-		buttonRow.setLayout(SWTFactory.createGridLayout(3));
+		buttonRow.setLayout(SWTFactory.createGridLayout(8));
 
 
 		Button changeBtn = new Button(buttonRow, SWT.NONE);
@@ -52,6 +55,10 @@ public class SqlJsonView extends ViewPart {
 		Button sqlBtn = new Button(buttonRow, SWT.NONE);
 		sqlBtn.setText("toSql");
 		
+		
+		Label label1 = new Label(buttonRow, SWT.NONE);
+		label1.setText("toJsonDate:");
+		 
 		Combo ymdCombo = new Combo(buttonRow, SWT.READ_ONLY);
 		String[] arr = YmdTypeEnum.toDescArray();
 		ymdCombo.setItems(arr);
@@ -78,6 +85,35 @@ public class SqlJsonView extends ViewPart {
         
 		
 		
+		
+		Label label2 = new Label(buttonRow, SWT.NONE);
+		label2.setText("toSqlDate:");
+		
+		Combo toSqlDateCombo = new Combo(buttonRow, SWT.READ_ONLY);
+		toSqlDateCombo.setItems(YmdTypeEnum.toDescArray());
+		
+		String selectedText2 = Activator.getDefault().getPreferenceStore().getString(RestConstant.JsonSql_ymd);
+		Integer selectIndex2 = YmdTypeEnum.ymdhms.getKey();
+		if (StringUtils.isNotBlank(selectedText2)) {
+			Integer temp = YmdTypeEnum.getKeyByDesc(selectedText2);
+			if (temp != null) {
+				selectIndex2 = temp;
+			}
+		}
+		toSqlDateCombo.select(selectIndex2);
+		
+		// 添加选项变更监听器
+		toSqlDateCombo.addSelectionListener(new SelectionAdapter() {
+		@Override
+			public void widgetSelected(SelectionEvent e) {
+				Combo selectedCombo = (Combo) e.getSource();
+	            String selectedText = selectedCombo.getText();
+	            Activator.getDefault().getPreferenceStore().putValue(RestConstant.JsonSql_ymd, selectedText);
+			}
+		});     
+
+		/*------------------------- resultRow-----------------------------*/
+		
 		Composite resultRow = SWTFactory.createComposite(composite);
 		GridData resultRowData = new GridData(SWT.FILL, SWT.FILL, true, true);
 //		resultRowData.heightHint = 200;
@@ -88,8 +124,8 @@ public class SqlJsonView extends ViewPart {
 		resultText.setText("result");
 		resultText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
-		changeBtn.addSelectionListener(new SqlJsonChangeListener(sqlText,resultText,ymdCombo));
-		sqlBtn.addSelectionListener(new JsonSqlChangeListener(sqlText,resultText));
+		changeBtn.addSelectionListener(new SqlJsonChangeListener(sqlText,resultText,toSqlDateCombo));
+		sqlBtn.addSelectionListener(new JsonSqlChangeListener(sqlText,resultText,toSqlDateCombo));
 	}
 
 	/** 
@@ -99,5 +135,4 @@ public class SqlJsonView extends ViewPart {
 	public void setFocus() {
 		
 	}
-
 }

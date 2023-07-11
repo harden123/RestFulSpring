@@ -199,13 +199,13 @@ public class AstUtil {
 				 // 处理JDK内置类...
 				return initJdkVal(typeBinding);
 		    }else {
-				JSONObject obj = new JSONObject();
+				JSONObject obj = new JSONObject(true);
 		    	if (judgeDependencyFieldConflict(dependencyLine, typeBinding.getQualifiedName())) {
 					return obj;
 				}
 		    	dependencyLine = appendToDependencyLine(dependencyLine, typeBinding.getQualifiedName());
 		    	// 处理非JDK内置类...
-				//TODO:hsl 2023/06/15-防止迭代循环
+				//防止迭代循环
 		    	IVariableBinding[] fields = typeBinding.getDeclaredFields();
 				for (IVariableBinding field : fields) {
 					obj.put(field.getName(), iterParse(field.getType(),dependencyLine));
@@ -257,7 +257,7 @@ public class AstUtil {
 		}else if(isQuailifyList(typeBinding)) {
 			 return new JSONArray();
 		}else if(isQuailifyMap(typeBinding)) {
-			 return new JSONObject();
+			 return new JSONObject(true);
 		}else if(typeBinding.isArray()) {
 			 return new JSONArray();
 		}

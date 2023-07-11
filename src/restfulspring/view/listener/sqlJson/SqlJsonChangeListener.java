@@ -115,7 +115,7 @@ public class SqlJsonChangeListener implements SelectionListener{
 						valueList.add(group);
 					}
 				}
-				JSONObject o = new JSONObject();
+				JSONObject o = new JSONObject(true);
 				for (int i = 0; i < fieldList.size(); i++) {
 					String k = fieldList.get(i);
 					Object v = valueList.get(i);

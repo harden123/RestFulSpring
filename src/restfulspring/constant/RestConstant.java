@@ -42,6 +42,7 @@ public class RestConstant {
 
 	/*-------------------------sp -----------------------------*/
 	public static final String SqlJson_ymd = "SqlJson_ymd";
+	public static final String JsonSql_ymd = "JsonSql_ymd";
 
 	
 
