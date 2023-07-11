@@ -136,6 +136,17 @@ public class JsonSqlChangeListener implements SelectionListener{
 				date = new Date(time);
 			} catch (Exception e) {
 			}
+		}else if(v instanceof String) {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+				date = sdf.parse(v+"");
+			} catch (Exception e) {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				try {
+					date = sdf.parse(v+"");
+				} catch (Exception e1) {
+				}
+			}
 		}
 		if (date == null) {
 			return v;
