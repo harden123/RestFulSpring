@@ -27,6 +27,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.google.common.collect.Maps;
 
@@ -35,7 +36,6 @@ import lombok.SneakyThrows;
 public class TextUtil {
 	public static Pattern compile = Pattern.compile("(?<!\\\\)\"\\s*:", 0);
 
-	
 	public static boolean isTextEqualKey(String text1,String text2) {
 		Set<String> allKeys = getAllKeys(text1);
 		Set<String> allKeys2 = getAllKeys(text2);
@@ -175,7 +175,7 @@ public class TextUtil {
 						SerializerFeature.SortField,
 						SerializerFeature.MapSortField,});
 			}else if(JSON.isValid(parse+"")) {
-				Object parse2 = JSON.parse(parse+"");
+				Object parse2 = JSON.parse(parse+"",Feature.OrderedField);
 				jsonString =  JSON.toJSONString(parse2,new SerializerFeature[] {
 						SerializerFeature.WriteMapNullValue,
 						SerializerFeature.PrettyFormat,
@@ -193,5 +193,22 @@ public class TextUtil {
 		return jsonString;
 	}
 
+	
+	public static Object parseJsonText(String textJson) {
+		if (StringUtils.isNotBlank(textJson)&&JSON.isValid(textJson)) {
+			Object parse = JSON.parse(textJson,Feature.OrderedField);
+			return parse;
+		}
+		return textJson;
+	}
+	
+	
+	public static StringBuffer chopLast(StringBuffer sb, char lastChar) {
+		if (sb != null && sb.length() > 0 && sb.charAt(sb.length() - 1) == lastChar) {
+			return sb.deleteCharAt(sb.length() - 1);
+		}
+		return sb;
+	}
+	
 
 }

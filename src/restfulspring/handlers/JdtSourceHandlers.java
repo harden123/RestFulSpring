@@ -60,7 +60,7 @@ public class JdtSourceHandlers {
 		boolean compareAndSet = running.compareAndSet(false, true);
 		if (compareAndSet) {
 				try {
-					long s1 = System.currentTimeMillis();
+//					long s1 = System.currentTimeMillis();
 					IWorkbench workbench = PlatformUI.getWorkbench();
 					IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
 					IEditorPart editor = Optional.ofNullable(window).map(x -> x.getActivePage()).map(x -> x.getActiveEditor()).orElse(null);
@@ -80,7 +80,7 @@ public class JdtSourceHandlers {
 								if (!project.isOpen() || !project.hasNature(JavaCore.NATURE_ID)) {
 									return ;
 								}
-								System.out.println("parseJDTing");
+//								System.out.println("parseJDTing");
 								IJavaProject javaProject = JavaCore.create(project);
 								IPackageFragmentRoot[] packageFragmentRoots = javaProject.getPackageFragmentRoots();
 								List<ICompilationUnit> allJavaFiles = new ArrayList<>();
@@ -96,8 +96,8 @@ public class JdtSourceHandlers {
 									getAllJavaFiles(iPackageFragmentRoot, allJavaFiles);
 								}
 								JdtSourceHandlers.setList(parseAllJavaFiles(allJavaFiles));
-								long s2 = System.currentTimeMillis();
-								System.out.println("parseJDTUsed:"+(s2-s1)/1000);
+//								long s2 = System.currentTimeMillis();
+//								System.out.println("parseJDTUsed:"+(s2-s1)/1000);
 								RestFulSpringView.notifyRefreshTree();
 							}catch (Exception e) {
 								System.out.println(e.getMessage());

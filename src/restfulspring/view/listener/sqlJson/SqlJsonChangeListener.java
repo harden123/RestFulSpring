@@ -1,8 +1,11 @@
 package restfulspring.view.listener.sqlJson;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 
 import com.alibaba.fastjson.JSON;
@@ -18,6 +22,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 
 import cn.hutool.core.util.StrUtil;
+import restfulspring.constant.YmdTypeEnum;
 import restfulspring.utils.TextUtil;
 
 public class SqlJsonChangeListener implements SelectionListener{
@@ -29,10 +34,12 @@ public class SqlJsonChangeListener implements SelectionListener{
 
 	private StyledText sqlText;
 	private StyledText resultText;
+	private Combo ymdCombo;
 
-	public SqlJsonChangeListener(StyledText sqlText, StyledText resultText) {
+	public SqlJsonChangeListener(StyledText sqlText, StyledText resultText, Combo ymdCombo) {
 		this.sqlText = sqlText;
 		this.resultText = resultText;
+		this.ymdCombo = ymdCombo;
 	}
 
 	/** 
@@ -65,6 +72,7 @@ public class SqlJsonChangeListener implements SelectionListener{
 
 	
 	private JSON doParse(String text) {
+		String ymdComboText = ymdCombo.getText();
 		List<String> split = Lists.newArrayList();
 		Matcher sqlsMatcher = sqlsCompile.matcher(text);
 		int startIndex = 0;
@@ -111,6 +119,8 @@ public class SqlJsonChangeListener implements SelectionListener{
 				for (int i = 0; i < fieldList.size(); i++) {
 					String k = fieldList.get(i);
 					Object v = valueList.get(i);
+					//TODO:hsl 2023/07/11-changeDate
+					v = changeDate(k,v,ymdComboText);
 					o.put(k, v);
 				}
 				array.add(o);
@@ -122,6 +132,38 @@ public class SqlJsonChangeListener implements SelectionListener{
 		}
 		return array;
 	}
+	/**
+	 * 转换日期
+	 * @param getComboText 
+	 */
+	private Object changeDate(String k, Object v, String ymdComboText) {
+		if (!StringUtils.startsWith(k, "gmt")&&!StringUtils.endsWithIgnoreCase(k, "Date")) {
+			return v;
+		}
+		if (YmdTypeEnum.ymdhms.getDesc().equals(ymdComboText)) {
+			return v;
+		}
+		String val = v+"";
+		if (StringUtils.isNotBlank(val)) {
+			SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    	try {
+				Date date = ft.parse(val);
+				if (YmdTypeEnum.ymdhmsz.getDesc().equals(ymdComboText)) {
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+			        sdf.setTimeZone(TimeZone.getTimeZone("GMT+8"));  // 设置时区为东八区
+			        return sdf.format(date);
+				}else if (YmdTypeEnum.miliSec.getDesc().equals(ymdComboText)) {
+					return date.getTime();
+				}else if (YmdTypeEnum.sec.getDesc().equals(ymdComboText)) {
+					return date.getTime()/1000;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return v;
+	}
+
 	public static void main(String[] args) {
 //		Matcher matcher = compile.matcher("INSERT INTO `wit_test_b`.`uar_visitor` (`id`, `user_id`, `area_code`, `live_type`, `expire_date`, `area_address`, `extend`, `live_reason`, `cert_image_first`, `cert_image_end`, `company_id`, `leader`, `gmt_create`, `creator`, `gmt_modify`, `modifier`, `deleted`, `manager`, `outside`, `outside_tag_code`) VALUES (ebb1f246027811edbaf5005056b63bdb, 'eb99f59c027811edbaf5005056b63bdb', '0033000100010001000100010001000100010001', 'H004001003', '2023-07-15 23:59:59', '和茂大厦1幢1单元1层101室\\',水电费', '0', NULL, NULL, NULL, NULL, '0', '2022-07-13 14:56:30', 'b766f9007e7e11ecb9fa005056b63bdb', '2022-07-13 14:56:30', 'b766f9007e7e11ecb9fa005056b63bdb', '0', '0', '0', NULL);\r\n"
 //				+ "");
@@ -163,7 +205,6 @@ public class SqlJsonChangeListener implements SelectionListener{
 //            startIndex = matcher.end();
 //        }
 	        
-
 	}
 
 }

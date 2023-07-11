@@ -10,14 +10,12 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.parser.Feature;
-
 import restfulspring.constant.RestConstant;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.RestParamDTO;
 import restfulspring.handlers.RequestCacheHandlers;
 import restfulspring.utils.AstUtil;
+import restfulspring.utils.TextUtil;
 import restfulspring.view.tab.restSpring.TabGroupDTO;
 import restfulspring.view.tree.restSpring.MyTreeElement;
 
@@ -74,8 +72,8 @@ public class BodyTextFocusListener implements FocusListener{
 		}else if (textJson!=null&&methodJson==null) {
 			return false;
 		}
-		Object parse = JSON.parse(textJson,Feature.OrderedField);
-		Object parse2 = JSON.parse(methodJson,Feature.OrderedField);
+		Object parse = TextUtil.parseJsonText(textJson);
+		Object parse2 = TextUtil.parseJsonText(methodJson);
 		if (parse.equals(parse2)) {
 			return true;
 		}

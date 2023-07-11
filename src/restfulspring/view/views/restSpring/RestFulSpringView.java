@@ -138,7 +138,7 @@ public class RestFulSpringView extends ViewPart {
 		queryRow.setLayout(rowLayout);
 
 		Combo getCombo = new Combo(queryRow, SWT.READ_ONLY);
-		getCombo.setItems(new String[] { RestTypeEnum.GET.toString(), RestTypeEnum.POST.toString()});
+		getCombo.setItems(new String[] { RestTypeEnum.GET.getDesc(), RestTypeEnum.POST.getDesc()});
 		getCombo.select(RestTypeEnum.GET.getKey()); // 设置选中第一个选项
 		// 添加选项变更监听器
 		getCombo.addSelectionListener(new SelectionAdapter() {
@@ -273,7 +273,6 @@ public class RestFulSpringView extends ViewPart {
 	 */
 	@Override
 	public void saveState(IMemento memento) {
-		System.out.println("saveState");
 		super.saveState(memento);
 	}
 

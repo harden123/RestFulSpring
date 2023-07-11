@@ -28,7 +28,7 @@ public class BodyFormatItemListener implements SelectionListener{
 		Text bodyText = tabGroupDTO.getBodyText();
 		String text = bodyText.getText();
 		if (StringUtils.isNotBlank(text)&&JSON.isValid(text)) {
-			Object parse = JSON.parse(text);
+			Object parse = TextUtil.parseJsonText(text);
 			Display.getDefault().asyncExec(new Runnable() {
 
 				@Override

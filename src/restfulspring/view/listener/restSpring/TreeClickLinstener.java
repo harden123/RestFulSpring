@@ -62,7 +62,7 @@ public class TreeClickLinstener implements IDoubleClickListener,ISelectionChange
 				RestParamDTO computeParam = AstUtil.computeParam(jdtMethodDTO);
 				AtomicReference<String> bodyStr = computeParam.getBodyStr();
 				if (StringUtils.isNotBlank(bodyStr.get())) {
-					method_type.set(RestTypeEnum.POST.toString());
+					method_type.set(RestTypeEnum.POST.getDesc());
 				}
 				Map<String, Object> getParamKVMap = computeParam.getGetParamKVMap();
 				Display.getDefault().asyncExec(new Runnable() {
@@ -70,7 +70,7 @@ public class TreeClickLinstener implements IDoubleClickListener,ISelectionChange
 					@Override
 					public void run() {
 						boolean hasCache = false;
-						if (RestTypeEnum.POST.toString().equals(method_type.get())) {
+						if (RestTypeEnum.POST.getDesc().equals(method_type.get())) {
 							getCombo.select(RestTypeEnum.POST.getKey());
 						}else {
 							getCombo.select(RestTypeEnum.GET.getKey());

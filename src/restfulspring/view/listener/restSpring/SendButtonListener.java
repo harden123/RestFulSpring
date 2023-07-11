@@ -42,7 +42,7 @@ public class SendButtonListener implements SelectionListener {
 		String body = StringUtils.trimToNull(tabGroupDTO.getBodyText().getText());
 		String restType = getCombo.getText();
 		
-		if (RestTypeEnum.GET.toString().equals(restType)) {
+		if (RestTypeEnum.GET.getDesc().equals(restType)) {
 			executor.execute(()->{
 				try {
 					String r = OkHttpUtlis.doGet(null, headers, url);
@@ -52,7 +52,7 @@ public class SendButtonListener implements SelectionListener {
 					throw e1;
 				}
 			});
-		}else if(RestTypeEnum.POST.toString().equals(restType)) {
+		}else if(RestTypeEnum.POST.getDesc().equals(restType)) {
 			executor.execute(()->{
 				try {
 					String r = OkHttpUtlis.doPostJSON(body, headers, url);

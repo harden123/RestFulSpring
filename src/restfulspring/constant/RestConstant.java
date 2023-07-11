@@ -1,7 +1,12 @@
 package restfulspring.constant;
 
-public class RestConstant {
+import java.io.File;
 
+public class RestConstant {
+	public static String lineSeparator = System.lineSeparator();
+	public static String fileSeparator = File.separator;
+
+	/*----------------------------------restView --------------------------------------*/
 	/*-------------------------annos -----------------------------*/
 	public static final String RequestMapping = "RequestMapping";
 	public static final Object RestController = "RestController";
@@ -32,6 +37,11 @@ public class RestConstant {
 	public static final String BodyText = "bodyText:";
 	public static final String UrlText = "urlText:";
 
+
+	/*----------------------------------sqlJSONView --------------------------------------*/
+
+	/*-------------------------sp -----------------------------*/
+	public static final String SqlJson_ymd = "SqlJson_ymd";
 
 	
 

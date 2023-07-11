@@ -23,6 +23,7 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.commons.lang3.StringUtils;
 
 import lombok.SneakyThrows;
+import restfulspring.constant.RestConstant;
 
 public class OkHttpUtlis {
 //    private static OkHttpClient client;
@@ -159,7 +160,7 @@ public class OkHttpUtlis {
 	        StringBuilder builder = new StringBuilder();
 	        while ((line = reader.readLine()) != null) {
 	            builder.append(line);
-	            builder.append(System.getProperty("line.separator"));
+	            builder.append(RestConstant.lineSeparator);
 	        }
 	        return builder.toString();
 	    }

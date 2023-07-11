@@ -30,6 +30,7 @@ import com.google.common.collect.Maps;
 
 import cn.hutool.core.io.FileUtil;
 import lombok.SneakyThrows;
+import restfulspring.constant.RestConstant;
 import restfulspring.utils.CollectionUtils;
 
 public class CorrectPackage extends AbstractHandler{
@@ -117,7 +118,7 @@ public class CorrectPackage extends AbstractHandler{
 			return ;
 		}
 		Display display = Display.getDefault();
-		String join = StringUtils.join(showPathList,System.getProperty("line.separator") );
+		String join = StringUtils.join(showPathList,RestConstant.lineSeparator );
 		boolean result = MessageDialog.open(MessageDialog.QUESTION, display.getActiveShell(), "是否修改package", join, SWT.NONE);
          if (!result) {
         	  // 用户点击了取消按钮或关闭了对话框
