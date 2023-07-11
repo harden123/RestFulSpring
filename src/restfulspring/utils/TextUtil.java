@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
@@ -31,6 +33,7 @@ import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
 
 public class TextUtil {
+	public static Pattern compile = Pattern.compile("(?<!\\\\)\"\\s*:", 0);
 
 	
 	public static boolean isTextEqualKey(String text1,String text2) {
@@ -163,24 +166,31 @@ public class TextUtil {
 	}
 	
 	public static String prettyJSON(Object parse) {
+		String jsonString = parse+"";
 		if (parse!=null) {
 			if (parse instanceof JSON) {
-				return JSON.toJSONString(parse,new SerializerFeature[] {
+				jsonString = JSON.toJSONString(parse,new SerializerFeature[] {
 						SerializerFeature.WriteMapNullValue,
 						SerializerFeature.PrettyFormat,
 						SerializerFeature.SortField,
 						SerializerFeature.MapSortField,});
 			}else if(JSON.isValid(parse+"")) {
 				Object parse2 = JSON.parse(parse+"");
-				return JSON.toJSONString(parse2,new SerializerFeature[] {
+				jsonString =  JSON.toJSONString(parse2,new SerializerFeature[] {
 						SerializerFeature.WriteMapNullValue,
 						SerializerFeature.PrettyFormat,
 						SerializerFeature.SortField,
 						SerializerFeature.MapSortField,	});
 			}
-			
+			Matcher matcher = compile.matcher(jsonString);
+			StringBuffer sb = new StringBuffer();
+			while (matcher.find()) {
+			    matcher.appendReplacement(sb, "$0"+" ");
+			}
+			matcher.appendTail(sb);
+			jsonString = sb.toString();
 		}
-		return parse+"";
+		return jsonString;
 	}
 
 
