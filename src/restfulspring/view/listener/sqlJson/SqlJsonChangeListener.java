@@ -119,7 +119,6 @@ public class SqlJsonChangeListener implements SelectionListener{
 				for (int i = 0; i < fieldList.size(); i++) {
 					String k = fieldList.get(i);
 					Object v = valueList.get(i);
-					//TODO:hsl 2023/07/11-changeDate
 					v = changeDate(k,v,ymdComboText);
 					o.put(k, v);
 				}
