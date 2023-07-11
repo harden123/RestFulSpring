@@ -48,20 +48,20 @@ public class SqlJsonView extends ViewPart {
 		buttonRow.setLayout(SWTFactory.createGridLayout(8));
 
 
-		Button changeBtn = new Button(buttonRow, SWT.NONE);
-		changeBtn.setText("toJson");
+		Button toJsonBtn = new Button(buttonRow, SWT.NONE);
+		toJsonBtn.setText("toJson");
 		
 
-		Button sqlBtn = new Button(buttonRow, SWT.NONE);
-		sqlBtn.setText("toSql");
+		Button toSqlBtn = new Button(buttonRow, SWT.NONE);
+		toSqlBtn.setText("toSql");
 		
 		
-		Label label1 = new Label(buttonRow, SWT.NONE);
-		label1.setText("toJsonDate:");
+		Label toJsonDateLabel = new Label(buttonRow, SWT.NONE);
+		toJsonDateLabel.setText("toJsonDate:");
 		 
-		Combo ymdCombo = new Combo(buttonRow, SWT.READ_ONLY);
+		Combo toJsonDateCombo = new Combo(buttonRow, SWT.READ_ONLY);
 		String[] arr = YmdTypeEnum.toDescArray();
-		ymdCombo.setItems(arr);
+		toJsonDateCombo.setItems(arr);
 		
 		String selectedText = Activator.getDefault().getPreferenceStore().getString(RestConstant.SqlJson_ymd);
 		Integer selectIndex = YmdTypeEnum.ymdhmsz.getKey();
@@ -71,10 +71,10 @@ public class SqlJsonView extends ViewPart {
 				selectIndex = temp;
 			}
 		}
-		ymdCombo.select(selectIndex);
+		toJsonDateCombo.select(selectIndex);
 		
 		// 添加选项变更监听器
-		ymdCombo.addSelectionListener(new SelectionAdapter() {
+		toJsonDateCombo.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Combo selectedCombo = (Combo) e.getSource();
@@ -86,8 +86,8 @@ public class SqlJsonView extends ViewPart {
 		
 		
 		
-		Label label2 = new Label(buttonRow, SWT.NONE);
-		label2.setText("toSqlDate:");
+		Label toSqlDateLabel = new Label(buttonRow, SWT.NONE);
+		toSqlDateLabel.setText("toSqlDate:");
 		
 		Combo toSqlDateCombo = new Combo(buttonRow, SWT.READ_ONLY);
 		toSqlDateCombo.setItems(YmdTypeEnum.toDescArray());
@@ -124,8 +124,8 @@ public class SqlJsonView extends ViewPart {
 		resultText.setText("result");
 		resultText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
-		changeBtn.addSelectionListener(new SqlJsonChangeListener(sqlText,resultText,toSqlDateCombo));
-		sqlBtn.addSelectionListener(new JsonSqlChangeListener(sqlText,resultText,toSqlDateCombo));
+		toJsonBtn.addSelectionListener(new SqlJsonChangeListener(sqlText,resultText,toJsonDateCombo));
+		toSqlBtn.addSelectionListener(new JsonSqlChangeListener(sqlText,resultText,toSqlDateCombo));
 	}
 
 	/** 
