@@ -15,7 +15,7 @@ import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.Type;
 
-import tool.config.SupertypeHierarchyCache;
+import tool.config.mybatis.SupertypeHierarchyCache;
 import tool.utils.NameUtil;
 
 

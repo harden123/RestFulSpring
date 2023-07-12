@@ -20,7 +20,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 
 import restfulspring.config.Log;
-import tool.config.SupertypeHierarchyCache;
+import tool.config.mybatis.SupertypeHierarchyCache;
 
 /**
  * @author Iwao AVE!

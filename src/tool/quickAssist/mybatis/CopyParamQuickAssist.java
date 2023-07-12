@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.core.IField;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.Signature;
 import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -47,6 +48,12 @@ public class CopyParamQuickAssist extends QuickAssistCompletionProposal {
 	@Override
 	@SneakyThrows
 	public void apply(IDocument document) {
+		StringBuffer sb = getSqlFragment(method);
+		ViewUtil.copyAndToolTip(sb.toString());
+
+	}
+
+	public static StringBuffer getSqlFragment(MapperMethod method) throws JavaModelException {
 		List<SingleVariableDeclaration> params = method.parameters();
 		StringBuffer sb = new StringBuffer();
 		for (SingleVariableDeclaration param : params) {
@@ -77,11 +84,10 @@ public class CopyParamQuickAssist extends QuickAssistCompletionProposal {
 		        }
 			}
 		}
-		ViewUtil.copyAndToolTip(sb.toString());
-
+		return sb;
 	}
 	
-	private String getParamName(List<IExtendedModifier> modifiers) {
+	private static String getParamName(List<IExtendedModifier> modifiers) {
 		if (CollectionUtils.isEmpty(modifiers)) {
 			return null;
 		}

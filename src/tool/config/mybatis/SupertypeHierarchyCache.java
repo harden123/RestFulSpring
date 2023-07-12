@@ -9,7 +9,7 @@
  *    Iwao AVE! - initial API and implementation and/or initial documentation
  *******************************************************************************/
 
-package tool.config;
+package tool.config.mybatis;
 
 import java.util.concurrent.ConcurrentHashMap;
 
