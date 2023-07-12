@@ -9,6 +9,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -32,7 +37,6 @@ import restfulspring.view.tree.restSpring.MyTreeElement;
 
 public class AstUtil {
 	public static Pattern listPattern = Pattern.compile("^java.util.[^\\.]*List$");
-	public static Pattern setPattern = Pattern.compile("^java.util.[^\\.]*Set$");
     private static Pattern mapPattern = Pattern.compile("^java.util.[^\\.]*Map$");
     private static final String DepencyLineSplitor = "->";
 
@@ -341,6 +345,14 @@ public class AstUtil {
 			}
 		}
 		return false;
+	}
+	
+	public static CompilationUnit getAstNode(ICompilationUnit compilationUnit) {
+		ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
+		parser.setSource(compilationUnit);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setResolveBindings(true);
+		return (CompilationUnit) parser.createAST(new NullProgressMonitor());
 	}
 }
 

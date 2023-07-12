@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.commands.AbstractHandler;
@@ -33,10 +34,11 @@ import org.eclipse.ui.ide.ResourceUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import restfulspring.utils.AstUtil;
 import tool.utils.ViewUtil;
 
 public class CopyDto2MybatisFragment extends AbstractHandler{
+	public static Pattern setPattern = Pattern.compile("^[^\\.]*Set$");
+	public static Pattern listPattern = Pattern.compile("^[^\\.]*List$");
 
 	/** 
 	 * {@inheritDoc}
@@ -60,13 +62,14 @@ public class CopyDto2MybatisFragment extends AbstractHandler{
 			if (o instanceof TypeDeclaration) {
 				TypeDeclaration type = (TypeDeclaration) o;
 				Map<String, String> name2fullyQualified = getname2fullyQualified(type);
-				copySqlMethods(name2fullyQualified);
+				StringBuffer sb = copySqlMethods(name2fullyQualified);
+				ViewUtil.copyAndToolTip(sb.toString());
 			}
 		}
 		return null;
 	}
 	
-	private Map<String,String> getname2fullyQualified(TypeDeclaration clztype) {
+	public static Map<String,String> getname2fullyQualified(TypeDeclaration clztype) {
 		FieldDeclaration[] fields = clztype.getFields();
 		HashMap<String,String> name2fullyQualifiedNameMap = Maps.newLinkedHashMap();
 		for (FieldDeclaration field : fields) {
@@ -75,32 +78,32 @@ public class CopyDto2MybatisFragment extends AbstractHandler{
 			if (name.equals("pageSize") || name.equals("pageNum")) {
 				continue;
 			}
-			String fullyQualifiedName = null;
+			String typeName = null;
 			if (type.isSimpleType()) {
 	            SimpleType simpleType = (SimpleType) type;
-	            fullyQualifiedName = simpleType.resolveBinding().getQualifiedName();
+	            typeName = simpleType.resolveBinding().getName();
 	        } else if (type.isParameterizedType()) {
 	        	ParameterizedType parameterizedType = (ParameterizedType)type;
-	        	fullyQualifiedName = parameterizedType.resolveBinding().getErasure().getName();
+	        	typeName = parameterizedType.resolveBinding().getErasure().getName();
 	        } else if (type.isArrayType()) {
 	        	ArrayType arrayType = (ArrayType)type;
-	        	fullyQualifiedName = arrayType.resolveBinding().getQualifiedName();
+	        	typeName = arrayType.resolveBinding().getName();
 	        }
-			name2fullyQualifiedNameMap.put(name, fullyQualifiedName);
+			name2fullyQualifiedNameMap.put(name, typeName);
 		}
 		return name2fullyQualifiedNameMap;
 	}
 	
 	
-	public void copySqlMethods(Map<String, String> name2fullyQualified) {
+	public static StringBuffer copySqlMethods(Map<String, String> name2TypeMap) {
 		StringBuffer sb = new StringBuffer();
-		Set<Entry<String, String>> entrySet = name2fullyQualified.entrySet();
+		Set<Entry<String, String>> entrySet = name2TypeMap.entrySet();
 		ArrayList<String> leftFieldNames = Lists.newArrayList();
 		for (Entry<String, String> entry : entrySet) {
 			String name = entry.getKey();
-			String fullyQualifiedName = entry.getValue();
+			String typeName = entry.getValue();
 			String camel2underName = camel2under(name);
-			if (String.class.getName().equals(fullyQualifiedName)) {
+			if (String.class.getSimpleName().equals(typeName)) {
 				if (StringUtils.startsWith(name,"like")||StringUtils.endsWithIgnoreCase(name, "like")) {
 					sb.append("<if test=\"" + name + " != null and " + name + " != ''\">\r\n" + "   and " + camel2underName + " LIKE CONCAT#{" + name + "},'%')\r\n"
 							+ "</if>\r\n");
@@ -108,18 +111,18 @@ public class CopyDto2MybatisFragment extends AbstractHandler{
 					sb.append("<if test=\"" + name + " != null and " + name + " != ''\">\r\n" + "   and " + camel2underName + " = #{" + name + "}\r\n"
 							+ "</if>\r\n");
 				}
-			} else if (Date.class.getName().equals(fullyQualifiedName)) {
+			} else if (Date.class.getSimpleName().equals(typeName)) {
 				if (StringUtils.containsIgnoreCase(name, "end")) {
 					sb.append("<if test=\"" + name + " != null \" >\r\n" + "   <![CDATA[\r\n" + "   and " + camel2underName + " < #{" + name
 							+ "}\r\n" + "   ]]>\r\n" + "</if>\r\n");
 				} else {
 					sb.append("<if test=\"" + name + " != null \" >\r\n" + "   and " + camel2underName + " >= #{" + name + "}\r\n" + "</if>\r\n");
 				}
-			} else if (Integer.class.getName().equals(fullyQualifiedName) || Long.class.getName().equals(fullyQualifiedName) || Double.class.getName().equals(fullyQualifiedName)
-					|| Float.class.getName().equals(fullyQualifiedName) || Short.class.getName().equals(fullyQualifiedName)) {
+			} else if (Integer.class.getSimpleName().equals(typeName) || Long.class.getSimpleName().equals(typeName) || Double.class.getSimpleName().equals(typeName)
+					|| Float.class.getSimpleName().equals(typeName) || Short.class.getSimpleName().equals(typeName)) {
 				sb.append("<if test=\"" + name + " != null \">\r\n" + "   and " + camel2underName + " = #{" + name + "}\r\n" + "</if>\r\n");
-			} else if (AstUtil.listPattern.matcher(fullyQualifiedName).matches()
-					||AstUtil.setPattern.matcher(fullyQualifiedName).matches()){
+			} else if (listPattern.matcher(typeName).matches()
+					||setPattern.matcher(typeName).matches()){
 				if (StringUtils.startsWith(name,"simpleAreaCode")||StringUtils.startsWith(name,"like")||StringUtils.endsWithIgnoreCase(name, "like")) {
 					sb.append("<if test=\""+name+" != null and "+name+".size > 0\">\r\n"
 							+ "    AND\r\n"
@@ -143,8 +146,7 @@ public class CopyDto2MybatisFragment extends AbstractHandler{
 		for (String string : leftFieldNames) {
 			sb.append(string + "\r\n");
 		}
-		
-		ViewUtil.copyAndToolTip(sb.toString());
+		return sb;
 	}
 
 	
@@ -154,8 +156,8 @@ public class CopyDto2MybatisFragment extends AbstractHandler{
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(int.class.getName());
-		System.out.println(Integer.class.getName());
+		System.out.println(listPattern.matcher("ArrayList").matches());
+		
 	}
 
 }

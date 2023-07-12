@@ -3,6 +3,8 @@ package restfulspring;
 import java.util.HashMap;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -53,6 +55,18 @@ public class Activator extends AbstractUIPlugin {
 //        preferenceStore.setDefault("control1.value", /* 控件1的默认值 */);
 //        preferenceStore.setDefault("control2.value", /* 控件2的默认值 */);
 	}
+	
+	
+	public static Image getIcon() {
+		return getImageDescriptor("/icons/sample.png").createImage(); //$NON-NLS-1$
+	}
 
+	public static Image getIcon(String path) {
+		return getImageDescriptor(path).createImage();
+	}
+
+	public static ImageDescriptor getImageDescriptor(String path) {
+		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
 
 }

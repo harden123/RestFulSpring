@@ -38,6 +38,15 @@
 	</extension>
 	
 	
+	<extension
+         point="org.eclipse.jdt.ui.quickAssistProcessors">
+      <quickAssistProcessor
+            class="tool.quickAssist.JavaQuickAssistProcessor"
+            id="JavaQuickAssistProcessor"
+            name="tool.quickAssist.JavaQuickAssistProcessor">
+      </quickAssistProcessor>
+   </extension>
+	
     <extension point="org.eclipse.ui.menus">
        <menuContribution locationURI="popup:org.eclipse.ui.popup.any?after=additions">
           <menu label="RestFulSpring" id="RestFulSpringMenu">
