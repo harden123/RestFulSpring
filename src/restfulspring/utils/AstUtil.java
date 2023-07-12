@@ -31,9 +31,10 @@ import restfulspring.dto.RestParamDTO;
 import restfulspring.view.tree.restSpring.MyTreeElement;
 
 public class AstUtil {
-	private static Pattern listPattern = Pattern.compile("^java.util.[^\\.]*List$");
-   private static Pattern mapPattern = Pattern.compile("^java.util.[^\\.]*Map$");
-   private static final String DepencyLineSplitor = "->";
+	public static Pattern listPattern = Pattern.compile("^java.util.[^\\.]*List$");
+	public static Pattern setPattern = Pattern.compile("^java.util.[^\\.]*Set$");
+    private static Pattern mapPattern = Pattern.compile("^java.util.[^\\.]*Map$");
+    private static final String DepencyLineSplitor = "->";
 
 
 	// 获取给定modifiers中所有注解
