@@ -57,9 +57,9 @@ public class JavaQuickAssistProcessor implements IQuickAssistProcessor {
 					proposals.add(new CopyParamQuickAssist("Copy @Param fragment to clipboard", mapperMethod, astNode));
 				}
 				//FIXME:hsl 2023/07/12-
-				if (AddSqlQuickAssist.findXmlNode(mapperMethod)!=null) {
+//				if (AddSqlQuickAssist.findXmlNode(mapperMethod)!=null) {
 					proposals.add(new AddSqlQuickAssist("Add sql to xml", mapperMethod, astNode));
-				}
+//				}
 				return proposals.toArray(new IJavaCompletionProposal[proposals.size()]);
 			}
 		}

@@ -2,9 +2,13 @@ package restfulspring;
 
 import java.util.HashMap;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -67,6 +71,12 @@ public class Activator extends AbstractUIPlugin {
 
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+	
+
+	public static boolean openDialog(int kind, String title, String message) {
+		Shell shell = Display.getDefault().getActiveShell();
+		return MessageDialog.open(kind, shell, title, message, SWT.SHEET);
 	}
 
 }
