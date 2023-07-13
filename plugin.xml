@@ -21,6 +21,15 @@
             name="SqlJson"
             restorable="true">
       </view>
+       <view
+            allowMultiple="false"
+            category="com.RestSpring"
+            class="restfulspring.view.views.mybatis.MyBatisSqlView"
+            icon="icons/mybatis.png"
+            id="MyBatisSqlView"
+            name="MyBatisSqlView"
+            restorable="true">
+      </view>
       <category
             id="com.RestSpring"
             name="RestSpring">
