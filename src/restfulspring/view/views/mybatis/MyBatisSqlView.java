@@ -1,5 +1,8 @@
 package restfulspring.view.views.mybatis;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.xml.xpath.XPathExpressionException;
 
 import org.eclipse.core.resources.IFile;
@@ -18,7 +21,6 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocumentRegion;
 import org.eclipse.wst.xml.core.internal.document.AttrImpl;
 import org.eclipse.wst.xml.core.internal.document.ElementImpl;
 import org.eclipse.wst.xml.core.internal.document.TextImpl;
@@ -34,6 +36,12 @@ import tool.utils.XpathUtil;
 
 @SuppressWarnings("restriction")
 public class MyBatisSqlView extends ViewPart {
+
+	private static Pattern blankLinePattern = Pattern.compile("^[\\s\\r\\n\\t]+$");
+	private static Pattern startEndBlankPattern = Pattern.compile("^\\s*\\R.*\\R\\s*$",Pattern.MULTILINE|Pattern.DOTALL);
+	private static final String replaceFirstBlank = "^[\\s\\r\\n]*\\r\\n\\s*";
+	private static Pattern varPattern = Pattern.compile("#\\{[^\\}]+\\}\\s*(\"%\")*",Pattern.MULTILINE);
+
 
 	private MyBatisSqlViewSelectionListener selectionListener;
 
@@ -82,6 +90,7 @@ public class MyBatisSqlView extends ViewPart {
 
 	private final class MyBatisSqlViewSelectionListener implements ISelectionListener {
 
+
 		@Override
 		public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 			if (!selection.isEmpty() && (selection instanceof IStructuredSelection)) {
@@ -122,18 +131,25 @@ public class MyBatisSqlView extends ViewPart {
 				Node childNode = childNodes.item(k);
 				if (childNode instanceof TextImpl) {
 					String text = ((TextImpl) childNode).getTextContent();
+			        if (blankLinePattern.matcher(text).matches()) {
+						continue;
+					}
+			        if (startEndBlankPattern.matcher(text).matches()) {
+			        	text = text.replaceFirst(replaceFirstBlank, "");
+					}
+			        text = changeVarText(text);
 					buffer.append(text);
 				} else if (childNode instanceof ElementImpl) {
 					ElementImpl element = (ElementImpl) childNode;
 					String elemName = element.getNodeName();
 					if (element.hasChildNodes()) {
-						IStructuredDocumentRegion startRegion = element.getStartStructuredDocumentRegion();
-						if (startRegion != null)
-							buffer.append(startRegion.getText());
+//						IStructuredDocumentRegion startRegion = element.getStartStructuredDocumentRegion();
+//						if (startRegion != null)
+//							buffer.append(startRegion.getText());
 						computeStatementText(element, buffer);
-						IStructuredDocumentRegion endRegion = element.getEndStructuredDocumentRegion();
-						if (endRegion != null)
-							buffer.append(endRegion.getText());
+//						IStructuredDocumentRegion endRegion = element.getEndStructuredDocumentRegion();
+//						if (endRegion != null)
+//							buffer.append(endRegion.getText());
 					} else if ("include".equals(elemName)) {
 						ElementImpl sqlElement = resolveInclude(element, buffer);
 						computeStatementText(sqlElement, buffer);
@@ -178,6 +194,33 @@ public class MyBatisSqlView extends ViewPart {
 		if (!text.isDisposed()) {
 			text.setBackground(new Color(204, 232, 207));
 		}
+	}
+	
+	
+	private String changeVarText(String text) {
+		Matcher matcher = varPattern.matcher(text);
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+		    matcher.appendReplacement(sb, "''");
+		}
+		matcher.appendTail(sb);
+		return sb.toString();
+	}
+	
+	
+	public static void main(String[] args) {
+//		String string = "   \r\nHello, world! \r\nHow are you?\r\n  ";
+//		Matcher matcher = startEndBlankPattern.matcher(string);
+//		System.out.println(matcher.matches());
+//		String replaceFirst = string.replaceFirst("^[\\s\\r\\n]*\\r\\n", "");
+//        String output = replaceFirst.replaceAll("\r\n\\s+$", "\r\n");
+		Matcher matcher = varPattern.matcher("            AND feedback.mobile = #{mobile}\"%\" and \r\n a =#{mobile2}");
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+		    matcher.appendReplacement(sb, "''");
+		}
+		matcher.appendTail(sb);
+		System.out.println(sb.toString());
 	}
 
 
