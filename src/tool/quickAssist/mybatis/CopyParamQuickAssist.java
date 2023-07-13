@@ -79,7 +79,7 @@ public class CopyParamQuickAssist extends QuickAssistCompletionProposal {
 		        	for (IField im : fields) {
 		        		name2TypeName.put(im.getElementName(), Signature.toString(im.getTypeSignature()));
 					}
-					StringBuffer copySqlMethods = CopyDto2MybatisFragment.copySqlMethods(name2TypeName,paramName);
+					StringBuffer copySqlMethods = CopyDto2MybatisFragment.copySqlMethods(name2TypeName,paramAlias);
 					sb.append(copySqlMethods);
 		        }
 			}
