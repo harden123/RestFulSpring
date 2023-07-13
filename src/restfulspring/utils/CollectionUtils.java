@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import restfulspring.dto.JDTTypeDTO;
-
 public class CollectionUtils {
 
 	/**
@@ -17,11 +15,11 @@ public class CollectionUtils {
      * @return true if empty or null
      * @since Commons Collections 3.2
      */
-    public static boolean isEmpty(Collection coll) {
+    public static boolean isEmpty(Collection<?> coll) {
         return (coll == null || coll.isEmpty());
     }
 
-	public static boolean isNotEmpty(List<JDTTypeDTO> list) {
+	public static boolean isNotEmpty(List<?> list) {
 		return !isEmpty(list);
 	}
 

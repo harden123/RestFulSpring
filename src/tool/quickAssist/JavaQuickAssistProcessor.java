@@ -17,6 +17,7 @@ import org.eclipse.jdt.ui.text.java.IProblemLocation;
 import org.eclipse.jdt.ui.text.java.IQuickAssistProcessor;
 
 import restfulspring.utils.AstUtil;
+import restfulspring.utils.CollectionUtils;
 import tool.dto.mybatis.MapperMethod;
 import tool.quickAssist.mybatis.AddSqlQuickAssist;
 import tool.quickAssist.mybatis.CopyParamQuickAssist;
@@ -56,10 +57,10 @@ public class JavaQuickAssistProcessor implements IQuickAssistProcessor {
 				if (method.getParameters().length > 0) {
 					proposals.add(new CopyParamQuickAssist("Copy @Param fragment to clipboard", mapperMethod, astNode));
 				}
-				//FIXME:hsl 2023/07/12-
-//				if (AddSqlQuickAssist.findXmlNode(mapperMethod)!=null) {
-					proposals.add(new AddSqlQuickAssist("Add sql to xml", mapperMethod, astNode));
-//				}
+				if (CollectionUtils.isEmpty(AddSqlQuickAssist.findNodeByMapperMethod(mapperMethod))) {
+					proposals.add(new AddSqlQuickAssist("Add SQL to XML", mapperMethod, astNode));
+
+				}
 				return proposals.toArray(new IJavaCompletionProposal[proposals.size()]);
 			}
 		}

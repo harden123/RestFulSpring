@@ -2,6 +2,9 @@ package tool.quickAssist.mybatis;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 import javax.xml.xpath.XPathExpressionException;
 
@@ -12,15 +15,11 @@ import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IMethodBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
 import org.eclipse.wst.sse.core.StructuredModelManager;
 import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel;
@@ -32,12 +31,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import lombok.SneakyThrows;
 import restfulspring.Activator;
 import restfulspring.config.Log;
+import restfulspring.utils.CollectionUtils;
 import tool.config.mybatis.MapperNamespaceCache;
 import tool.dto.mybatis.FindXmlNodeDTO;
 import tool.dto.mybatis.MapperMethod;
+import tool.hyperlink.mybatis.ToXmlHyperlink;
 import tool.quickAssist.QuickAssistCompletionProposal;
 import tool.utils.MybatipseXmlUtil;
 import tool.utils.XpathUtil;
@@ -60,14 +64,26 @@ public class AddSqlQuickAssist extends QuickAssistCompletionProposal {
 	@SneakyThrows
 	public void apply(IDocument document) {
 		StringBuffer sqlFragment = CopyParamQuickAssist.getSqlFragment(method);
-		IFile xmlMapperFile = findXmlMapperFile(method);
-		addXmlStatement(xmlMapperFile,sqlFragment);
+		IFile xmlMapperFile = findMapperFileByMapperMethod(method);
+		boolean addXmlStatement = addXmlStatement(xmlMapperFile,sqlFragment);
+		if (addXmlStatement) {
+			List<FindXmlNodeDTO> findNodeByMapperMethod = findNodeByMapperMethod(method);
+			if (CollectionUtils.isNotEmpty(findNodeByMapperMethod)) {
+				IDOMNode domNode = (IDOMNode)findNodeByMapperMethod.get(0).getDomNode();
+				IFile mapperFile = findNodeByMapperMethod.get(0).getMapperFile();
+				Region destRegion = new Region(domNode.getStartOffset(), domNode.getEndOffset() - domNode.getStartOffset());
+				String label = "Open <" + domNode.getNodeName() + "/> in " + mapperFile.getFullPath();
+				ToXmlHyperlink toXmlHyperlink = new ToXmlHyperlink(mapperFile, null, label, destRegion);
+				toXmlHyperlink.open();
+			}
+		}
+		
 	}
 
 
 	
 	@SneakyThrows
-	public static IFile findXmlMapperFile(MapperMethod method) {
+	public static IFile findMapperFileByMapperMethod(MapperMethod method) {
 		MethodDeclaration methodDeclaration = method.getMethodDeclaration();
 		IMethodBinding resolveBinding = methodDeclaration.resolveBinding();
 		IJavaElement srcElement = resolveBinding.getJavaElement();
@@ -92,15 +108,15 @@ public class AddSqlQuickAssist extends QuickAssistCompletionProposal {
 		return null;
 	}
 
-	public static FindXmlNodeDTO findXmlNode(MapperMethod method) {
+	public static List<FindXmlNodeDTO> findNodeByMapperMethod(MapperMethod method) {
 		MethodDeclaration methodDeclaration = method.getMethodDeclaration();
-		IRegion region = new Region(methodDeclaration.getStartPosition(), methodDeclaration.getLength());
+//		IRegion region = new Region(methodDeclaration.getStartPosition(), methodDeclaration.getLength());
 		IMethodBinding resolveBinding = methodDeclaration.resolveBinding();
 		IJavaElement srcElement = resolveBinding.getJavaElement();
 		switch (srcElement.getElementType()) {
 			case IJavaElement.METHOD:
 				IMethod m = (IMethod) srcElement;
-				return findNodeByExpression(m.getDeclaringType(), null, "//*[@id='" + srcElement.getElementName() + "']", region);
+				return findNodeByExpression(m.getDeclaringType(), "//*[@id='" + srcElement.getElementName() + "']");
 			default:
 				break;
 		}
@@ -109,12 +125,12 @@ public class AddSqlQuickAssist extends QuickAssistCompletionProposal {
 
 	
 	@SneakyThrows
-	private static FindXmlNodeDTO findNodeByExpression(IType type, IType triggerType, String expression, IRegion srcRegion) {
-		if (type.isInterface() && (triggerType == null || type.equals(triggerType))) {
+	public static List<FindXmlNodeDTO> findNodeByExpression(IType type, String expression) {
+		if (type.isInterface()) {
 			IJavaProject project = type.getJavaProject();
 			if (project == null)
 				return null;
-			FindXmlNodeDTO findXmlNodeDTO = new FindXmlNodeDTO();
+			List<FindXmlNodeDTO> findXmlNodeDTOs = Lists.newArrayList();
 			for (IFile mapperFile : MapperNamespaceCache.getInstance().get(project, type.getFullyQualifiedName(), null)) {
 				IDOMDocument mapperDocument = MybatipseXmlUtil.getMapperDocument(mapperFile);
 				if (mapperDocument == null)
@@ -122,9 +138,11 @@ public class AddSqlQuickAssist extends QuickAssistCompletionProposal {
 				try {
 					IDOMNode domNode = (IDOMNode) XpathUtil.xpathNode(mapperDocument, expression);
 					if (domNode != null) {
+						FindXmlNodeDTO findXmlNodeDTO = new FindXmlNodeDTO();
 						findXmlNodeDTO.setDomNode(domNode);
 						findXmlNodeDTO.setMapperFile(mapperFile);
-						return findXmlNodeDTO;
+						findXmlNodeDTOs.add(findXmlNodeDTO);
+						return findXmlNodeDTOs;
 					}
 				} catch (XPathExpressionException e) {
 					Log.error(e.getMessage(), e);
@@ -176,15 +194,27 @@ public class AddSqlQuickAssist extends QuickAssistCompletionProposal {
 
 	private Element createStatementElement(IDOMDocument mapperDoc, String delimiter, StringBuffer sqlFragment) {
 		MethodDeclaration methodDeclaration = method.getMethodDeclaration();
-		ASTNode parent = methodDeclaration.getParent();
-		String doName = null;
-		if (parent instanceof TypeDeclaration) {
-			TypeDeclaration clzTypeDeclaration = ((TypeDeclaration) parent);
-			ITypeBinding[] interfaces = clzTypeDeclaration.resolveBinding().getInterfaces();
-			if (interfaces!=null&&interfaces.length>0&&interfaces[0].getTypeArguments()!=null&&interfaces[0].getTypeArguments().length>0) {
-				doName = interfaces[0].getTypeArguments()[0].getName();
-			}
+		IMethodBinding resolveBinding = methodDeclaration.resolveBinding();
+		IJavaElement srcElement = resolveBinding.getJavaElement();
+		IMethod m = (IMethod) srcElement;
+		IType type = m.getDeclaringType();
+		List<FindXmlNodeDTO> findNodeByExpression = findNodeByExpression(type, "/mapper/resultMap");
+		HashMap<String, String> type2IdResultMap = Maps.newHashMap();
+		for (FindXmlNodeDTO findXmlNodeDTO : findNodeByExpression) {
+			Node domNode = findXmlNodeDTO.getDomNode();
+			String resultMapId = MybatipseXmlUtil.getAttribute(domNode, "id");
+			String resultMapType = MybatipseXmlUtil.findEnclosingType(domNode);
+			type2IdResultMap.put(resultMapId, resultMapType);
 		}
+//		ASTNode parent = methodDeclaration.getParent();
+//		String doName = null;
+//		if (parent instanceof TypeDeclaration) {
+//			TypeDeclaration clzTypeDeclaration = ((TypeDeclaration) parent);
+//			ITypeBinding[] interfaces = clzTypeDeclaration.resolveBinding().getInterfaces();
+//			if (interfaces!=null&&interfaces.length>0&&interfaces[0].getTypeArguments()!=null&&interfaces[0].getTypeArguments().length>0) {
+//				doName = interfaces[0].getTypeArguments()[0].getName();
+//			}
+//		}
 		String methodName = methodDeclaration.resolveBinding().getName();
 		Element element = null;
 		if (StringUtils.startsWithIgnoreCase(methodName, "update")||StringUtils.startsWithIgnoreCase(methodName, "modify")||StringUtils.startsWithIgnoreCase(methodName, "upsert")) {
@@ -195,9 +225,10 @@ public class AddSqlQuickAssist extends QuickAssistCompletionProposal {
 		element.setAttribute("id", methodDeclaration.getName().toString());
 		
 		String returnTypeStr = method.getReturnTypeStr();
-		if (StringUtils.isNotBlank(returnTypeStr)&&!StringUtils.equalsIgnoreCase(returnTypeStr, "void")) {
-			if (StringUtils.equals(returnTypeStr, doName)||(doName==null&&returnTypeStr.endsWith("DO"))) {
-				element.setAttribute("resultMap", "BaseResultMap");
+		if (StringUtils.isNotBlank(returnTypeStr)) {
+			Optional<String> findAny = type2IdResultMap.keySet().stream().filter(x->StringUtils.endsWith(x, returnTypeStr)).findAny();
+			if (findAny.isPresent()) {
+				element.setAttribute("resultMap", type2IdResultMap.get(findAny.get()));
 			}else {
 				element.setAttribute("resultType", returnTypeStr);
 			}

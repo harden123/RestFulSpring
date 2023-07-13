@@ -209,7 +209,7 @@ public class MybatipseXmlUtil {
 		return src == null ? null : src.replace('$', '.');
 	}
 
-	private static String getAttribute(Node node, String attributeName) {
+	public static String getAttribute(Node node, String attributeName) {
 		NamedNodeMap attributes = node.getAttributes();
 		if (attributes != null) {
 			Node typeAttrNode = attributes.getNamedItem(attributeName);
