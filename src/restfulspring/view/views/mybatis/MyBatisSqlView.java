@@ -8,9 +8,10 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -36,13 +37,14 @@ public class MyBatisSqlView extends ViewPart {
 
 	private MyBatisSqlViewSelectionListener selectionListener;
 
-	protected Text text;
+	protected StyledText  text;
 
 	@Override
 	public void createPartControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NULL);
 		composite.setLayout(new FillLayout());
-		text = new Text(composite, SWT.MULTI | SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
+		text = new StyledText(composite, SWT.MULTI  | SWT.WRAP | SWT.V_SCROLL);
+		setAppearance();
 
 		selectionListener = new MyBatisSqlViewSelectionListener();
 		IWorkbenchWindow workbenchWindow = getSite().getWorkbenchWindow();
@@ -169,6 +171,12 @@ public class MyBatisSqlView extends ViewPart {
 				Log.error("Failed to resolve included sql element.", e);
 			}
 			return null;
+		}
+	}
+	
+	protected void setAppearance() {
+		if (!text.isDisposed()) {
+			text.setBackground(new Color(204, 232, 207));
 		}
 	}
 

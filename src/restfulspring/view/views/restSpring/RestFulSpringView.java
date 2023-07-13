@@ -70,7 +70,9 @@ public class RestFulSpringView extends ViewPart {
 		Composite toolRow = SWTFactory.createComposite(composite);
 		GridData row1Data = new GridData(SWT.FILL, SWT.FILL, true, false);
 		// row1.heightHint = 200;
+		//控制控件在父容器中的大小、位置、对齐方式
 		toolRow.setLayoutData(row1Data);
+		//控制控件内的布局样式
 		toolRow.setLayout(SWTFactory.createGridLayout(6));
 
 		Button refresh = new Button(toolRow, SWT.NONE);
