@@ -62,7 +62,7 @@ public class CopyDto2MybatisFragment extends AbstractHandler{
 			if (o instanceof TypeDeclaration) {
 				TypeDeclaration type = (TypeDeclaration) o;
 				Map<String, String> name2fullyQualified = getname2fullyQualified(type);
-				StringBuffer sb = copySqlMethods(name2fullyQualified);
+				StringBuffer sb = copySqlMethods(name2fullyQualified,null);
 				ViewUtil.copyAndToolTip(sb.toString());
 			}
 		}
@@ -95,15 +95,18 @@ public class CopyDto2MybatisFragment extends AbstractHandler{
 	}
 	
 	
-	public static StringBuffer copySqlMethods(Map<String, String> name2TypeMap) {
+	public static StringBuffer copySqlMethods(Map<String, String> name2SimpleTypeMap,String prefix) {
 		StringBuffer sb = new StringBuffer();
-		Set<Entry<String, String>> entrySet = name2TypeMap.entrySet();
+		Set<Entry<String, String>> entrySet = name2SimpleTypeMap.entrySet();
 		ArrayList<String> leftFieldNames = Lists.newArrayList();
 		for (Entry<String, String> entry : entrySet) {
 			String name = entry.getKey();
-			String typeName = entry.getValue();
+			if (StringUtils.isNotBlank(prefix)) {
+				name = prefix+"."+name;
+			}
+			String simpleTypeName = entry.getValue();
 			String camel2underName = camel2under(name);
-			if (String.class.getSimpleName().equals(typeName)) {
+			if (String.class.getSimpleName().equals(simpleTypeName)) {
 				if (StringUtils.startsWith(name,"like")||StringUtils.endsWithIgnoreCase(name, "like")) {
 					sb.append("<if test=\"" + name + " != null and " + name + " != ''\">\r\n" + "   and " + camel2underName + " LIKE CONCAT#{" + name + "},'%')\r\n"
 							+ "</if>\r\n");
@@ -111,18 +114,18 @@ public class CopyDto2MybatisFragment extends AbstractHandler{
 					sb.append("<if test=\"" + name + " != null and " + name + " != ''\">\r\n" + "   and " + camel2underName + " = #{" + name + "}\r\n"
 							+ "</if>\r\n");
 				}
-			} else if (Date.class.getSimpleName().equals(typeName)) {
+			} else if (Date.class.getSimpleName().equals(simpleTypeName)) {
 				if (StringUtils.containsIgnoreCase(name, "end")) {
 					sb.append("<if test=\"" + name + " != null \" >\r\n" + "   <![CDATA[\r\n" + "   and " + camel2underName + " < #{" + name
 							+ "}\r\n" + "   ]]>\r\n" + "</if>\r\n");
 				} else {
 					sb.append("<if test=\"" + name + " != null \" >\r\n" + "   and " + camel2underName + " >= #{" + name + "}\r\n" + "</if>\r\n");
 				}
-			} else if (Integer.class.getSimpleName().equals(typeName) || Long.class.getSimpleName().equals(typeName) || Double.class.getSimpleName().equals(typeName)
-					|| Float.class.getSimpleName().equals(typeName) || Short.class.getSimpleName().equals(typeName)) {
+			} else if (Integer.class.getSimpleName().equals(simpleTypeName) || Long.class.getSimpleName().equals(simpleTypeName) || Double.class.getSimpleName().equals(simpleTypeName)
+					|| Float.class.getSimpleName().equals(simpleTypeName) || Short.class.getSimpleName().equals(simpleTypeName)) {
 				sb.append("<if test=\"" + name + " != null \">\r\n" + "   and " + camel2underName + " = #{" + name + "}\r\n" + "</if>\r\n");
-			} else if (listPattern.matcher(typeName).matches()
-					||setPattern.matcher(typeName).matches()){
+			} else if (listPattern.matcher(simpleTypeName).matches()
+					||setPattern.matcher(simpleTypeName).matches()){
 				if (StringUtils.startsWith(name,"simpleAreaCode")||StringUtils.startsWith(name,"like")||StringUtils.endsWithIgnoreCase(name, "like")) {
 					sb.append("<if test=\""+name+" != null and "+name+".size > 0\">\r\n"
 							+ "    AND\r\n"

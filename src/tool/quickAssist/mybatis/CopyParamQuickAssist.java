@@ -69,7 +69,7 @@ public class CopyParamQuickAssist extends QuickAssistCompletionProposal {
 			if (AstUtil.isJdkType(type)) {
 				HashMap<String, String> name2TypeName = Maps.newHashMapWithExpectedSize(1);
 				name2TypeName.put(paramName, typeName);
-				StringBuffer copySqlMethods = CopyDto2MybatisFragment.copySqlMethods(name2TypeName);
+				StringBuffer copySqlMethods = CopyDto2MybatisFragment.copySqlMethods(name2TypeName,null);
 				sb.append(copySqlMethods);
 			}else {
 			    IType type2 = (IType) type.getJavaElement();
@@ -79,7 +79,7 @@ public class CopyParamQuickAssist extends QuickAssistCompletionProposal {
 		        	for (IField im : fields) {
 		        		name2TypeName.put(im.getElementName(), Signature.toString(im.getTypeSignature()));
 					}
-					StringBuffer copySqlMethods = CopyDto2MybatisFragment.copySqlMethods(name2TypeName);
+					StringBuffer copySqlMethods = CopyDto2MybatisFragment.copySqlMethods(name2TypeName,paramName);
 					sb.append(copySqlMethods);
 		        }
 			}
