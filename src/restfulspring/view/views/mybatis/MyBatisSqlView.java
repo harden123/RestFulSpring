@@ -21,6 +21,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.eclipse.wst.sse.core.internal.provisional.text.IStructuredDocumentRegion;
 import org.eclipse.wst.xml.core.internal.document.AttrImpl;
 import org.eclipse.wst.xml.core.internal.document.ElementImpl;
 import org.eclipse.wst.xml.core.internal.document.TextImpl;
@@ -39,6 +40,7 @@ public class MyBatisSqlView extends ViewPart {
 
 	private static Pattern blankLinePattern = Pattern.compile("^[\\s\\r\\n\\t]+$");
 	private static Pattern startEndBlankPattern = Pattern.compile("^\\s*\\R.*\\R\\s*$",Pattern.MULTILINE|Pattern.DOTALL);
+	private static Pattern wherePattern = Pattern.compile("^[\\s\\r\\n]*<where>[\\s\\r\\n]*$",Pattern.MULTILINE);
 	private static final String replaceFirstBlank = "^[\\s\\r\\n]*\\r\\n\\s*";
 	private static Pattern varPattern = Pattern.compile("#\\{[^\\}]+\\}\\s*(\"%\")*",Pattern.MULTILINE);
 
@@ -143,9 +145,9 @@ public class MyBatisSqlView extends ViewPart {
 					ElementImpl element = (ElementImpl) childNode;
 					String elemName = element.getNodeName();
 					if (element.hasChildNodes()) {
-//						IStructuredDocumentRegion startRegion = element.getStartStructuredDocumentRegion();
-//						if (startRegion != null)
-//							buffer.append(startRegion.getText());
+						IStructuredDocumentRegion startRegion = element.getStartStructuredDocumentRegion();
+						if (startRegion != null&&wherePattern.matcher(startRegion.getText()).matches())
+							buffer.append(startRegion.getText().replaceAll(">", "").replaceAll("<", ""));
 						computeStatementText(element, buffer);
 //						IStructuredDocumentRegion endRegion = element.getEndStructuredDocumentRegion();
 //						if (endRegion != null)
@@ -214,13 +216,17 @@ public class MyBatisSqlView extends ViewPart {
 //		System.out.println(matcher.matches());
 //		String replaceFirst = string.replaceFirst("^[\\s\\r\\n]*\\r\\n", "");
 //        String output = replaceFirst.replaceAll("\r\n\\s+$", "\r\n");
-		Matcher matcher = varPattern.matcher("            AND feedback.mobile = #{mobile}\"%\" and \r\n a =#{mobile2}");
-		StringBuffer sb = new StringBuffer();
-		while (matcher.find()) {
-		    matcher.appendReplacement(sb, "''");
-		}
-		matcher.appendTail(sb);
-		System.out.println(sb.toString());
+		
+//		Matcher matcher = varPattern.matcher("            AND feedback.mobile = #{mobile}\"%\" and \r\n a =#{mobile2}");
+//		StringBuffer sb = new StringBuffer();
+//		while (matcher.find()) {
+//		    matcher.appendReplacement(sb, "''");
+//		}
+//		matcher.appendTail(sb);
+//		System.out.println(sb.toString());
+		
+		Matcher matcher2 = wherePattern.matcher("<where>");
+		System.out.println(matcher2.matches());
 	}
 
 
