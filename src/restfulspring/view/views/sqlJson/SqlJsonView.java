@@ -121,7 +121,7 @@ public class SqlJsonView extends ViewPart {
 		resultRow.setLayout(SWTFactory.createGridLayout(1));
 		
 		StyledText resultText = new StyledText(resultRow, SWT.MULTI   | SWT.WRAP | SWT.V_SCROLL);
-		resultText.setText("result");
+		resultText.setText("json");
 		resultText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
 		toJsonBtn.addSelectionListener(new SqlJsonChangeListener(sqlText,resultText,toJsonDateCombo));
