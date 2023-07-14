@@ -147,7 +147,7 @@ public class MyBatisSqlView extends ViewPart {
 					if (element.hasChildNodes()) {
 						IStructuredDocumentRegion startRegion = element.getStartStructuredDocumentRegion();
 						if (startRegion != null&&wherePattern.matcher(startRegion.getText()).matches())
-							buffer.append(startRegion.getText().replaceAll(">", "").replaceAll("<", ""));
+							buffer.append(startRegion.getText().replaceAll(">", "").replaceAll("<", "")).append(" ");
 						computeStatementText(element, buffer);
 //						IStructuredDocumentRegion endRegion = element.getEndStructuredDocumentRegion();
 //						if (endRegion != null)
