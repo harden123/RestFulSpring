@@ -26,7 +26,7 @@
             category="com.RestSpring"
             class="restfulspring.view.views.mybatis.MyBatisSqlView"
             icon="icons/mybatis.png"
-            id="MyBatisSqlView"
+            id="restfulspring.MyBatisSqlView"
             name="MyBatisSqlView"
             restorable="true">
       </view>
