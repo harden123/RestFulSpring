@@ -19,6 +19,7 @@ import cn.hutool.core.util.StrUtil;
 import restfulspring.constant.RestConstant;
 import restfulspring.constant.YmdTypeEnum;
 import restfulspring.utils.TextUtil;
+import restfulspring.view.views.sqlJson.MybatisLogBinder;
 
 public class JsonSqlChangeListener implements SelectionListener{
 
@@ -46,15 +47,21 @@ public class JsonSqlChangeListener implements SelectionListener{
 	@Override
 	public void widgetSelected(SelectionEvent arg0) {
 		String jsontext = sqlText.getText();
+		
 		if (StringUtils.isNotBlank(jsontext)) {
-			String toSqlDateText = toSqlDateCombo.getText();
-			String result = doParse(jsontext,toSqlDateText);
-			
+			String[] bind = {""};
+			final int sqlPrefixStart = jsontext.indexOf(MybatisLogBinder.PREFIX_SQL);
+			if (sqlPrefixStart == -1) {
+				String toSqlDateText = toSqlDateCombo.getText();
+				bind[0] = doParse(jsontext,toSqlDateText);
+			}else {
+				bind[0]= MybatisLogBinder.bind(jsontext);
+			}
 			Display.getDefault().asyncExec(new Runnable() {
 
 				@Override
 				public void run() {
-					resultText.setText(result);
+					resultText.setText(bind[0]);
 				}
 			});
 		}
