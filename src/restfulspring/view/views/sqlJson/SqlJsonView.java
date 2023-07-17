@@ -5,6 +5,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
@@ -112,6 +113,11 @@ public class SqlJsonView extends ViewPart {
 			}
 		});     
 
+		
+		Button clearBtn = new Button(buttonRow, SWT.NONE);
+		toSqlBtn.setText("clear");
+		
+		
 		/*------------------------- resultRow-----------------------------*/
 		
 		Composite resultRow = SWTFactory.createComposite(composite);
@@ -126,6 +132,19 @@ public class SqlJsonView extends ViewPart {
 		
 		toJsonBtn.addSelectionListener(new SqlJsonChangeListener(sqlText,resultText,toJsonDateCombo));
 		toSqlBtn.addSelectionListener(new JsonSqlChangeListener(sqlText,resultText,toSqlDateCombo));
+		clearBtn.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				sqlText.setText("");
+				resultText.setText("");
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				
+			}
+		});
 	}
 
 	/** 
