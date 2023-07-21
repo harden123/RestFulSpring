@@ -11,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
@@ -21,6 +23,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
+
+import com.alibaba.fastjson.JSON;
 
 import lombok.SneakyThrows;
 import restfulspring.constant.RestConstant;
@@ -37,7 +41,7 @@ public class OkHttpUtlis {
 //    }
 
 //	private static HostnameVerifier trustAllHostnameVerifier;
-
+	static Map<String, String> host2CookieMap = new HashMap<String, String>();
 	static {
 	    TrustManager[] trustAllCerts = new TrustManager[]{
 		    new X509TrustManager() {
@@ -80,6 +84,8 @@ public class OkHttpUtlis {
 				}
 			}
 			
+		    String domainPort = addCookie(apiUrl, connection);
+			
 			connection.setDoOutput(true); // 允许向服务器输出内容
 			OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8);
 			writer.write(json);
@@ -87,6 +93,21 @@ public class OkHttpUtlis {
 			
 			int responseCode = connection.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) {
+				Map<String, List<String>> respHeaders = connection.getHeaderFields();
+		        for (Map.Entry<String, List<String>> entry : respHeaders.entrySet()) {
+		            String headerName = entry.getKey();
+		            List<String> headerValues = entry.getValue();
+		            if (StringUtils.equalsIgnoreCase(headerName, "Set-Cookie")) {
+		            	for (String headerValue : headerValues) {
+							if (StringUtils.containsIgnoreCase(JSON.toJSONString(headerValue), "delete")) {
+								continue;
+							}
+			                host2CookieMap.put(domainPort, headerValue);
+						}
+		             
+					}
+		        }
+			        
 			    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			    String line;
 			    StringBuilder response = new StringBuilder();
@@ -104,6 +125,15 @@ public class OkHttpUtlis {
 		} catch (Exception e) {
 			return e.getMessage();
 		}
+	}
+
+	private static String addCookie(URL apiUrl, HttpURLConnection connection) {
+		String domainPort = apiUrl.getHost()+apiUrl.getPort();
+		String cookie = host2CookieMap.get(domainPort);
+		if (StringUtils.isNotBlank(cookie)) {
+			connection.addRequestProperty("Cookie", cookie);
+		}
+		return domainPort;
 	}
     
     public static String doGet(Map<String,Object> params, Map<String,String> headers, String url){
@@ -129,6 +159,7 @@ public class OkHttpUtlis {
 					connection.addRequestProperty(key, val);
 				}
 			}
+			addCookie(apiUrl, connection);
 			
 			int responseCode = connection.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -168,7 +199,11 @@ public class OkHttpUtlis {
 	}
 	
 	public static void main(String[] args) {
-		String doGet = doGet(null, null, "https://www.baidu.com");
+//		String doGet = doGet(null, null, "https://www.baidu.com");
+//		System.out.println(doGet);
+		String doPostJSON = doPostJSON("{\"loginId\":\"sysadmin4\",\"password\":\"123456\"}", null, "https://wit-plat-testb-browser.gogen.cn/biz/login");
+		System.out.println(doPostJSON);
+		String doGet = doGet(null, null, "https://wit-plat-testb-browser.gogen.cn/biz/getUserDetailByUserUuid");
 		System.out.println(doGet);
 	}
 }
