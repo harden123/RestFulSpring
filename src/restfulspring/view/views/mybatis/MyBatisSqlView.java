@@ -43,6 +43,7 @@ public class MyBatisSqlView extends ViewPart {
 	private static Pattern wherePattern = Pattern.compile("^[\\s\\r\\n]*<where>[\\s\\r\\n]*$",Pattern.MULTILINE);
 	private static final String replaceFirstBlank = "^[\\s\\r\\n]*\\r\\n\\s*";
 	private static Pattern varPattern = Pattern.compile("#\\{[^\\}]+\\}\\s*(\"%\")*",Pattern.MULTILINE);
+	private static Pattern var2Pattern = Pattern.compile("\\$\\{[^\\}]+\\}",Pattern.MULTILINE);
 
 
 	private MyBatisSqlViewSelectionListener selectionListener;
@@ -206,7 +207,15 @@ public class MyBatisSqlView extends ViewPart {
 		    matcher.appendReplacement(sb, "''");
 		}
 		matcher.appendTail(sb);
-		return sb.toString();
+		text = sb.toString();
+		
+		Matcher matcher2 = var2Pattern.matcher(text);
+		StringBuffer sb2 = new StringBuffer();
+		while (matcher2.find()) {
+			matcher2.appendReplacement(sb2, "''");
+		}
+		matcher2.appendTail(sb2);
+		return sb2.toString();
 	}
 	
 	
