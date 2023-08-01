@@ -23,6 +23,7 @@ import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.RestParamDTO;
 import restfulspring.handlers.OpenEditorHandlers;
 import restfulspring.handlers.RequestCacheHandlers;
+import restfulspring.preference.MyPreferencesPage;
 import restfulspring.utils.AstUtil;
 import restfulspring.utils.TextUtil;
 import restfulspring.view.tab.restSpring.TabGroupDTO;
@@ -33,11 +34,13 @@ public class TreeClickLinstener implements IDoubleClickListener,ISelectionChange
 	private Combo getCombo;
 	private Text urlText;
 	private TabGroupDTO tabGroupDTO;
+	private Combo urlPrfixCombo;
 
-	public TreeClickLinstener(Combo getCombo, Text urlText, TabGroupDTO tabGroupDTO) {
+	public TreeClickLinstener(Combo getCombo, Text urlText, TabGroupDTO tabGroupDTO, Combo urlPrfixCombo) {
 		this.getCombo = getCombo;
 		this.urlText = urlText;
 		this.tabGroupDTO = tabGroupDTO;
+		this.urlPrfixCombo = urlPrfixCombo;
 	}
 
 	@Override
@@ -81,7 +84,7 @@ public class TreeClickLinstener implements IDoubleClickListener,ISelectionChange
 						tabGroupDTO.getHeadText().setText(headers);
 						
 						//url
-						String UrlPrefix = Activator.getDefault().getPreferenceStore().getString(RestConstant.UrlPrefix);
+						String UrlPrefix = MyPreferencesPage.getUrlPrfixByCombo(urlPrfixCombo);
 						String urlParamCache = RequestCacheHandlers.getBeyKey(RestConstant.UrlText,methodUrl);
 						if (StringUtils.isBlank(urlParamCache)) {
 							urlParamCache = TextUtil.initGetParam(getParamKVMap);

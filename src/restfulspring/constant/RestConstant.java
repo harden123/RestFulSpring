@@ -32,7 +32,13 @@ public class RestConstant {
 	
 	/*---------------sp -----------------------------*/
 
+	public static final String LabelPrefix = "labelPrefix";
 	public static final String UrlPrefix = "urlPrefix";
+	public static final String LabelPrefix2 = "labelPrefix2";
+	public static final String UrlPrefix2 = "urlPrefix2";
+	public static final String LabelPrefix3 = "labelPrefix3";
+	public static final String UrlPrefix3 = "urlPrefix3";
+	
 	public static final String Headers = "Headers";
 	public static final String BodyText = "bodyText:";
 	public static final String UrlText = "urlText:";

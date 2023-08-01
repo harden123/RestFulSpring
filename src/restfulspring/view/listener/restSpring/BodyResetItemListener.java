@@ -7,14 +7,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
-import restfulspring.Activator;
 import restfulspring.constant.RestConstant;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.RestParamDTO;
 import restfulspring.handlers.RequestCacheHandlers;
+import restfulspring.preference.MyPreferencesPage;
 import restfulspring.utils.AstUtil;
 import restfulspring.utils.TextUtil;
 import restfulspring.view.tab.restSpring.TabGroupDTO;
@@ -24,10 +25,12 @@ public class BodyResetItemListener implements SelectionListener{
 
 	private TabGroupDTO tabGroupDTO;
 	private Text urlText;
+	private Combo urlPrfixCombo;
 
-	public BodyResetItemListener(TabGroupDTO tabGroupDTO, Text urlText) {
+	public BodyResetItemListener(TabGroupDTO tabGroupDTO, Text urlText, Combo urlPrfixCombo) {
 		this.tabGroupDTO = tabGroupDTO;
 		this.urlText = urlText;
+		this.urlPrfixCombo = urlPrfixCombo;
 	}
 
 	/** 
@@ -55,7 +58,7 @@ public class BodyResetItemListener implements SelectionListener{
 					tabGroupDTO.getBodyText().setText("");
 				}
 				//url
-				String UrlPrefix = Activator.getDefault().getPreferenceStore().getString(RestConstant.UrlPrefix);
+				String UrlPrefix = MyPreferencesPage.getUrlPrfixByCombo(urlPrfixCombo);
 				urlText.setText(UrlPrefix+methodUrl+StringUtils.trimToEmpty(urlParam));
 				tabGroupDTO.getResetItem().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
 			}

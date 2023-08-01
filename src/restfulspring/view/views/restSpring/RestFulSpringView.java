@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -23,11 +24,19 @@ import org.eclipse.ui.part.ViewPart;
 
 import com.google.common.collect.Lists;
 
+import lombok.Getter;
+import lombok.Setter;
+import restfulspring.constant.RestConstant;
 import restfulspring.constant.RestTypeEnum;
 import restfulspring.dto.JDTMethodDTO;
 import restfulspring.dto.JDTTypeDTO;
+import restfulspring.dto.RestParamDTO;
 import restfulspring.handlers.JdtSourceHandlers;
+import restfulspring.handlers.RequestCacheHandlers;
+import restfulspring.preference.MyPreferencesPage;
+import restfulspring.utils.AstUtil;
 import restfulspring.utils.CollectionUtils;
+import restfulspring.utils.TextUtil;
 import restfulspring.view.SWTFactory;
 import restfulspring.view.listener.restSpring.BodyFormatItemListener;
 import restfulspring.view.listener.restSpring.BodyResetItemListener;
@@ -45,12 +54,15 @@ import restfulspring.view.tree.restSpring.MyTreeInput;
 import restfulspring.view.tree.restSpring.TreeContentProvider;
 import restfulspring.view.tree.restSpring.TreeLabelProvider;
 import restfulspring.view.tree.restSpring.TreeViewFactory;
-
+@Getter
+@Setter
 public class RestFulSpringView extends ViewPart {
 
+	public static String id="RestFulSpringView";
 	int commonStyle = SWT.BORDER;
 	private static MyTreeInput treeData;
 	private static TreeViewer treeViewer;
+	private Combo urlPrfixCombo;
 
 	public RestFulSpringView() {
 	}
@@ -136,8 +148,12 @@ public class RestFulSpringView extends ViewPart {
 		GridData row3Data = new GridData(SWT.FILL, SWT.FILL, true, false);
 		queryRow.setLayoutData(row3Data);
 
-		GridLayout rowLayout = SWTFactory.createGridLayout(3);
+		GridLayout rowLayout = SWTFactory.createGridLayout(4);
 		queryRow.setLayout(rowLayout);
+		
+		urlPrfixCombo = new Combo(queryRow, SWT.READ_ONLY);
+		MyPreferencesPage.initUrlPrfixCombo(urlPrfixCombo);
+		
 
 		Combo getCombo = new Combo(queryRow, SWT.READ_ONLY);
 		getCombo.setItems(new String[] { RestTypeEnum.GET.getDesc(), RestTypeEnum.POST.getDesc()});
@@ -176,7 +192,7 @@ public class RestFulSpringView extends ViewPart {
 		
 		/*-------------------------linsteners -----------------------------*/
 
-		TreeClickLinstener treeClickLinstener = new TreeClickLinstener(getCombo,urlText,tabGroupDTO);
+		TreeClickLinstener treeClickLinstener = new TreeClickLinstener(getCombo,urlText,tabGroupDTO,urlPrfixCombo);
 		treeViewer.addDoubleClickListener(treeClickLinstener);
 		treeViewer.addSelectionChangedListener(treeClickLinstener);
 		send.addSelectionListener(new SendButtonListener(getCombo,urlText,tabGroupDTO));
@@ -186,7 +202,7 @@ public class RestFulSpringView extends ViewPart {
 		
 		tabGroupDTO.getBodyText().addFocusListener(new BodyTextFocusListener(tabGroupDTO));
 		
-		tabGroupDTO.getResetItem().addSelectionListener(new BodyResetItemListener(tabGroupDTO,urlText));
+		tabGroupDTO.getResetItem().addSelectionListener(new BodyResetItemListener(tabGroupDTO,urlText,urlPrfixCombo));
 //		
 		tabGroupDTO.getFormatItem().addSelectionListener(new BodyFormatItemListener(tabGroupDTO));
 		
@@ -196,6 +212,29 @@ public class RestFulSpringView extends ViewPart {
 		
 		treeScroll.addSelectionListener(new TreeScrollListener(treeViewer));
 
+		urlPrfixCombo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				MyTreeElement selectedTreeNode = tabGroupDTO.getSelectedTreeNode();
+				JDTMethodDTO selectedJdtMethodDTO = selectedTreeNode.getJDTMethodDTO();
+				String methodUrl = AstUtil.getMethodUrl(selectedTreeNode);
+				String methodUrlParamText = RequestCacheHandlers.getBeyKey(RestConstant.UrlText,methodUrl);
+				if (StringUtils.isBlank(methodUrlParamText)) {
+					RestParamDTO computeParam = AstUtil.computeParam(selectedJdtMethodDTO);
+					Map<String, Object> getParamKVMap = computeParam.getGetParamKVMap();
+					methodUrlParamText = TextUtil.initGetParam(getParamKVMap);
+				}
+				String text = urlText.getText();
+				String urlParamText = TextUtil.getUrlParam(text);
+				if (!StringUtils.trimToEmpty(urlParamText).equals(StringUtils.trimToEmpty(methodUrlParamText))) {
+					RequestCacheHandlers.put(RestConstant.UrlText,methodUrl,urlParamText);
+					tabGroupDTO.getResetItem().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+				}
+				String substringAfter = StringUtils.substringAfter(text, methodUrl);
+				String UrlPrefix = MyPreferencesPage.getUrlPrfixByCombo(urlPrfixCombo);
+				urlText.setText(UrlPrefix+methodUrl+StringUtils.trimToEmpty(substringAfter));
+			}
+		});
 	}
 
 
