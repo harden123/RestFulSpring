@@ -39,7 +39,7 @@ import tool.utils.XpathUtil;
 public class MyBatisSqlView extends ViewPart {
 
 	private static Pattern blankLinePattern = Pattern.compile("^[\\s\\r\\n\\t]+$");
-	private static Pattern startEndBlankPattern = Pattern.compile("^\\s*\\R.*\\R\\s*$",Pattern.MULTILINE|Pattern.DOTALL);
+	private static Pattern startEndBlankPattern = Pattern.compile("^\\s*\\R.*\\R\\s*$",Pattern.MULTILINE|Pattern.DOTALL);//Pattern.DOTALL：.可以匹配包括换行符在内的任何字符，在默认情况下，.只匹配除了换行符以外的任何字符
 	private static Pattern wherePattern = Pattern.compile("^[\\s\\r\\n]*<where>[\\s\\r\\n]*$",Pattern.MULTILINE);
 	private static final String replaceFirstBlank = "^[\\s\\r\\n]*\\r\\n\\s*";
 	private static Pattern varPattern = Pattern.compile("#\\{[^\\}]+\\}\\s*(\"%\")*",Pattern.MULTILINE);

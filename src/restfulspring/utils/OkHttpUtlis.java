@@ -1,6 +1,8 @@
 package restfulspring.utils;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,6 +16,8 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -66,6 +70,9 @@ public class OkHttpUtlis {
 			}
 		});
 	}
+	private static String desktop = System.getProperty("user.home")+"\\Desktop";
+	private static Pattern fileNamePattern = Pattern.compile("filename=([^=;]+)");
+
 
 	@SneakyThrows
     public static String doPostJSON(String json, Map<String,String> headers, String url){
@@ -92,7 +99,10 @@ public class OkHttpUtlis {
 			writer.flush();
 			
 			int responseCode = connection.getResponseCode();
+			
 			if (responseCode == HttpURLConnection.HTTP_OK) {
+				boolean isFile = false;
+				String fileName = "attachment"+System.currentTimeMillis();
 				Map<String, List<String>> respHeaders = connection.getHeaderFields();
 		        for (Map.Entry<String, List<String>> entry : respHeaders.entrySet()) {
 		            String headerName = entry.getKey();
@@ -104,19 +114,46 @@ public class OkHttpUtlis {
 							}
 			                host2CookieMap.put(domainPort, headerValue);
 						}
-		             
+					}else if (StringUtils.equalsIgnoreCase(headerName, "Content-Type")){
+						for (String headerValue : headerValues) {
+							if (StringUtils.containsIgnoreCase(headerValue, "application/octet-stream")) {
+								isFile=true;
+							}
+						}
+					}else if(StringUtils.equalsIgnoreCase(headerName, "Content-Disposition")){
+						for (String headerValue : headerValues) {
+							Matcher matcher = fileNamePattern.matcher(headerValue);
+							if (matcher.find()) {
+								fileName = matcher.group(1);
+							}
+						}
 					}
 		        }
 			        
-			    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			    String line;
-			    StringBuilder response = new StringBuilder();
-			    while ((line = in.readLine()) != null) {
-			        response.append(line);
-			    }
-			    in.close();
-			    String responseBody = response.toString();
-				return responseBody;
+		        if (isFile) {
+		            String savePath = desktop+"\\"+fileName; 
+					InputStream inputStream = connection.getInputStream();
+					BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+					FileOutputStream fileOutputStream = new FileOutputStream(savePath);
+					byte[] buffer = new byte[512];
+					int bytesRead;
+					while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
+						fileOutputStream.write(buffer, 0, bytesRead);
+					}
+					fileOutputStream.close();
+					bufferedInputStream.close();
+					return savePath;
+				}else {
+					BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				    String line;
+				    StringBuilder response = new StringBuilder();
+				    while ((line = in.readLine()) != null) {
+				        response.append(line);
+				    }
+				    in.close();
+				    String responseBody = response.toString();
+					return responseBody;
+				}
 			} else {
 				// 处理响应错误
 				String errorMsg = getErrorMsg(connection);
@@ -163,15 +200,51 @@ public class OkHttpUtlis {
 			
 			int responseCode = connection.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) {
-			    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			    String line;
-			    StringBuilder response = new StringBuilder();
-			    while ((line = in.readLine()) != null) {
-			        response.append(line);
-			    }
-			    in.close();
-			    String responseBody = response.toString();
-				return responseBody;
+				boolean isFile = false;
+				String fileName = "attachment"+System.currentTimeMillis();
+				Map<String, List<String>> respHeaders = connection.getHeaderFields();
+		        for (Map.Entry<String, List<String>> entry : respHeaders.entrySet()) {
+		            String headerName = entry.getKey();
+		            List<String> headerValues = entry.getValue();
+		            if (StringUtils.equalsIgnoreCase(headerName, "Content-Type")){
+						for (String headerValue : headerValues) {
+							if (StringUtils.containsIgnoreCase(headerValue, "application/octet-stream")) {
+								isFile=true;
+							}
+						}
+					}else if(StringUtils.equalsIgnoreCase(headerName, "Content-Disposition")){
+						for (String headerValue : headerValues) {
+							Matcher matcher = fileNamePattern.matcher(headerValue);
+							if (matcher.find()) {
+								fileName = matcher.group(1);
+							}
+						}
+					}
+		        }
+		        if (isFile) {
+		            String savePath = desktop+"\\"+fileName; 
+					InputStream inputStream = connection.getInputStream();
+					BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+					FileOutputStream fileOutputStream = new FileOutputStream(savePath);
+					byte[] buffer = new byte[512];
+					int bytesRead;
+					while ((bytesRead = bufferedInputStream.read(buffer)) != -1) {
+						fileOutputStream.write(buffer, 0, bytesRead);
+					}
+					fileOutputStream.close();
+					bufferedInputStream.close();
+					return savePath;
+				}else {
+					BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+				    String line;
+				    StringBuilder response = new StringBuilder();
+				    while ((line = in.readLine()) != null) {
+				        response.append(line);
+				    }
+				    in.close();
+				    String responseBody = response.toString();
+					return responseBody;
+				}
 			} else {
 				// 处理响应错误
 				String errorMsg = getErrorMsg(connection);
@@ -201,9 +274,14 @@ public class OkHttpUtlis {
 	public static void main(String[] args) {
 //		String doGet = doGet(null, null, "https://www.baidu.com");
 //		System.out.println(doGet);
-		String doPostJSON = doPostJSON("{\"loginId\":\"sysadmin4\",\"password\":\"123456\"}", null, "https://wit-plat-testb-browser.gogen.cn/biz/login");
-		System.out.println(doPostJSON);
-		String doGet = doGet(null, null, "https://wit-plat-testb-browser.gogen.cn/biz/getUserDetailByUserUuid");
-		System.out.println(doGet);
+//		String doPostJSON = doPostJSON("{\"loginId\":\"sysadmin4\",\"password\":\"123456\"}", null, "https://wit-plat-testb-browser.gogen.cn/biz/login");
+//		System.out.println(doPostJSON);
+//		String doGet = doGet(null, null, "https://wit-plat-testb-browser.gogen.cn/biz/getUserDetailByUserUuid");
+//		System.out.println(doGet);
+		
+		Matcher matcher = fileNamePattern.matcher("attachment;filename=äºç»´ç å¯¼åº202308011014.xlsx");
+		if (matcher.find()) {
+			System.out.println(matcher.group(1));
+		}
 	}
 }
