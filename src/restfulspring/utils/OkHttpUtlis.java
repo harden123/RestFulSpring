@@ -278,10 +278,5 @@ public class OkHttpUtlis {
 //		System.out.println(doPostJSON);
 //		String doGet = doGet(null, null, "https://wit-plat-testb-browser.gogen.cn/biz/getUserDetailByUserUuid");
 //		System.out.println(doGet);
-		
-		Matcher matcher = fileNamePattern.matcher("attachment;filename=äºç»´ç å¯¼åº202308011014.xlsx");
-		if (matcher.find()) {
-			System.out.println(matcher.group(1));
-		}
 	}
 }
