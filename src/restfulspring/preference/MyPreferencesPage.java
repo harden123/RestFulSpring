@@ -65,6 +65,9 @@ public class MyPreferencesPage extends FieldEditorPreferencePage implements IWor
     }
 
     public static void initUrlPrfixCombo(Combo urlPrfixCombo) {
+    	if (urlPrfixCombo == null) {
+    		return ;
+		}
 		int selectionIndex = urlPrfixCombo.getSelectionIndex();
 		if (selectionIndex==-1) {
 			selectionIndex=0;
@@ -95,6 +98,9 @@ public class MyPreferencesPage extends FieldEditorPreferencePage implements IWor
     }
     
 	public static String getUrlPrfixByCombo(Combo urlPrfixCombo) {
+		if (urlPrfixCombo == null) {
+			return null;
+		}
 		String text = urlPrfixCombo.getText();
 		String LabelPrefix = Activator.getDefault().getPreferenceStore().getString(RestConstant.LabelPrefix);
 		String LabelPrefix2 = Activator.getDefault().getPreferenceStore().getString(RestConstant.LabelPrefix2);
