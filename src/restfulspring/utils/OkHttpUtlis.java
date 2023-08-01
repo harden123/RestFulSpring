@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 import com.alibaba.fastjson.JSON;
 
@@ -102,7 +104,7 @@ public class OkHttpUtlis {
 			
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				boolean isFile = false;
-				String fileName = "attachment"+System.currentTimeMillis();
+				String fileName = "attachment"+DateFormatUtils.format(new Date(), "yyyyMMddHHmmss");
 				Map<String, List<String>> respHeaders = connection.getHeaderFields();
 		        for (Map.Entry<String, List<String>> entry : respHeaders.entrySet()) {
 		            String headerName = entry.getKey();
@@ -201,7 +203,7 @@ public class OkHttpUtlis {
 			int responseCode = connection.getResponseCode();
 			if (responseCode == HttpURLConnection.HTTP_OK) {
 				boolean isFile = false;
-				String fileName = "attachment"+System.currentTimeMillis();
+				String fileName = "attachment"+DateFormatUtils.format(new Date(), "yyyyMMddHHmmss");
 				Map<String, List<String>> respHeaders = connection.getHeaderFields();
 		        for (Map.Entry<String, List<String>> entry : respHeaders.entrySet()) {
 		            String headerName = entry.getKey();
