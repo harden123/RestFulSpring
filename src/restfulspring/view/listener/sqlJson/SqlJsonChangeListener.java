@@ -58,7 +58,7 @@ public class SqlJsonChangeListener implements SelectionListener{
 		String text = sqlText.getText();
 		if (StringUtils.isNotBlank(text)) {
 			
-			JSON  result = doParse(text);
+			JSON result = doParse(text);
 			
 			Display.getDefault().asyncExec(new Runnable() {
 

@@ -46,7 +46,7 @@ public class SqlJsonView extends ViewPart {
 		Composite buttonRow = SWTFactory.createComposite(composite);
 		GridData buttonRowData = new GridData(SWT.FILL, SWT.FILL, true, false);
 		buttonRow.setLayoutData(buttonRowData);
-		buttonRow.setLayout(SWTFactory.createGridLayout(8));
+		buttonRow.setLayout(SWTFactory.createGridLayout(10));
 
 
 		Button toJsonBtn = new Button(buttonRow, SWT.NONE);
@@ -115,7 +115,7 @@ public class SqlJsonView extends ViewPart {
 
 		
 		Button clearBtn = new Button(buttonRow, SWT.NONE);
-		toSqlBtn.setText("clear");
+		clearBtn.setText("clear");
 		
 		
 		/*------------------------- resultRow-----------------------------*/
